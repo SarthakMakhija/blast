@@ -4,26 +4,31 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 )
 
 const ResponseChannelSize = 10000
 
 type GroupOptions struct {
-	concurrency   uint
-	totalRequests uint
-	payload       []byte
-	targetAddress string
+	concurrency       uint
+	totalRequests     uint
+	payload           []byte
+	targetAddress     string
+	requestsPerSecond float64
 }
 
 type WorkerOptions struct {
-	totalRequests   uint
-	payload         []byte
-	targetAddress   string
-	responseChannel chan WorkerResponse
+	totalRequests     uint
+	payload           []byte
+	targetAddress     string
+	requestsPerSecond float64
+	stopChannel       chan struct{}
+	responseChannel   chan WorkerResponse
 }
 
 type WorkerGroup struct {
-	options GroupOptions
+	options     GroupOptions
+	stopChannel chan struct{}
 }
 
 type WorkerResponse struct {
@@ -37,7 +42,7 @@ type Worker struct {
 }
 
 func NewWorkerGroup(options GroupOptions) *WorkerGroup {
-	return &WorkerGroup{options: options}
+	return &WorkerGroup{options: options, stopChannel: make(chan struct{}, options.concurrency)}
 }
 
 func (group *WorkerGroup) Run() chan WorkerResponse {
@@ -63,10 +68,12 @@ func (group *WorkerGroup) runWorkers(responseChannel chan WorkerResponse) {
 		Worker{
 			connection: connection,
 			options: WorkerOptions{
-				totalRequests:   uint(group.options.totalRequests / group.options.concurrency),
-				payload:         group.options.payload,
-				targetAddress:   group.options.targetAddress,
-				responseChannel: responseChannel,
+				totalRequests:     uint(group.options.totalRequests / group.options.concurrency),
+				payload:           group.options.payload,
+				targetAddress:     group.options.targetAddress,
+				requestsPerSecond: group.options.requestsPerSecond,
+				stopChannel:       group.stopChannel,
+				responseChannel:   responseChannel,
 			},
 		}.run(&wg)
 	}
@@ -80,13 +87,35 @@ func (group *WorkerGroup) finish(responseChannel chan WorkerResponse) {
 func (worker Worker) run(wg *sync.WaitGroup) {
 	go func() {
 		defer wg.Done()
-
-		for request := 1; request <= int(worker.options.totalRequests); request++ {
-			_, err := worker.connection.Write(worker.options.payload)
-			worker.options.responseChannel <- WorkerResponse{
-				err:           err,
-				payloadLength: int64(len(worker.options.payload)),
-			}
-		}
+		worker.sendRequests()
 	}()
+}
+
+func (worker Worker) sendRequests() {
+	var throttle <-chan time.Time
+	if worker.options.requestsPerSecond > 0 {
+		throttle = time.Tick(
+			time.Duration(1e6/(worker.options.requestsPerSecond)) * time.Microsecond,
+		)
+	}
+
+	for request := 1; request <= int(worker.options.totalRequests); request++ {
+		select {
+		case <-worker.options.stopChannel:
+			return
+		default:
+			if worker.options.requestsPerSecond > 0 {
+				<-throttle
+			}
+			worker.sendRequest()
+		}
+	}
+}
+
+func (worker Worker) sendRequest() {
+	_, err := worker.connection.Write(worker.options.payload)
+	worker.options.responseChannel <- WorkerResponse{
+		err:           err,
+		payloadLength: int64(len(worker.options.payload)),
+	}
 }

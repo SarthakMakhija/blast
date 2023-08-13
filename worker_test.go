@@ -68,3 +68,31 @@ func TestWritesMultiplePayloadsByWorker(t *testing.T) {
 		assert.Equal(t, int64(7), response.payloadLength)
 	}
 }
+
+func TestWritesMultiplePayloadsByWorkerWithThrottle(t *testing.T) {
+	totalRequests := uint(5)
+	responseChannel := make(chan WorkerResponse, totalRequests)
+	defer close(responseChannel)
+
+	var buffer bytes.Buffer
+	worker := Worker{
+		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
+		options: WorkerOptions{
+			totalRequests:     totalRequests,
+			payload:           []byte("payload"),
+			responseChannel:   responseChannel,
+			requestsPerSecond: float64(3),
+		},
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	worker.run(&wg)
+	wg.Wait()
+
+	for count := 1; count <= int(totalRequests); count++ {
+		response := <-responseChannel
+		assert.Nil(t, response.err)
+		assert.Equal(t, int64(7), response.payloadLength)
+	}
+}
