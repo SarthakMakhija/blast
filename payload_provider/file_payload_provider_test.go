@@ -1,4 +1,4 @@
-package blast
+package payloadprovider
 
 import (
 	"os"
@@ -16,13 +16,13 @@ func TestReadsTheFile(t *testing.T) {
 	_, err = file.Write([]byte("sample test content"))
 	assert.Nil(t, err)
 
-	filePayload, err := NewFilePayload(file.Name())
+	filePayloadProvider, err := NewFilePayloadProvider(file.Name())
 	assert.Nil(t, err)
 
-	assert.Equal(t, "sample test content", string(filePayload.Get()))
+	assert.Equal(t, "sample test content", string(filePayloadProvider.Get()))
 }
 
 func TestReadsTheNonExistentFile(t *testing.T) {
-	_, err := NewFilePayload("non-existing")
+	_, err := NewFilePayloadProvider("non-existing")
 	assert.Error(t, err)
 }

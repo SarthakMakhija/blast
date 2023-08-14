@@ -1,4 +1,4 @@
-package blast
+package payloadprovider
 
 import (
 	"os"
@@ -14,13 +14,13 @@ func TestReadsAProcessOutput(t *testing.T) {
 
 	defer os.Remove(file.Name())
 
-	processPayload, err := NewProcessPayload("ls | grep test_file*")
+	processPayload, err := NewProcessPayloadProvider("ls | grep test_file*")
 
 	assert.Equal(t, filepath.Base(file.Name()), string(processPayload.Get()))
 }
 
 func TestReadsANonExisitngProcess(t *testing.T) {
-	_, err := NewProcessPayload("non-existing")
+	_, err := NewProcessPayloadProvider("non-existing")
 
 	assert.Error(t, err)
 }
