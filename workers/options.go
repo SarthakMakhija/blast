@@ -10,16 +10,15 @@ type GroupOptions struct {
 }
 
 type WorkerOptions struct {
-	totalRequests     uint
-	payload           []byte
-	targetAddress     string
-	requestsPerSecond float64
-	stopChannel       chan struct{}
-	responseChannel   chan WorkerResponse
+	totalRequests          uint
+	payload                []byte
+	targetAddress          string
+	requestsPerSecond      float64
+	stopChannel            chan struct{}
+	loadGenerationResponse chan LoadGenerationResponse
 }
 
-// TODO: Rename this
-type WorkerResponse struct {
+type LoadGenerationResponse struct {
 	Err           error
 	PayloadLength int64
 }

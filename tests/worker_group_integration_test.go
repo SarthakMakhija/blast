@@ -17,7 +17,7 @@ func TestSendRequestsWithSingleConnection(t *testing.T) {
 	defer server.stop()
 
 	concurrency, totalRequests := uint(10), uint(20)
-	responseChannel := workers.
+	loadGenerationResponseChannel := workers.
 		NewWorkerGroup(
 			workers.NewGroupOptions(
 				concurrency,
@@ -28,7 +28,7 @@ func TestSendRequestsWithSingleConnection(t *testing.T) {
 		).
 		Run()
 
-	for response := range responseChannel {
+	for response := range loadGenerationResponseChannel {
 		assert.Nil(t, response.Err)
 		assert.Equal(t, int64(10), response.PayloadLength)
 	}
@@ -43,7 +43,7 @@ func TestSendRequestsWithMultipleConnections(t *testing.T) {
 	defer server.stop()
 
 	concurrency, connections, totalRequests := uint(20), uint(10), uint(40)
-	responseChannel := workers.
+	loadGenerationResponseChannel := workers.
 		NewWorkerGroup(
 			workers.NewGroupOptionsWithConnections(
 				concurrency,
@@ -55,7 +55,7 @@ func TestSendRequestsWithMultipleConnections(t *testing.T) {
 		).
 		Run()
 
-	for response := range responseChannel {
+	for response := range loadGenerationResponseChannel {
 		assert.Nil(t, response.Err)
 		assert.Equal(t, int64(10), response.PayloadLength)
 	}
