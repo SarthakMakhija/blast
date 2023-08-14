@@ -42,7 +42,7 @@ func (responseReader ResponseReader) StartReading() {
 				case <-responseReader.stopChannel:
 					return
 				default:
-					connection.SetReadDeadline(time.Now().Add(1000 * time.Millisecond))
+					connection.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
 					buffer := make([]byte, responseReader.responseSizeBytes)
 					_, err := connection.Read(buffer)
 
