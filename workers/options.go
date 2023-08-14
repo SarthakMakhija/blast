@@ -1,5 +1,7 @@
 package workers
 
+import "time"
+
 type GroupOptions struct {
 	concurrency       uint
 	connections       uint
@@ -19,8 +21,9 @@ type WorkerOptions struct {
 }
 
 type LoadGenerationResponse struct {
-	Err           error
-	PayloadLength int64
+	Err                error
+	PayloadLength      int64
+	LoadGenerationTime time.Time
 }
 
 func NewGroupOptions(
