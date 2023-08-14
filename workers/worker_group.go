@@ -24,18 +24,25 @@ func (group *WorkerGroup) Run() chan WorkerResponse {
 	return responseChannel
 }
 
+// TODO: Should we care about the responses?
 func (group *WorkerGroup) runWorkers(responseChannel chan WorkerResponse) {
 	var wg sync.WaitGroup
 	wg.Add(int(group.options.concurrency))
 
-	connection, err := net.Dial("tcp", group.options.targetAddress)
-	if err != nil {
-		// TODO: Handle error
-		return
-	}
+	connectionsSharedByWorker := group.options.concurrency / group.options.connections
 
-	// TODO: Should we care about the responses?
-	for count := 1; count <= int(group.options.concurrency); count++ {
+	var connection net.Conn
+	var err error
+
+	for count := 0; count < int(group.options.concurrency); count++ {
+		if count%int(connectionsSharedByWorker) == 0 {
+			connection, err = net.Dial("tcp", group.options.targetAddress)
+			if err != nil {
+				// TODO: Handle error
+				return
+			}
+		}
+
 		Worker{
 			connection: connection,
 			options: WorkerOptions{

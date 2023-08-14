@@ -2,6 +2,7 @@ package workers
 
 type GroupOptions struct {
 	concurrency       uint
+	connections       uint
 	totalRequests     uint
 	payload           []byte
 	targetAddress     string
@@ -17,6 +18,7 @@ type WorkerOptions struct {
 	responseChannel   chan WorkerResponse
 }
 
+// TODO: Rename this
 type WorkerResponse struct {
 	Err           error
 	PayloadLength int64
@@ -28,8 +30,9 @@ func NewGroupOptions(
 	payload []byte,
 	targetAddress string,
 ) GroupOptions {
-	return NewGroupOptionsWithRequestsPerSecond(
+	return NewGroupOptionsFullyLoaded(
 		concurrency,
+		1,
 		totalRequests,
 		payload,
 		targetAddress,
@@ -37,8 +40,26 @@ func NewGroupOptions(
 	)
 }
 
-func NewGroupOptionsWithRequestsPerSecond(
+func NewGroupOptionsWithConnections(
 	concurrency uint,
+	connections uint,
+	totalRequests uint,
+	payload []byte,
+	targetAddress string,
+) GroupOptions {
+	return NewGroupOptionsFullyLoaded(
+		concurrency,
+		connections,
+		totalRequests,
+		payload,
+		targetAddress,
+		0.0,
+	)
+}
+
+func NewGroupOptionsFullyLoaded(
+	concurrency uint,
+	connections uint,
 	totalRequests uint,
 	payload []byte,
 	targetAddress string,
@@ -46,6 +67,7 @@ func NewGroupOptionsWithRequestsPerSecond(
 ) GroupOptions {
 	return GroupOptions{
 		concurrency:       concurrency,
+		connections:       connections,
 		totalRequests:     totalRequests,
 		payload:           payload,
 		targetAddress:     targetAddress,
