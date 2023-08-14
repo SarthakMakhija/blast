@@ -1,4 +1,4 @@
-package blast
+package tests
 
 import (
 	"net"

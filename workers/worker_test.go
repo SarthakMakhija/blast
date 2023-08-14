@@ -1,4 +1,4 @@
-package blast
+package workers
 
 import (
 	"bufio"
@@ -38,8 +38,8 @@ func TestWritesPayloadByWorker(t *testing.T) {
 
 	response := <-worker.options.responseChannel
 
-	assert.Nil(t, response.err)
-	assert.Equal(t, int64(7), response.payloadLength)
+	assert.Nil(t, response.Err)
+	assert.Equal(t, int64(7), response.PayloadLength)
 }
 
 func TestWritesMultiplePayloadsByWorker(t *testing.T) {
@@ -64,8 +64,8 @@ func TestWritesMultiplePayloadsByWorker(t *testing.T) {
 
 	for count := 1; count <= int(totalRequests); count++ {
 		response := <-responseChannel
-		assert.Nil(t, response.err)
-		assert.Equal(t, int64(7), response.payloadLength)
+		assert.Nil(t, response.Err)
+		assert.Equal(t, int64(7), response.PayloadLength)
 	}
 }
 
@@ -92,7 +92,7 @@ func TestWritesMultiplePayloadsByWorkerWithThrottle(t *testing.T) {
 
 	for count := 1; count <= int(totalRequests); count++ {
 		response := <-responseChannel
-		assert.Nil(t, response.err)
-		assert.Equal(t, int64(7), response.payloadLength)
+		assert.Nil(t, response.Err)
+		assert.Equal(t, int64(7), response.PayloadLength)
 	}
 }

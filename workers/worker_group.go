@@ -1,44 +1,15 @@
-package blast
+package workers
 
 import (
-	"io"
 	"net"
 	"sync"
-	"time"
 )
 
 const ResponseChannelSize = 10000
 
-type GroupOptions struct {
-	concurrency       uint
-	totalRequests     uint
-	payload           []byte
-	targetAddress     string
-	requestsPerSecond float64
-}
-
-type WorkerOptions struct {
-	totalRequests     uint
-	payload           []byte
-	targetAddress     string
-	requestsPerSecond float64
-	stopChannel       chan struct{}
-	responseChannel   chan WorkerResponse
-}
-
 type WorkerGroup struct {
 	options     GroupOptions
 	stopChannel chan struct{}
-}
-
-type WorkerResponse struct {
-	err           error
-	payloadLength int64
-}
-
-type Worker struct {
-	connection io.WriteCloser
-	options    WorkerOptions
 }
 
 func NewWorkerGroup(options GroupOptions) *WorkerGroup {
@@ -82,40 +53,4 @@ func (group *WorkerGroup) runWorkers(responseChannel chan WorkerResponse) {
 
 func (group *WorkerGroup) finish(responseChannel chan WorkerResponse) {
 	close(responseChannel)
-}
-
-func (worker Worker) run(wg *sync.WaitGroup) {
-	go func() {
-		defer wg.Done()
-		worker.sendRequests()
-	}()
-}
-
-func (worker Worker) sendRequests() {
-	var throttle <-chan time.Time
-	if worker.options.requestsPerSecond > 0 {
-		throttle = time.Tick(
-			time.Duration(1e6/(worker.options.requestsPerSecond)) * time.Microsecond,
-		)
-	}
-
-	for request := 1; request <= int(worker.options.totalRequests); request++ {
-		select {
-		case <-worker.options.stopChannel:
-			return
-		default:
-			if worker.options.requestsPerSecond > 0 {
-				<-throttle
-			}
-			worker.sendRequest()
-		}
-	}
-}
-
-func (worker Worker) sendRequest() {
-	_, err := worker.connection.Write(worker.options.payload)
-	worker.options.responseChannel <- WorkerResponse{
-		err:           err,
-		payloadLength: int64(len(worker.options.payload)),
-	}
 }
