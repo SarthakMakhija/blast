@@ -30,10 +30,17 @@ func NewMockServer(network, address string, payloadSizeBytes uint) (*MockServer,
 
 func (server *MockServer) accept(t *testing.T) {
 	go func() {
-		connection, err := server.listener.Accept()
-		assert.Nil(t, err)
+		for {
+			select {
+			case <-server.stopChannel:
+				return
+			default:
+				connection, err := server.listener.Accept()
+				assert.Nil(t, err)
 
-		server.handleConnection(connection)
+				server.handleConnection(connection)
+			}
+		}
 	}()
 }
 
@@ -45,8 +52,11 @@ func (server *MockServer) handleConnection(connection net.Conn) {
 				return
 			default:
 				payload := make([]byte, server.payloadSizeBytes)
+
 				_, _ = connection.Read(payload)
 				server.totalRequests.Add(1)
+
+				_, _ = connection.Write(payload)
 			}
 		}
 	}()
