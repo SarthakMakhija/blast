@@ -13,23 +13,23 @@ type Report struct {
 
 // TODO: Total connections
 type LoadMetrics struct {
-	successCount         uint
-	errorCount           uint
-	errorCountByType     map[string]uint
-	totalPayloadLength   int64
-	averagePayloadLength float64
-	earliestLoadSendTime time.Time
-	latestLoadSendTime   time.Time
+	successCount              uint
+	errorCount                uint
+	errorCountByType          map[string]uint
+	totalPayloadLengthBytes   int64
+	averagePayloadLengthBytes float64
+	earliestLoadSendTime      time.Time
+	latestLoadSendTime        time.Time
 }
 
 type ResponseMetrics struct {
-	successCount                 uint
-	errorCount                   uint
-	errorCountByType             map[string]uint
-	totalResponsePayloadLength   int64
-	averageResponsePayloadLength float64
-	earliestResponseReceivedTime time.Time
-	latestResponseReceivedTime   time.Time
+	successCount                      uint
+	errorCount                        uint
+	errorCountByType                  map[string]uint
+	totalResponsePayloadLengthBytes   int64
+	averageResponsePayloadLengthBytes float64
+	earliestResponseReceivedTime      time.Time
+	latestResponseReceivedTime        time.Time
 }
 
 type Reporter struct {
@@ -73,9 +73,12 @@ func (reporter *Reporter) collectLoadMetrics() {
 			} else {
 				reporter.report.loadMetrics.successCount++
 			}
-			reporter.report.loadMetrics.totalPayloadLength += load.PayloadLength
-			reporter.report.loadMetrics.averagePayloadLength = float64(
-				reporter.report.loadMetrics.totalPayloadLength) / float64(totalGeneratedLoad)
+			reporter.report.loadMetrics.totalPayloadLengthBytes += load.PayloadLength
+			reporter.report.loadMetrics.averagePayloadLengthBytes = float64(
+				reporter.report.loadMetrics.totalPayloadLengthBytes,
+			) / float64(
+				totalGeneratedLoad,
+			)
 
 			if reporter.report.loadMetrics.earliestLoadSendTime.IsZero() ||
 				load.LoadGenerationTime.Before(reporter.report.loadMetrics.earliestLoadSendTime) {
@@ -102,9 +105,9 @@ func (reporter *Reporter) collectResponseMetrics() {
 			} else {
 				reporter.report.responseMetrics.successCount++
 			}
-			reporter.report.responseMetrics.totalResponsePayloadLength += response.PayloadLength
-			reporter.report.responseMetrics.averageResponsePayloadLength = float64(
-				reporter.report.responseMetrics.totalResponsePayloadLength,
+			reporter.report.responseMetrics.totalResponsePayloadLengthBytes += response.PayloadLength
+			reporter.report.responseMetrics.averageResponsePayloadLengthBytes = float64(
+				reporter.report.responseMetrics.totalResponsePayloadLengthBytes,
 			) / float64(totalResponses)
 
 			if reporter.report.responseMetrics.earliestResponseReceivedTime.IsZero() ||
