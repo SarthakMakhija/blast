@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"blast"
+	"blast/report"
 )
 
 func TestReadsResponseFromASingleConnection(t *testing.T) {
@@ -24,12 +24,12 @@ func TestReadsResponseFromASingleConnection(t *testing.T) {
 	writeTo(t, connection, []byte("HelloWorld"))
 
 	stopChannel := make(chan struct{})
-	responseChannel := make(chan blast.SubjectServerResponse, 1)
+	responseChannel := make(chan report.SubjectServerResponse, 1)
 
 	defer close(stopChannel)
 	defer close(responseChannel)
 
-	responseReader := blast.NewResponseReader(
+	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
 		[]net.Conn{connection},
 		stopChannel,
@@ -58,12 +58,12 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 	time.Sleep(10 * time.Millisecond)
 
 	stopChannel := make(chan struct{})
-	responseChannel := make(chan blast.SubjectServerResponse, 2)
+	responseChannel := make(chan report.SubjectServerResponse, 2)
 
 	defer close(stopChannel)
 	defer close(responseChannel)
 
-	responseReader := blast.NewResponseReader(
+	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
 		[]net.Conn{connection, otherConnection},
 		stopChannel,
@@ -88,7 +88,7 @@ func writeTo(t *testing.T, connection net.Conn, payload []byte) {
 	assert.Nil(t, err)
 }
 
-func captureTwoResponses(t *testing.T, responseChannel chan blast.SubjectServerResponse) [][]byte {
+func captureTwoResponses(t *testing.T, responseChannel chan report.SubjectServerResponse) [][]byte {
 	var responses [][]byte
 
 	response := <-responseChannel

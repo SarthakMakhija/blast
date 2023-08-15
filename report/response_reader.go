@@ -1,4 +1,4 @@
-package blast
+package report
 
 import (
 	"errors"
@@ -8,9 +8,10 @@ import (
 )
 
 type SubjectServerResponse struct {
-	Err          error
-	ResponseTime time.Time
-	Response     []byte
+	Err           error
+	ResponseTime  time.Time
+	Response      []byte
+	PayloadLength int64
 }
 
 type ResponseReader struct {
@@ -56,8 +57,9 @@ func (responseReader ResponseReader) StartReading() {
 						}
 					} else {
 						responseReader.responseChannel <- SubjectServerResponse{
-							ResponseTime: time.Now(),
-							Response:     buffer,
+							ResponseTime:  time.Now(),
+							Response:      buffer,
+							PayloadLength: int64(len(buffer)),
 						}
 					}
 				}
