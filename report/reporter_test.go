@@ -21,8 +21,8 @@ func TestReportWithErrorInGeneratingLoad(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(loadGenerationChannel)
 
-	assert.Equal(t, uint(1), reporter.report.loadMetrics.errorCount)
-	assert.Equal(t, map[string]uint{"test error": 1}, reporter.report.loadMetrics.errorCountByType)
+	assert.Equal(t, uint(1), reporter.report.Load.ErrorCount)
+	assert.Equal(t, map[string]uint{"test error": 1}, reporter.report.Load.ErrorCountByType)
 }
 
 func TestReportWithoutErrorInGeneratingLoad(t *testing.T) {
@@ -36,7 +36,7 @@ func TestReportWithoutErrorInGeneratingLoad(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(loadGenerationChannel)
 
-	assert.Equal(t, uint(1), reporter.report.loadMetrics.successCount)
+	assert.Equal(t, uint(1), reporter.report.Load.SuccessCount)
 }
 
 func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
@@ -53,8 +53,8 @@ func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(loadGenerationChannel)
 
-	assert.Equal(t, uint(1), reporter.report.loadMetrics.successCount)
-	assert.Equal(t, uint(1), reporter.report.loadMetrics.errorCount)
+	assert.Equal(t, uint(1), reporter.report.Load.SuccessCount)
+	assert.Equal(t, uint(1), reporter.report.Load.ErrorCount)
 }
 
 func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
@@ -72,8 +72,8 @@ func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(loadGenerationChannel)
 
-	assert.Equal(t, int64(20), reporter.report.loadMetrics.totalPayloadLengthBytes)
-	assert.Equal(t, float64(10.0), reporter.report.loadMetrics.averagePayloadLengthBytes)
+	assert.Equal(t, int64(20), reporter.report.Load.TotalPayloadLengthBytes)
+	assert.Equal(t, float64(10.0), reporter.report.Load.AveragePayloadLengthBytes)
 }
 
 func TestReportWithLoadTimeInGeneratingLoad(t *testing.T) {
@@ -94,8 +94,8 @@ func TestReportWithLoadTimeInGeneratingLoad(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(loadGenerationChannel)
 
-	assert.Equal(t, now, reporter.report.loadMetrics.earliestLoadSendTime)
-	assert.Equal(t, laterByTenSeconds, reporter.report.loadMetrics.latestLoadSendTime)
+	assert.Equal(t, now, reporter.report.Load.EarliestLoadSendTime)
+	assert.Equal(t, laterByTenSeconds, reporter.report.Load.LatestLoadSendTime)
 }
 
 func TestReportWithErrorInReceivingResponse(t *testing.T) {
@@ -109,11 +109,11 @@ func TestReportWithErrorInReceivingResponse(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(responseChannel)
 
-	assert.Equal(t, uint(1), reporter.report.responseMetrics.errorCount)
+	assert.Equal(t, uint(1), reporter.report.Response.ErrorCount)
 	assert.Equal(
 		t,
 		map[string]uint{"test error": 1},
-		reporter.report.responseMetrics.errorCountByType,
+		reporter.report.Response.ErrorCountByType,
 	)
 }
 
@@ -128,7 +128,7 @@ func TestReportWithoutErrorInReceivingResponse(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(responseChannel)
 
-	assert.Equal(t, uint(1), reporter.report.responseMetrics.successCount)
+	assert.Equal(t, uint(1), reporter.report.Response.SuccessCount)
 }
 
 func TestReportWithAndWithoutErrorInReceivingResponse(t *testing.T) {
@@ -145,8 +145,8 @@ func TestReportWithAndWithoutErrorInReceivingResponse(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(responseChannel)
 
-	assert.Equal(t, uint(1), reporter.report.responseMetrics.successCount)
-	assert.Equal(t, uint(1), reporter.report.responseMetrics.errorCount)
+	assert.Equal(t, uint(1), reporter.report.Response.SuccessCount)
+	assert.Equal(t, uint(1), reporter.report.Response.ErrorCount)
 }
 
 func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
@@ -164,11 +164,11 @@ func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(responseChannel)
 
-	assert.Equal(t, int64(20), reporter.report.responseMetrics.totalResponsePayloadLengthBytes)
+	assert.Equal(t, int64(20), reporter.report.Response.TotalResponsePayloadLengthBytes)
 	assert.Equal(
 		t,
 		float64(10.0),
-		reporter.report.responseMetrics.averageResponsePayloadLengthBytes,
+		reporter.report.Response.AverageResponsePayloadLengthBytes,
 	)
 }
 
@@ -190,6 +190,6 @@ func TestReportWithLoadTimeInReceivingResponse(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(responseChannel)
 
-	assert.Equal(t, now, reporter.report.responseMetrics.earliestResponseReceivedTime)
-	assert.Equal(t, laterByTenSeconds, reporter.report.responseMetrics.latestResponseReceivedTime)
+	assert.Equal(t, now, reporter.report.Response.EarliestResponseReceivedTime)
+	assert.Equal(t, laterByTenSeconds, reporter.report.Response.LatestResponseReceivedTime)
 }

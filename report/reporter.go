@@ -7,29 +7,30 @@ import (
 )
 
 type Report struct {
-	loadMetrics     LoadMetrics
-	responseMetrics ResponseMetrics
+	Load     LoadMetrics
+	Response ResponseMetrics
 }
 
-// TODO: Total connections
+// TODO: Total connections, total requests, requests per second
 type LoadMetrics struct {
-	successCount              uint
-	errorCount                uint
-	errorCountByType          map[string]uint
-	totalPayloadLengthBytes   int64
-	averagePayloadLengthBytes float64
-	earliestLoadSendTime      time.Time
-	latestLoadSendTime        time.Time
+	SuccessCount              uint
+	ErrorCount                uint
+	ErrorCountByType          map[string]uint
+	TotalPayloadLengthBytes   int64
+	AveragePayloadLengthBytes float64
+	EarliestLoadSendTime      time.Time
+	LatestLoadSendTime        time.Time
 }
 
+// TODO: connection time, total responses
 type ResponseMetrics struct {
-	successCount                      uint
-	errorCount                        uint
-	errorCountByType                  map[string]uint
-	totalResponsePayloadLengthBytes   int64
-	averageResponsePayloadLengthBytes float64
-	earliestResponseReceivedTime      time.Time
-	latestResponseReceivedTime        time.Time
+	SuccessCount                      uint
+	ErrorCount                        uint
+	ErrorCountByType                  map[string]uint
+	TotalResponsePayloadLengthBytes   int64
+	AverageResponsePayloadLengthBytes float64
+	EarliestResponseReceivedTime      time.Time
+	LatestResponseReceivedTime        time.Time
 }
 
 type Reporter struct {
@@ -44,11 +45,11 @@ func NewReporter(
 ) Reporter {
 	return Reporter{
 		report: &Report{
-			loadMetrics: LoadMetrics{
-				errorCountByType: make(map[string]uint),
+			Load: LoadMetrics{
+				ErrorCountByType: make(map[string]uint),
 			},
-			responseMetrics: ResponseMetrics{
-				errorCountByType: make(map[string]uint),
+			Response: ResponseMetrics{
+				ErrorCountByType: make(map[string]uint),
 			},
 		},
 		loadGenerationChannel: loadGenerationChannel,
@@ -68,26 +69,26 @@ func (reporter *Reporter) collectLoadMetrics() {
 			totalGeneratedLoad++
 
 			if load.Err != nil {
-				reporter.report.loadMetrics.errorCount++
-				reporter.report.loadMetrics.errorCountByType[load.Err.Error()]++
+				reporter.report.Load.ErrorCount++
+				reporter.report.Load.ErrorCountByType[load.Err.Error()]++
 			} else {
-				reporter.report.loadMetrics.successCount++
+				reporter.report.Load.SuccessCount++
 			}
-			reporter.report.loadMetrics.totalPayloadLengthBytes += load.PayloadLength
-			reporter.report.loadMetrics.averagePayloadLengthBytes = float64(
-				reporter.report.loadMetrics.totalPayloadLengthBytes,
+			reporter.report.Load.TotalPayloadLengthBytes += load.PayloadLength
+			reporter.report.Load.AveragePayloadLengthBytes = float64(
+				reporter.report.Load.TotalPayloadLengthBytes,
 			) / float64(
 				totalGeneratedLoad,
 			)
 
-			if reporter.report.loadMetrics.earliestLoadSendTime.IsZero() ||
-				load.LoadGenerationTime.Before(reporter.report.loadMetrics.earliestLoadSendTime) {
-				reporter.report.loadMetrics.earliestLoadSendTime = load.LoadGenerationTime
+			if reporter.report.Load.EarliestLoadSendTime.IsZero() ||
+				load.LoadGenerationTime.Before(reporter.report.Load.EarliestLoadSendTime) {
+				reporter.report.Load.EarliestLoadSendTime = load.LoadGenerationTime
 			}
 
-			if reporter.report.loadMetrics.latestLoadSendTime.IsZero() ||
-				load.LoadGenerationTime.After(reporter.report.loadMetrics.latestLoadSendTime) {
-				reporter.report.loadMetrics.latestLoadSendTime = load.LoadGenerationTime
+			if reporter.report.Load.LatestLoadSendTime.IsZero() ||
+				load.LoadGenerationTime.After(reporter.report.Load.LatestLoadSendTime) {
+				reporter.report.Load.LatestLoadSendTime = load.LoadGenerationTime
 			}
 		}
 	}()
@@ -100,28 +101,28 @@ func (reporter *Reporter) collectResponseMetrics() {
 			totalResponses++
 
 			if response.Err != nil {
-				reporter.report.responseMetrics.errorCount++
-				reporter.report.responseMetrics.errorCountByType[response.Err.Error()]++
+				reporter.report.Response.ErrorCount++
+				reporter.report.Response.ErrorCountByType[response.Err.Error()]++
 			} else {
-				reporter.report.responseMetrics.successCount++
+				reporter.report.Response.SuccessCount++
 			}
-			reporter.report.responseMetrics.totalResponsePayloadLengthBytes += response.PayloadLength
-			reporter.report.responseMetrics.averageResponsePayloadLengthBytes = float64(
-				reporter.report.responseMetrics.totalResponsePayloadLengthBytes,
+			reporter.report.Response.TotalResponsePayloadLengthBytes += response.PayloadLength
+			reporter.report.Response.AverageResponsePayloadLengthBytes = float64(
+				reporter.report.Response.TotalResponsePayloadLengthBytes,
 			) / float64(totalResponses)
 
-			if reporter.report.responseMetrics.earliestResponseReceivedTime.IsZero() ||
+			if reporter.report.Response.EarliestResponseReceivedTime.IsZero() ||
 				response.ResponseTime.Before(
-					reporter.report.responseMetrics.earliestResponseReceivedTime,
+					reporter.report.Response.EarliestResponseReceivedTime,
 				) {
-				reporter.report.responseMetrics.earliestResponseReceivedTime = response.ResponseTime
+				reporter.report.Response.EarliestResponseReceivedTime = response.ResponseTime
 			}
 
-			if reporter.report.responseMetrics.latestResponseReceivedTime.IsZero() ||
+			if reporter.report.Response.LatestResponseReceivedTime.IsZero() ||
 				response.ResponseTime.After(
-					reporter.report.responseMetrics.latestResponseReceivedTime,
+					reporter.report.Response.LatestResponseReceivedTime,
 				) {
-				reporter.report.responseMetrics.latestResponseReceivedTime = response.ResponseTime
+				reporter.report.Response.LatestResponseReceivedTime = response.ResponseTime
 			}
 		}
 	}()
