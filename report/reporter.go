@@ -12,6 +12,7 @@ type Report struct {
 
 // TODO: Total connections
 type LoadMetrics struct {
+	successCount         uint
 	errorCount           uint
 	errorCountByType     map[string]uint
 	totalPayloadLength   int64
@@ -32,8 +33,7 @@ func NewReporter(loadGenerationChannel chan workers.LoadGenerationResponse) Repo
 				errorCount:       0,
 				errorCountByType: make(map[string]uint),
 			},
-		},
-		loadGenerationChannel: loadGenerationChannel,
+		}, loadGenerationChannel: loadGenerationChannel,
 	}
 }
 
@@ -46,6 +46,8 @@ func (reporter *Reporter) Run() {
 			if load.Err != nil {
 				reporter.report.loadMetrics.errorCount++
 				reporter.report.loadMetrics.errorCountByType[load.Err.Error()]++
+			} else {
+				reporter.report.loadMetrics.successCount++
 			}
 			reporter.report.loadMetrics.totalPayloadLength += load.PayloadLength
 			reporter.report.loadMetrics.averagePayloadLength = float64(
