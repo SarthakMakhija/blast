@@ -57,6 +57,20 @@ func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
 	assert.Equal(t, uint(1), reporter.report.Load.ErrorCount)
 }
 
+func TestReportWithTotalRequests(t *testing.T) {
+	loadGenerationChannel := make(chan workers.LoadGenerationResponse, 1)
+	reporter := NewReporter(loadGenerationChannel, nil)
+	reporter.Run()
+
+	loadGenerationChannel <- workers.LoadGenerationResponse{
+		Err: errors.New("test error"),
+	}
+	close(loadGenerationChannel)
+	time.Sleep(2 * time.Millisecond)
+
+	assert.Equal(t, uint(1), reporter.report.Load.TotalRequests)
+}
+
 func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
 	loadGenerationChannel := make(chan workers.LoadGenerationResponse, 1)
 	reporter := NewReporter(loadGenerationChannel, nil)

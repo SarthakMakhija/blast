@@ -10,6 +10,8 @@ import (
 var templateText = `
 Summary:
   LoadMetrics:
+    TotalRequests: {{ formatNumberUint .Load.TotalRequests }}
+    RequestsPerSecond: {{ formatNumberFloat .Load.RequestsPerSecond }}
     SuccessCount: {{ formatNumberUint .Load.SuccessCount }}
     ErrorCount: {{ formatNumberUint .Load.ErrorCount }}
     TotalPayloadSize: {{ formatNumberInt64 .Load.TotalPayloadLengthBytes }} bytes

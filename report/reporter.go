@@ -11,8 +11,10 @@ type Report struct {
 	Response ResponseMetrics
 }
 
-// TODO: Total connections, total requests, requests per second
+// TODO: Total connections
 type LoadMetrics struct {
+	TotalRequests             uint
+	RequestsPerSecond         float64
 	SuccessCount              uint
 	ErrorCount                uint
 	ErrorCountByType          map[string]uint
@@ -64,7 +66,7 @@ func (reporter *Reporter) Run() {
 
 func (reporter *Reporter) collectLoadMetrics() {
 	go func() {
-		totalGeneratedLoad := 0
+		totalGeneratedLoad := uint(0)
 		for load := range reporter.loadGenerationChannel {
 			totalGeneratedLoad++
 
@@ -91,6 +93,15 @@ func (reporter *Reporter) collectLoadMetrics() {
 				reporter.report.Load.LatestLoadSendTime = load.LoadGenerationTime
 			}
 		}
+		startTime := reporter.report.Load.EarliestLoadSendTime
+		timeToCompleteLoad := time.Now().Sub(startTime)
+
+		reporter.report.Load.TotalRequests = totalGeneratedLoad
+		reporter.report.Load.RequestsPerSecond = float64(
+			totalGeneratedLoad,
+		) / float64(
+			timeToCompleteLoad.Seconds(),
+		)
 	}()
 }
 

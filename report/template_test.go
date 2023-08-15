@@ -12,9 +12,11 @@ import (
 var expected = `
 Summary:
   LoadMetrics:
-    SuccessCount: 1
+    TotalRequests: 1000
+    RequestsPerSecond: 55.3200
+    SuccessCount: 999
     ErrorCount: 1
-    TotalPayloadSize: 20 bytes
+    TotalPayloadSize: 2000 bytes
     AveragePayloadSize: 20.0000 bytes
     EarliestLoadSendTime: August 21, 2023 04:14:00 IST
     LatestLoadSendTime: August 21, 2023 04:14:00 IST
@@ -23,9 +25,9 @@ Summary:
   [1]   load error
 
   ResponseMetrics:
-    SuccessCount: 1
+    SuccessCount: 1000
     ErrorCount: 1
-    TotalResponsePayloadSize: 18 bytes
+    TotalResponsePayloadSize: 1800 bytes
     AverageResponsePayloadSize: 18.0000 bytes
     EarliestResponseReceivedTime: August 21, 2023 04:14:00 IST
     LatestResponseReceivedTime: August 21, 2023 04:14:00 IST
@@ -40,19 +42,21 @@ func TestPrintsTheReport(t *testing.T) {
 
 	report := &Report{
 		Load: LoadMetrics{
-			SuccessCount:              1,
+			TotalRequests:             1000,
+			RequestsPerSecond:         55.32,
+			SuccessCount:              999,
 			ErrorCount:                1,
 			ErrorCountByType:          map[string]uint{"load error": 1},
-			TotalPayloadLengthBytes:   20,
+			TotalPayloadLengthBytes:   2000,
 			AveragePayloadLengthBytes: 20.0,
 			EarliestLoadSendTime:      time,
 			LatestLoadSendTime:        time,
 		},
 		Response: ResponseMetrics{
-			SuccessCount:                      1,
+			SuccessCount:                      1000,
 			ErrorCount:                        1,
 			ErrorCountByType:                  map[string]uint{"response error": 1},
-			TotalResponsePayloadLengthBytes:   18,
+			TotalResponsePayloadLengthBytes:   1800,
 			AverageResponsePayloadLengthBytes: 18.0,
 			EarliestResponseReceivedTime:      time,
 			LatestResponseReceivedTime:        time,
