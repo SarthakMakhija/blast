@@ -24,7 +24,6 @@ func (group *WorkerGroup) Run() chan LoadGenerationResponse {
 	return loadGenerationResponse
 }
 
-// TODO: Should we care about the responses?
 func (group *WorkerGroup) runWorkers(loadGenerationResponse chan LoadGenerationResponse) {
 	var wg sync.WaitGroup
 	wg.Add(int(group.options.concurrency))
