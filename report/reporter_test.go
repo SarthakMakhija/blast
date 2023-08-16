@@ -10,7 +10,7 @@ import (
 
 func TestReportWithErrorInGeneratingLoad(t *testing.T) {
 	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
-	reporter := NewReporter(loadGenerationChannel, nil)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
 	reporter.Run()
 
 	loadGenerationChannel <- LoadGenerationResponse{
@@ -25,7 +25,7 @@ func TestReportWithErrorInGeneratingLoad(t *testing.T) {
 
 func TestReportWithoutErrorInGeneratingLoad(t *testing.T) {
 	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
-	reporter := NewReporter(loadGenerationChannel, nil)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
 	reporter.Run()
 
 	loadGenerationChannel <- LoadGenerationResponse{
@@ -39,7 +39,7 @@ func TestReportWithoutErrorInGeneratingLoad(t *testing.T) {
 
 func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
 	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
-	reporter := NewReporter(loadGenerationChannel, nil)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
 	reporter.Run()
 
 	loadGenerationChannel <- LoadGenerationResponse{
@@ -57,7 +57,7 @@ func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
 
 func TestReportWithTotalRequests(t *testing.T) {
 	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
-	reporter := NewReporter(loadGenerationChannel, nil)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
 	reporter.Run()
 
 	loadGenerationChannel <- LoadGenerationResponse{
@@ -71,7 +71,7 @@ func TestReportWithTotalRequests(t *testing.T) {
 
 func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
 	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
-	reporter := NewReporter(loadGenerationChannel, nil)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
 	reporter.Run()
 
 	loadGenerationChannel <- LoadGenerationResponse{
@@ -90,7 +90,7 @@ func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
 
 func TestReportWithLoadTimeInGeneratingLoad(t *testing.T) {
 	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
-	reporter := NewReporter(loadGenerationChannel, nil)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
 	reporter.Run()
 
 	now := time.Now()
@@ -112,7 +112,7 @@ func TestReportWithLoadTimeInGeneratingLoad(t *testing.T) {
 
 func TestReportWithErrorInReceivingResponse(t *testing.T) {
 	responseChannel := make(chan SubjectServerResponse, 1)
-	reporter := NewReporter(nil, responseChannel)
+	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
 	reporter.Run()
 
 	responseChannel <- SubjectServerResponse{
@@ -131,7 +131,7 @@ func TestReportWithErrorInReceivingResponse(t *testing.T) {
 
 func TestReportWithoutErrorInReceivingResponse(t *testing.T) {
 	responseChannel := make(chan SubjectServerResponse, 1)
-	reporter := NewReporter(nil, responseChannel)
+	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
 	reporter.Run()
 
 	responseChannel <- SubjectServerResponse{
@@ -145,7 +145,7 @@ func TestReportWithoutErrorInReceivingResponse(t *testing.T) {
 
 func TestReportWithAndWithoutErrorInReceivingResponse(t *testing.T) {
 	responseChannel := make(chan SubjectServerResponse, 1)
-	reporter := NewReporter(nil, responseChannel)
+	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
 	reporter.Run()
 
 	responseChannel <- SubjectServerResponse{
@@ -163,7 +163,7 @@ func TestReportWithAndWithoutErrorInReceivingResponse(t *testing.T) {
 
 func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
 	responseChannel := make(chan SubjectServerResponse, 1)
-	reporter := NewReporter(nil, responseChannel)
+	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
 	reporter.Run()
 
 	responseChannel <- SubjectServerResponse{
@@ -186,7 +186,7 @@ func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
 
 func TestReportWithLoadTimeInReceivingResponse(t *testing.T) {
 	responseChannel := make(chan SubjectServerResponse, 1)
-	reporter := NewReporter(nil, responseChannel)
+	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
 	reporter.Run()
 
 	now := time.Now()

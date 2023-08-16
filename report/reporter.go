@@ -39,7 +39,20 @@ type Reporter struct {
 	responseChannel       chan SubjectServerResponse
 }
 
-func NewReporter(
+func NewLoadGenerationMetricsCollectingReporter(
+	loadGenerationChannel chan LoadGenerationResponse,
+) Reporter {
+	return Reporter{
+		report: &Report{
+			Load: LoadMetrics{
+				ErrorCountByType: make(map[string]uint),
+			},
+		},
+		loadGenerationChannel: loadGenerationChannel,
+	}
+}
+
+func NewResponseMetricsCollectingReporter(
 	loadGenerationChannel chan LoadGenerationResponse,
 	responseChannel chan SubjectServerResponse,
 ) Reporter {
@@ -59,7 +72,9 @@ func NewReporter(
 
 func (reporter *Reporter) Run() {
 	reporter.collectLoadMetrics()
-	reporter.collectResponseMetrics()
+	if reporter.responseChannel != nil {
+		reporter.collectResponseMetrics()
+	}
 }
 
 func (reporter *Reporter) collectLoadMetrics() {
