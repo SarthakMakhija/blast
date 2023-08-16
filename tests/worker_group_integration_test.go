@@ -10,7 +10,7 @@ import (
 )
 
 func TestSendsRequestsWithSingleConnection(t *testing.T) {
-	payloadSizeBytes := uint(10)
+	payloadSizeBytes := int64(10)
 	server, err := NewMockServer("tcp", "localhost:8080", payloadSizeBytes)
 	assert.Nil(t, err)
 
@@ -36,7 +36,7 @@ func TestSendsRequestsWithSingleConnection(t *testing.T) {
 }
 
 func TestSendsRequestsWithMultipleConnections(t *testing.T) {
-	payloadSizeBytes := uint(10)
+	payloadSizeBytes := int64(10)
 	server, err := NewMockServer("tcp", "localhost:8081", payloadSizeBytes)
 	assert.Nil(t, err)
 
@@ -63,7 +63,7 @@ func TestSendsRequestsWithMultipleConnections(t *testing.T) {
 }
 
 func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
-	payloadSizeBytes, responseSizeBytes := uint(10), uint(10)
+	payloadSizeBytes, responseSizeBytes := int64(10), int64(10)
 	server, err := NewMockServer("tcp", "localhost:8082", payloadSizeBytes)
 	assert.Nil(t, err)
 

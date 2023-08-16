@@ -10,12 +10,12 @@ import (
 
 type MockServer struct {
 	listener         net.Listener
-	payloadSizeBytes uint
+	payloadSizeBytes int64
 	stopChannel      chan struct{}
 	totalRequests    atomic.Uint32
 }
 
-func NewMockServer(network, address string, payloadSizeBytes uint) (*MockServer, error) {
+func NewMockServer(network, address string, payloadSizeBytes int64) (*MockServer, error) {
 	listener, err := net.Listen(network, address)
 	if err != nil {
 		return nil, err

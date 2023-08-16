@@ -21,13 +21,13 @@ type SubjectServerResponse struct {
 }
 
 type ResponseReader struct {
-	responseSizeBytes uint
+	responseSizeBytes int64
 	stopChannel       chan struct{}
 	responseChannel   chan SubjectServerResponse
 }
 
 func NewResponseReader(
-	responseSizeBytes uint,
+	responseSizeBytes int64,
 	responseChannel chan SubjectServerResponse,
 ) *ResponseReader {
 	return &ResponseReader{
