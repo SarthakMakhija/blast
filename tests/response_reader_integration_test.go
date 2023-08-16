@@ -32,6 +32,7 @@ func TestReadsResponseFromASingleConnection(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
+		1,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)
@@ -65,6 +66,7 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
+		2,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)
@@ -73,6 +75,35 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 	responses := captureTwoResponses(t, responseChannel)
 	assert.Equal(t, []byte("BlastWorld"), responses[0])
 	assert.Equal(t, []byte("HelloWorld"), responses[1])
+}
+
+func TestTracksTheNumberOfResponsesRead(t *testing.T) {
+	payloadSizeBytes := int64(10)
+	server, err := NewEchoServer("tcp", "localhost:9092", payloadSizeBytes)
+	assert.Nil(t, err)
+
+	server.accept(t)
+
+	connection := connectTo(t, "localhost:9092")
+	writeTo(t, connection, []byte("HelloWorld"))
+
+	responseChannel := make(chan report.SubjectServerResponse)
+
+	defer func() {
+		server.stop()
+		close(responseChannel)
+		_ = connection.Close()
+	}()
+
+	responseReader := report.NewResponseReader(
+		payloadSizeBytes,
+		1,
+		responseChannel,
+	)
+	responseReader.StartReading(connection)
+
+	_ = <-responseChannel
+	assert.Equal(t, uint32(1), responseReader.TotalResponsesRead())
 }
 
 func connectTo(t *testing.T, address string) net.Conn {

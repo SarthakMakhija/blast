@@ -42,8 +42,8 @@ type Reporter struct {
 
 func NewLoadGenerationMetricsCollectingReporter(
 	loadGenerationChannel chan LoadGenerationResponse,
-) Reporter {
-	return Reporter{
+) *Reporter {
+	return &Reporter{
 		report: &Report{
 			Load: LoadMetrics{
 				ErrorCountByType: make(map[string]uint),
@@ -53,14 +53,15 @@ func NewLoadGenerationMetricsCollectingReporter(
 			},
 		},
 		loadGenerationChannel: loadGenerationChannel,
+		responseChannel:       nil,
 	}
 }
 
 func NewResponseMetricsCollectingReporter(
 	loadGenerationChannel chan LoadGenerationResponse,
 	responseChannel chan SubjectServerResponse,
-) Reporter {
-	return Reporter{
+) *Reporter {
+	return &Reporter{
 		report: &Report{
 			Load: LoadMetrics{
 				ErrorCountByType: make(map[string]uint),

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"net"
+	"sync/atomic"
 	"time"
 )
 
@@ -21,19 +22,23 @@ type SubjectServerResponse struct {
 }
 
 type ResponseReader struct {
-	responseSizeBytes int64
-	stopChannel       chan struct{}
-	responseChannel   chan SubjectServerResponse
+	responseSizeBytes    int64
+	totalResponsesToRead uint32
+	readResponses        atomic.Uint32
+	stopChannel          chan struct{}
+	responseChannel      chan SubjectServerResponse
 }
 
 func NewResponseReader(
 	responseSizeBytes int64,
+	totalResponsesToRead uint,
 	responseChannel chan SubjectServerResponse,
 ) *ResponseReader {
 	return &ResponseReader{
-		responseSizeBytes: responseSizeBytes,
-		stopChannel:       make(chan struct{}),
-		responseChannel:   responseChannel,
+		responseSizeBytes:    responseSizeBytes,
+		totalResponsesToRead: uint32(totalResponsesToRead),
+		stopChannel:          make(chan struct{}),
+		responseChannel:      responseChannel,
 	}
 }
 
@@ -69,6 +74,7 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 						PayloadLengthBytes: int64(len(buffer)),
 					}
 				}
+				responseReader.readResponses.Add(1)
 			}
 		}
 	}(connection)
@@ -76,4 +82,8 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 
 func (responseReader *ResponseReader) close() {
 	close(responseReader.stopChannel)
+}
+
+func (responseReader *ResponseReader) TotalResponsesRead() uint32 {
+	return responseReader.readResponses.Load()
 }

@@ -84,6 +84,7 @@ func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 		),
 		report.NewResponseReader(
 			responseSizeBytes,
+			totalRequests,
 			responseChannel,
 		),
 	).Run()
