@@ -43,7 +43,7 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 		for {
 			defer func() {
 				if err := recover(); err != nil {
-					println("received error in reading from the connection", err.(error).Error())
+					println("received error in ResponseReader", err.(error).Error())
 				}
 			}()
 

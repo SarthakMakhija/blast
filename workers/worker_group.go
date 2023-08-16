@@ -49,13 +49,15 @@ func (group *WorkerGroup) runWorkers(
 
 	var connection net.Conn
 	var err error
-
 	for count := 0; count < int(group.options.concurrency); count++ {
 		if count%int(connectionsSharedByWorker) == 0 {
 			connection, err = group.newConnection()
 			if err != nil {
 				// TODO: Handle error
 				return
+			}
+			if group.responseReader != nil {
+				group.responseReader.StartReading(connection)
 			}
 		}
 		group.runWorker(connection, &wg, loadGenerationResponseChannel)
