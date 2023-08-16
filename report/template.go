@@ -22,6 +22,7 @@ Summary:
 {{ if gt (len .Load.ErrorCountByType) 0 }}  Error distribution:{{ range $err, $num := .Load.ErrorCountByType }}
   [{{ $num }}]   {{ $err }}{{ end }}{{ end }}
 
+{{ if eq (.Response.IsAvailableForReporting) true }}  
   ResponseMetrics:
     SuccessCount: {{ formatNumberUint .Response.SuccessCount }}
     ErrorCount: {{ formatNumberUint .Response.ErrorCount }}
@@ -32,6 +33,7 @@ Summary:
   
 {{ if gt (len .Response.ErrorCountByType) 0 }}  Error distribution:{{ range $err, $num := .Response.ErrorCountByType }} 
   [{{ $num }}]   {{ $err }}{{ end }}{{ end }}
+{{end}}
 `
 
 var functions = template.FuncMap{

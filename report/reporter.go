@@ -31,6 +31,7 @@ type ResponseMetrics struct {
 	AverageResponsePayloadLengthBytes float64
 	EarliestResponseReceivedTime      time.Time
 	LatestResponseReceivedTime        time.Time
+	IsAvailableForReporting           bool
 }
 
 type Reporter struct {
@@ -47,6 +48,9 @@ func NewLoadGenerationMetricsCollectingReporter(
 			Load: LoadMetrics{
 				ErrorCountByType: make(map[string]uint),
 			},
+			Response: ResponseMetrics{
+				IsAvailableForReporting: false,
+			},
 		},
 		loadGenerationChannel: loadGenerationChannel,
 	}
@@ -62,7 +66,8 @@ func NewResponseMetricsCollectingReporter(
 				ErrorCountByType: make(map[string]uint),
 			},
 			Response: ResponseMetrics{
-				ErrorCountByType: make(map[string]uint),
+				IsAvailableForReporting: true,
+				ErrorCountByType:        make(map[string]uint),
 			},
 		},
 		loadGenerationChannel: loadGenerationChannel,
