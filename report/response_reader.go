@@ -24,15 +24,15 @@ func NewResponseReader(
 	responseSizeBytes uint,
 	stopChannel chan struct{},
 	responseChannel chan SubjectServerResponse,
-) ResponseReader {
-	return ResponseReader{
+) *ResponseReader {
+	return &ResponseReader{
 		responseSizeBytes: responseSizeBytes,
 		stopChannel:       stopChannel,
 		responseChannel:   responseChannel,
 	}
 }
 
-func (responseReader ResponseReader) StartReading(connection net.Conn) {
+func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 	go func(connection net.Conn) {
 		for {
 			defer func() {
@@ -69,6 +69,6 @@ func (responseReader ResponseReader) StartReading(connection net.Conn) {
 	}(connection)
 }
 
-func (responseReader ResponseReader) close() {
+func (responseReader *ResponseReader) close() {
 	close(responseReader.stopChannel)
 }
