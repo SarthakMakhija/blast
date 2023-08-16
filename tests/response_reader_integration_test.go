@@ -18,24 +18,26 @@ func TestReadsResponseFromASingleConnection(t *testing.T) {
 	assert.Nil(t, err)
 
 	server.accept(t)
-	defer server.stop()
 
 	connection := connectTo(t, "localhost:9090")
 	writeTo(t, connection, []byte("HelloWorld"))
 
 	stopChannel := make(chan struct{})
-	responseChannel := make(chan report.SubjectServerResponse, 1)
+	responseChannel := make(chan report.SubjectServerResponse)
 
-	defer close(stopChannel)
-	defer close(responseChannel)
+	defer func() {
+		server.stop()
+		close(stopChannel)
+		close(responseChannel)
+		_ = connection.Close()
+	}()
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
-		[]net.Conn{connection},
 		stopChannel,
 		responseChannel,
 	)
-	responseReader.StartReading()
+	responseReader.StartReading(connection)
 
 	response := <-responseChannel
 
@@ -49,27 +51,31 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 	assert.Nil(t, err)
 
 	server.accept(t)
-	defer server.stop()
 
 	connection, otherConnection := connectTo(t, "localhost:9091"), connectTo(t, "localhost:9091")
 	writeTo(t, connection, []byte("HelloWorld"))
-	writeTo(t, connection, []byte("BlastWorld"))
+	writeTo(t, otherConnection, []byte("BlastWorld"))
 
 	time.Sleep(10 * time.Millisecond)
 
 	stopChannel := make(chan struct{})
-	responseChannel := make(chan report.SubjectServerResponse, 2)
+	responseChannel := make(chan report.SubjectServerResponse)
 
-	defer close(stopChannel)
-	defer close(responseChannel)
+	defer func() {
+		server.stop()
+		close(stopChannel)
+		close(responseChannel)
+		_ = connection.Close()
+		_ = otherConnection.Close()
+	}()
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
-		[]net.Conn{connection, otherConnection},
 		stopChannel,
 		responseChannel,
 	)
-	responseReader.StartReading()
+	responseReader.StartReading(connection)
+	responseReader.StartReading(otherConnection)
 
 	responses := captureTwoResponses(t, responseChannel)
 	assert.Equal(t, []byte("BlastWorld"), responses[0])
