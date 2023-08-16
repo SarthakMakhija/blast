@@ -5,8 +5,6 @@ import (
 	"sync"
 )
 
-const ResponseChannelSize = 10000
-
 type WorkerGroup struct {
 	options     GroupOptions
 	stopChannel chan struct{}
@@ -17,7 +15,7 @@ func NewWorkerGroup(options GroupOptions) *WorkerGroup {
 }
 
 func (group *WorkerGroup) Run() chan LoadGenerationResponse {
-	loadGenerationResponse := make(chan LoadGenerationResponse, ResponseChannelSize)
+	loadGenerationResponse := make(chan LoadGenerationResponse, group.options.totalRequests)
 	group.runWorkers(loadGenerationResponse)
 	group.finish(loadGenerationResponse)
 
