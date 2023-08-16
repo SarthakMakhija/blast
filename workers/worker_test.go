@@ -39,7 +39,7 @@ func TestWritesPayloadByWorker(t *testing.T) {
 	response := <-worker.options.loadGenerationResponse
 
 	assert.Nil(t, response.Err)
-	assert.Equal(t, int64(7), response.PayloadLength)
+	assert.Equal(t, int64(7), response.PayloadLengthBytes)
 }
 
 func TestWritesMultiplePayloadsByWorker(t *testing.T) {
@@ -65,7 +65,7 @@ func TestWritesMultiplePayloadsByWorker(t *testing.T) {
 	for count := 1; count <= int(totalRequests); count++ {
 		response := <-loadGenerationResponse
 		assert.Nil(t, response.Err)
-		assert.Equal(t, int64(7), response.PayloadLength)
+		assert.Equal(t, int64(7), response.PayloadLengthBytes)
 	}
 }
 
@@ -93,6 +93,6 @@ func TestWritesMultiplePayloadsByWorkerWithThrottle(t *testing.T) {
 	for count := 1; count <= int(totalRequests); count++ {
 		response := <-loadGenerationResponse
 		assert.Nil(t, response.Err)
-		assert.Equal(t, int64(7), response.PayloadLength)
+		assert.Equal(t, int64(7), response.PayloadLengthBytes)
 	}
 }

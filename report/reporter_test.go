@@ -31,7 +31,7 @@ func TestReportWithoutErrorInGeneratingLoad(t *testing.T) {
 	reporter.Run()
 
 	loadGenerationChannel <- workers.LoadGenerationResponse{
-		PayloadLength: 15,
+		PayloadLengthBytes: 15,
 	}
 	time.Sleep(2 * time.Millisecond)
 	close(loadGenerationChannel)
@@ -45,7 +45,7 @@ func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
 	reporter.Run()
 
 	loadGenerationChannel <- workers.LoadGenerationResponse{
-		PayloadLength: 15,
+		PayloadLengthBytes: 15,
 	}
 	loadGenerationChannel <- workers.LoadGenerationResponse{
 		Err: errors.New("test error"),
@@ -77,10 +77,10 @@ func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
 	reporter.Run()
 
 	loadGenerationChannel <- workers.LoadGenerationResponse{
-		PayloadLength: 10,
+		PayloadLengthBytes: 10,
 	}
 	loadGenerationChannel <- workers.LoadGenerationResponse{
-		PayloadLength: 10,
+		PayloadLengthBytes: 10,
 	}
 
 	time.Sleep(2 * time.Millisecond)
@@ -169,10 +169,10 @@ func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
 	reporter.Run()
 
 	responseChannel <- SubjectServerResponse{
-		PayloadLength: 10,
+		PayloadLengthBytes: 10,
 	}
 	responseChannel <- SubjectServerResponse{
-		PayloadLength: 10,
+		PayloadLengthBytes: 10,
 	}
 
 	time.Sleep(2 * time.Millisecond)

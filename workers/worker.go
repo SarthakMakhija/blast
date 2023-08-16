@@ -44,7 +44,7 @@ func (worker Worker) sendRequest() {
 	_, err := worker.connection.Write(worker.options.payload)
 	worker.options.loadGenerationResponse <- LoadGenerationResponse{
 		Err:                err,
-		PayloadLength:      int64(len(worker.options.payload)),
+		PayloadLengthBytes: int64(len(worker.options.payload)),
 		LoadGenerationTime: time.Now(),
 	}
 }

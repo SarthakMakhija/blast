@@ -30,7 +30,7 @@ func TestSendRequestsWithSingleConnection(t *testing.T) {
 
 	for response := range loadGenerationResponseChannel {
 		assert.Nil(t, response.Err)
-		assert.Equal(t, int64(10), response.PayloadLength)
+		assert.Equal(t, int64(10), response.PayloadLengthBytes)
 	}
 }
 
@@ -57,6 +57,6 @@ func TestSendRequestsWithMultipleConnections(t *testing.T) {
 
 	for response := range loadGenerationResponseChannel {
 		assert.Nil(t, response.Err)
-		assert.Equal(t, int64(10), response.PayloadLength)
+		assert.Equal(t, int64(10), response.PayloadLengthBytes)
 	}
 }

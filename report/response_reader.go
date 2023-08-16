@@ -8,10 +8,10 @@ import (
 )
 
 type SubjectServerResponse struct {
-	Err           error
-	ResponseTime  time.Time
-	Response      []byte
-	PayloadLength int64
+	Err                error
+	ResponseTime       time.Time
+	Response           []byte
+	PayloadLengthBytes int64
 }
 
 type ResponseReader struct {
@@ -59,9 +59,9 @@ func (responseReader ResponseReader) StartReading(connection net.Conn) {
 					}
 				} else {
 					responseReader.responseChannel <- SubjectServerResponse{
-						ResponseTime:  time.Now(),
-						Response:      buffer,
-						PayloadLength: int64(len(buffer)),
+						ResponseTime:       time.Now(),
+						Response:           buffer,
+						PayloadLengthBytes: int64(len(buffer)),
 					}
 				}
 			}

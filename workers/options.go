@@ -22,7 +22,7 @@ type WorkerOptions struct {
 
 type LoadGenerationResponse struct {
 	Err                error
-	PayloadLength      int64
+	PayloadLengthBytes int64
 	LoadGenerationTime time.Time
 }
 

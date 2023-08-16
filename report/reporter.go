@@ -76,7 +76,7 @@ func (reporter *Reporter) collectLoadMetrics() {
 			} else {
 				reporter.report.Load.SuccessCount++
 			}
-			reporter.report.Load.TotalPayloadLengthBytes += load.PayloadLength
+			reporter.report.Load.TotalPayloadLengthBytes += load.PayloadLengthBytes
 			reporter.report.Load.AveragePayloadLengthBytes = float64(
 				reporter.report.Load.TotalPayloadLengthBytes,
 			) / float64(
@@ -117,7 +117,7 @@ func (reporter *Reporter) collectResponseMetrics() {
 			} else {
 				reporter.report.Response.SuccessCount++
 			}
-			reporter.report.Response.TotalResponsePayloadLengthBytes += response.PayloadLength
+			reporter.report.Response.TotalResponsePayloadLengthBytes += response.PayloadLengthBytes
 			reporter.report.Response.AverageResponsePayloadLengthBytes = float64(
 				reporter.report.Response.TotalResponsePayloadLengthBytes,
 			) / float64(totalResponses)
