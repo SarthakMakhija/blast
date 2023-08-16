@@ -11,7 +11,7 @@ import (
 
 func TestSendsRequestsWithSingleConnection(t *testing.T) {
 	payloadSizeBytes := int64(10)
-	server, err := NewMockServer("tcp", "localhost:8080", payloadSizeBytes)
+	server, err := NewEchoServer("tcp", "localhost:8080", payloadSizeBytes)
 	assert.Nil(t, err)
 
 	server.accept(t)
@@ -26,8 +26,7 @@ func TestSendsRequestsWithSingleConnection(t *testing.T) {
 				[]byte("HelloWorld"),
 				"localhost:8080",
 			),
-		).
-		Run()
+		).Run()
 
 	for response := range loadGenerationResponseChannel {
 		assert.Nil(t, response.Err)
@@ -37,7 +36,7 @@ func TestSendsRequestsWithSingleConnection(t *testing.T) {
 
 func TestSendsRequestsWithMultipleConnections(t *testing.T) {
 	payloadSizeBytes := int64(10)
-	server, err := NewMockServer("tcp", "localhost:8081", payloadSizeBytes)
+	server, err := NewEchoServer("tcp", "localhost:8081", payloadSizeBytes)
 	assert.Nil(t, err)
 
 	server.accept(t)
@@ -53,8 +52,7 @@ func TestSendsRequestsWithMultipleConnections(t *testing.T) {
 				[]byte("HelloWorld"),
 				"localhost:8081",
 			),
-		).
-		Run()
+		).Run()
 
 	for response := range loadGenerationResponseChannel {
 		assert.Nil(t, response.Err)
@@ -64,7 +62,7 @@ func TestSendsRequestsWithMultipleConnections(t *testing.T) {
 
 func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 	payloadSizeBytes, responseSizeBytes := int64(10), int64(10)
-	server, err := NewMockServer("tcp", "localhost:8082", payloadSizeBytes)
+	server, err := NewEchoServer("tcp", "localhost:8082", payloadSizeBytes)
 	assert.Nil(t, err)
 
 	server.accept(t)

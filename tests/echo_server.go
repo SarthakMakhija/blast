@@ -8,27 +8,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type MockServer struct {
+type EchoServer struct {
 	listener         net.Listener
 	payloadSizeBytes int64
 	stopChannel      chan struct{}
 	totalRequests    atomic.Uint32
 }
 
-func NewMockServer(network, address string, payloadSizeBytes int64) (*MockServer, error) {
+func NewEchoServer(network, address string, payloadSizeBytes int64) (*EchoServer, error) {
 	listener, err := net.Listen(network, address)
 	if err != nil {
 		return nil, err
 	}
 
-	return &MockServer{
+	return &EchoServer{
 		listener:         listener,
 		payloadSizeBytes: payloadSizeBytes,
 		stopChannel:      make(chan struct{}),
 	}, nil
 }
 
-func (server *MockServer) accept(t *testing.T) {
+func (server *EchoServer) accept(t *testing.T) {
 	go func() {
 		for {
 			select {
@@ -44,7 +44,7 @@ func (server *MockServer) accept(t *testing.T) {
 	}()
 }
 
-func (server *MockServer) handleConnection(connection net.Conn) {
+func (server *EchoServer) handleConnection(connection net.Conn) {
 	go func() {
 		for {
 			select {
@@ -62,10 +62,10 @@ func (server *MockServer) handleConnection(connection net.Conn) {
 	}()
 }
 
-func (server *MockServer) stop() {
+func (server *EchoServer) stop() {
 	close(server.stopChannel)
 }
 
-func (server *MockServer) totalRequestsReceived() uint32 {
+func (server *EchoServer) totalRequestsReceived() uint32 {
 	return server.totalRequests.Load()
 }

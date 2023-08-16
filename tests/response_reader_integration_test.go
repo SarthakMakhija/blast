@@ -14,7 +14,7 @@ import (
 
 func TestReadsResponseFromASingleConnection(t *testing.T) {
 	payloadSizeBytes := int64(10)
-	server, err := NewMockServer("tcp", "localhost:9090", payloadSizeBytes)
+	server, err := NewEchoServer("tcp", "localhost:9090", payloadSizeBytes)
 	assert.Nil(t, err)
 
 	server.accept(t)
@@ -44,7 +44,7 @@ func TestReadsResponseFromASingleConnection(t *testing.T) {
 
 func TestReadsResponseFromTwoConnections(t *testing.T) {
 	payloadSizeBytes := int64(10)
-	server, err := NewMockServer("tcp", "localhost:9091", payloadSizeBytes)
+	server, err := NewEchoServer("tcp", "localhost:9091", payloadSizeBytes)
 	assert.Nil(t, err)
 
 	server.accept(t)
