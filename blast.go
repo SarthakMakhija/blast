@@ -9,6 +9,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/dimiro1/banner"
 )
 
 var (
@@ -47,6 +49,9 @@ Options:
 `
 
 func main() {
+	file, _ := os.Open("banner.txt")
+	banner.Init(os.Stdout, true, false, file)
+
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprintf(usage, runtime.NumCPU()))
 	}
