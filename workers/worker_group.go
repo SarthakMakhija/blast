@@ -33,9 +33,11 @@ func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
 		chan report.LoadGenerationResponse,
 		group.options.totalRequests,
 	)
-	group.runWorkers(loadGenerationResponseChannel)
-	group.finish(loadGenerationResponseChannel)
 
+	go func() {
+		group.runWorkers(loadGenerationResponseChannel)
+		group.finish(loadGenerationResponseChannel)
+	}()
 	return loadGenerationResponseChannel
 }
 
