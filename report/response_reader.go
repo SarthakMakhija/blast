@@ -28,12 +28,11 @@ type ResponseReader struct {
 
 func NewResponseReader(
 	responseSizeBytes uint,
-	stopChannel chan struct{},
 	responseChannel chan SubjectServerResponse,
 ) *ResponseReader {
 	return &ResponseReader{
 		responseSizeBytes: responseSizeBytes,
-		stopChannel:       stopChannel,
+		stopChannel:       make(chan struct{}),
 		responseChannel:   responseChannel,
 	}
 }

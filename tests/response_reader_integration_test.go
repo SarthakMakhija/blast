@@ -22,19 +22,16 @@ func TestReadsResponseFromASingleConnection(t *testing.T) {
 	connection := connectTo(t, "localhost:9090")
 	writeTo(t, connection, []byte("HelloWorld"))
 
-	stopChannel := make(chan struct{})
 	responseChannel := make(chan report.SubjectServerResponse)
 
 	defer func() {
 		server.stop()
-		close(stopChannel)
 		close(responseChannel)
 		_ = connection.Close()
 	}()
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
-		stopChannel,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)
@@ -57,13 +54,10 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 	writeTo(t, otherConnection, []byte("BlastWorld"))
 
 	time.Sleep(10 * time.Millisecond)
-
-	stopChannel := make(chan struct{})
 	responseChannel := make(chan report.SubjectServerResponse)
 
 	defer func() {
 		server.stop()
-		close(stopChannel)
 		close(responseChannel)
 		_ = connection.Close()
 		_ = otherConnection.Close()
@@ -71,7 +65,6 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
-		stopChannel,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)

@@ -70,13 +70,10 @@ func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 	server.accept(t)
 
 	concurrency, totalRequests := uint(10), uint(20)
-
-	stopChannel := make(chan struct{})
 	responseChannel := make(chan report.SubjectServerResponse)
 
 	defer func() {
 		server.stop()
-		close(stopChannel)
 		close(responseChannel)
 	}()
 
@@ -89,7 +86,6 @@ func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 		),
 		report.NewResponseReader(
 			responseSizeBytes,
-			stopChannel,
 			responseChannel,
 		),
 	).Run()
