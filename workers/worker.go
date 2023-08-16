@@ -4,6 +4,8 @@ import (
 	"io"
 	"sync"
 	"time"
+
+	"blast/report"
 )
 
 type Worker struct {
@@ -42,7 +44,7 @@ func (worker Worker) sendRequests() {
 
 func (worker Worker) sendRequest() {
 	_, err := worker.connection.Write(worker.options.payload)
-	worker.options.loadGenerationResponse <- LoadGenerationResponse{
+	worker.options.loadGenerationResponse <- report.LoadGenerationResponse{
 		Err:                err,
 		PayloadLengthBytes: int64(len(worker.options.payload)),
 		LoadGenerationTime: time.Now(),

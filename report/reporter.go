@@ -2,8 +2,6 @@ package report
 
 import (
 	"time"
-
-	"blast/workers"
 )
 
 type Report struct {
@@ -37,12 +35,12 @@ type ResponseMetrics struct {
 
 type Reporter struct {
 	report                *Report
-	loadGenerationChannel chan workers.LoadGenerationResponse
+	loadGenerationChannel chan LoadGenerationResponse
 	responseChannel       chan SubjectServerResponse
 }
 
 func NewReporter(
-	loadGenerationChannel chan workers.LoadGenerationResponse,
+	loadGenerationChannel chan LoadGenerationResponse,
 	responseChannel chan SubjectServerResponse,
 ) Reporter {
 	return Reporter{

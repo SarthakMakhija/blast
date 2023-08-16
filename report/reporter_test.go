@@ -6,16 +6,14 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-
-	"blast/workers"
 )
 
 func TestReportWithErrorInGeneratingLoad(t *testing.T) {
-	loadGenerationChannel := make(chan workers.LoadGenerationResponse, 1)
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
 	reporter := NewReporter(loadGenerationChannel, nil)
 	reporter.Run()
 
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		Err: errors.New("test error"),
 	}
 	time.Sleep(2 * time.Millisecond)
@@ -26,11 +24,11 @@ func TestReportWithErrorInGeneratingLoad(t *testing.T) {
 }
 
 func TestReportWithoutErrorInGeneratingLoad(t *testing.T) {
-	loadGenerationChannel := make(chan workers.LoadGenerationResponse, 1)
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
 	reporter := NewReporter(loadGenerationChannel, nil)
 	reporter.Run()
 
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		PayloadLengthBytes: 15,
 	}
 	time.Sleep(2 * time.Millisecond)
@@ -40,14 +38,14 @@ func TestReportWithoutErrorInGeneratingLoad(t *testing.T) {
 }
 
 func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
-	loadGenerationChannel := make(chan workers.LoadGenerationResponse, 1)
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
 	reporter := NewReporter(loadGenerationChannel, nil)
 	reporter.Run()
 
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		PayloadLengthBytes: 15,
 	}
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		Err: errors.New("test error"),
 	}
 	time.Sleep(2 * time.Millisecond)
@@ -58,11 +56,11 @@ func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
 }
 
 func TestReportWithTotalRequests(t *testing.T) {
-	loadGenerationChannel := make(chan workers.LoadGenerationResponse, 1)
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
 	reporter := NewReporter(loadGenerationChannel, nil)
 	reporter.Run()
 
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		Err: errors.New("test error"),
 	}
 	close(loadGenerationChannel)
@@ -72,14 +70,14 @@ func TestReportWithTotalRequests(t *testing.T) {
 }
 
 func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
-	loadGenerationChannel := make(chan workers.LoadGenerationResponse, 1)
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
 	reporter := NewReporter(loadGenerationChannel, nil)
 	reporter.Run()
 
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		PayloadLengthBytes: 10,
 	}
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		PayloadLengthBytes: 10,
 	}
 
@@ -91,17 +89,17 @@ func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
 }
 
 func TestReportWithLoadTimeInGeneratingLoad(t *testing.T) {
-	loadGenerationChannel := make(chan workers.LoadGenerationResponse, 1)
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
 	reporter := NewReporter(loadGenerationChannel, nil)
 	reporter.Run()
 
 	now := time.Now()
 	laterByTenSeconds := now.Add(10 * time.Second)
 
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		LoadGenerationTime: now,
 	}
-	loadGenerationChannel <- workers.LoadGenerationResponse{
+	loadGenerationChannel <- LoadGenerationResponse{
 		LoadGenerationTime: laterByTenSeconds,
 	}
 

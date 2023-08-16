@@ -3,6 +3,8 @@ package workers
 import (
 	"net"
 	"sync"
+
+	"blast/report"
 )
 
 type WorkerGroup struct {
@@ -14,15 +16,15 @@ func NewWorkerGroup(options GroupOptions) *WorkerGroup {
 	return &WorkerGroup{options: options, stopChannel: make(chan struct{}, options.concurrency)}
 }
 
-func (group *WorkerGroup) Run() chan LoadGenerationResponse {
-	loadGenerationResponse := make(chan LoadGenerationResponse, group.options.totalRequests)
+func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
+	loadGenerationResponse := make(chan report.LoadGenerationResponse, group.options.totalRequests)
 	group.runWorkers(loadGenerationResponse)
 	group.finish(loadGenerationResponse)
 
 	return loadGenerationResponse
 }
 
-func (group *WorkerGroup) runWorkers(loadGenerationResponse chan LoadGenerationResponse) {
+func (group *WorkerGroup) runWorkers(loadGenerationResponse chan report.LoadGenerationResponse) {
 	var wg sync.WaitGroup
 	wg.Add(int(group.options.concurrency))
 
@@ -57,6 +59,6 @@ func (group *WorkerGroup) runWorkers(loadGenerationResponse chan LoadGenerationR
 	wg.Wait()
 }
 
-func (group *WorkerGroup) finish(loadGenerationResponse chan LoadGenerationResponse) {
+func (group *WorkerGroup) finish(loadGenerationResponse chan report.LoadGenerationResponse) {
 	close(loadGenerationResponse)
 }

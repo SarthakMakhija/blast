@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"blast/report"
 )
 
 type BytesWriteCloser struct {
@@ -18,7 +20,7 @@ func (writeCloser *BytesWriteCloser) Close() error {
 }
 
 func TestWritesPayloadByWorker(t *testing.T) {
-	loadGenerationResponse := make(chan LoadGenerationResponse, 1)
+	loadGenerationResponse := make(chan report.LoadGenerationResponse, 1)
 	defer close(loadGenerationResponse)
 
 	var buffer bytes.Buffer
@@ -44,7 +46,7 @@ func TestWritesPayloadByWorker(t *testing.T) {
 
 func TestWritesMultiplePayloadsByWorker(t *testing.T) {
 	totalRequests := uint(5)
-	loadGenerationResponse := make(chan LoadGenerationResponse, totalRequests)
+	loadGenerationResponse := make(chan report.LoadGenerationResponse, totalRequests)
 	defer close(loadGenerationResponse)
 
 	var buffer bytes.Buffer
@@ -71,7 +73,7 @@ func TestWritesMultiplePayloadsByWorker(t *testing.T) {
 
 func TestWritesMultiplePayloadsByWorkerWithThrottle(t *testing.T) {
 	totalRequests := uint(5)
-	loadGenerationResponse := make(chan LoadGenerationResponse, totalRequests)
+	loadGenerationResponse := make(chan report.LoadGenerationResponse, totalRequests)
 	defer close(loadGenerationResponse)
 
 	var buffer bytes.Buffer

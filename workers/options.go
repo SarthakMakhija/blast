@@ -1,6 +1,8 @@
 package workers
 
-import "time"
+import (
+	"blast/report"
+)
 
 type GroupOptions struct {
 	concurrency       uint
@@ -17,13 +19,7 @@ type WorkerOptions struct {
 	targetAddress          string
 	requestsPerSecond      float64
 	stopChannel            chan struct{}
-	loadGenerationResponse chan LoadGenerationResponse
-}
-
-type LoadGenerationResponse struct {
-	Err                error
-	PayloadLengthBytes int64
-	LoadGenerationTime time.Time
+	loadGenerationResponse chan report.LoadGenerationResponse
 }
 
 func NewGroupOptions(

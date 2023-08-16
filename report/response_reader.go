@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+type LoadGenerationResponse struct {
+	Err                error
+	PayloadLengthBytes int64
+	LoadGenerationTime time.Time
+}
+
 type SubjectServerResponse struct {
 	Err                error
 	ResponseTime       time.Time
