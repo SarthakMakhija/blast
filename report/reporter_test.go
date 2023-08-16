@@ -135,7 +135,7 @@ func TestReportWithoutErrorInReceivingResponse(t *testing.T) {
 	reporter.Run()
 
 	responseChannel <- SubjectServerResponse{
-		Response: []byte("response"),
+		ResponseTime: time.Now(),
 	}
 	time.Sleep(2 * time.Millisecond)
 	close(responseChannel)
@@ -149,7 +149,7 @@ func TestReportWithAndWithoutErrorInReceivingResponse(t *testing.T) {
 	reporter.Run()
 
 	responseChannel <- SubjectServerResponse{
-		Response: []byte("response"),
+		ResponseTime: time.Now(),
 	}
 	responseChannel <- SubjectServerResponse{
 		Err: errors.New("test error"),

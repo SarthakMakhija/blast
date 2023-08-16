@@ -17,7 +17,6 @@ type LoadGenerationResponse struct {
 type SubjectServerResponse struct {
 	Err                error
 	ResponseTime       time.Time
-	Response           []byte
 	PayloadLengthBytes int64
 }
 
@@ -70,7 +69,6 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 				} else {
 					responseReader.responseChannel <- SubjectServerResponse{
 						ResponseTime:       time.Now(),
-						Response:           buffer,
 						PayloadLengthBytes: int64(len(buffer)),
 					}
 				}

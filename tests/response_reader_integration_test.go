@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"bytes"
 	"net"
 	"sort"
 	"testing"
@@ -40,7 +39,7 @@ func TestReadsResponseFromASingleConnection(t *testing.T) {
 	response := <-responseChannel
 
 	assert.Nil(t, response.Err)
-	assert.Equal(t, []byte("HelloWorld"), response.Response)
+	assert.Equal(t, int64(10), response.PayloadLengthBytes)
 }
 
 func TestReadsResponseFromTwoConnections(t *testing.T) {
@@ -72,9 +71,9 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 	responseReader.StartReading(connection)
 	responseReader.StartReading(otherConnection)
 
-	responses := captureTwoResponses(t, responseChannel)
-	assert.Equal(t, []byte("BlastWorld"), responses[0])
-	assert.Equal(t, []byte("HelloWorld"), responses[1])
+	responsesLength := captureTwoResponses(t, responseChannel)
+	assert.Equal(t, int64(10), responsesLength[0])
+	assert.Equal(t, int64(10), responsesLength[1])
 }
 
 func TestTracksTheNumberOfResponsesRead(t *testing.T) {
@@ -118,20 +117,20 @@ func writeTo(t *testing.T, connection net.Conn, payload []byte) {
 	assert.Nil(t, err)
 }
 
-func captureTwoResponses(t *testing.T, responseChannel chan report.SubjectServerResponse) [][]byte {
-	var responses [][]byte
+func captureTwoResponses(t *testing.T, responseChannel chan report.SubjectServerResponse) []int64 {
+	var responsesLength []int64
 
 	response := <-responseChannel
 	assert.Nil(t, response.Err)
-	responses = append(responses, response.Response)
+	responsesLength = append(responsesLength, response.PayloadLengthBytes)
 
 	response = <-responseChannel
 	assert.Nil(t, response.Err)
-	responses = append(responses, response.Response)
+	responsesLength = append(responsesLength, response.PayloadLengthBytes)
 
-	sort.Slice(responses, func(i, j int) bool {
-		return bytes.Compare(responses[i], responses[j]) <= 0
+	sort.Slice(responsesLength, func(i, j int) bool {
+		return responsesLength[i] <= responsesLength[j]
 	})
 
-	return responses
+	return responsesLength
 }
