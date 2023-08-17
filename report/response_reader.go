@@ -21,23 +21,21 @@ type SubjectServerResponse struct {
 }
 
 type ResponseReader struct {
-	responseSizeBytes    int64
-	totalResponsesToRead uint32
-	readResponses        atomic.Uint32
-	stopChannel          chan struct{}
-	responseChannel      chan SubjectServerResponse
+	responseSizeBytes       int64
+	readTotalResponses      atomic.Uint32
+	readSuccessfulResponses atomic.Uint32
+	stopChannel             chan struct{}
+	responseChannel         chan SubjectServerResponse
 }
 
 func NewResponseReader(
 	responseSizeBytes int64,
-	totalResponsesToRead uint,
 	responseChannel chan SubjectServerResponse,
 ) *ResponseReader {
 	return &ResponseReader{
-		responseSizeBytes:    responseSizeBytes,
-		totalResponsesToRead: uint32(totalResponsesToRead),
-		stopChannel:          make(chan struct{}),
-		responseChannel:      responseChannel,
+		responseSizeBytes: responseSizeBytes,
+		stopChannel:       make(chan struct{}),
+		responseChannel:   responseChannel,
 	}
 }
 
@@ -68,12 +66,13 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 						ResponseTime: time.Now(),
 					}
 				} else {
+					responseReader.readSuccessfulResponses.Add(1)
 					responseReader.responseChannel <- SubjectServerResponse{
 						ResponseTime:       time.Now(),
 						PayloadLengthBytes: int64(len(buffer)),
 					}
 				}
-				responseReader.readResponses.Add(1)
+				responseReader.readTotalResponses.Add(1)
 			}
 		}
 	}(connection)
@@ -84,5 +83,9 @@ func (responseReader *ResponseReader) Close() {
 }
 
 func (responseReader *ResponseReader) TotalResponsesRead() uint32 {
-	return responseReader.readResponses.Load()
+	return responseReader.readTotalResponses.Load()
+}
+
+func (responseReader *ResponseReader) TotalSuccessfulResponsesRead() uint32 {
+	return responseReader.readSuccessfulResponses.Load()
 }

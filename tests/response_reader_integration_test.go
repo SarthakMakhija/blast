@@ -31,7 +31,6 @@ func TestReadsResponseFromASingleConnection(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
-		1,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)
@@ -65,7 +64,6 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
-		2,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)
@@ -96,13 +94,13 @@ func TestTracksTheNumberOfResponsesRead(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
-		1,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)
 
 	_ = <-responseChannel
 	assert.Equal(t, uint32(1), responseReader.TotalResponsesRead())
+	assert.Equal(t, uint32(1), responseReader.TotalSuccessfulResponsesRead())
 }
 
 func connectTo(t *testing.T, address string) net.Conn {
