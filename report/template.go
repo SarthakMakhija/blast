@@ -18,6 +18,7 @@ Summary:
     AveragePayloadSize: {{ formatNumberFloat .Load.AveragePayloadLengthBytes }} bytes
     EarliestLoadSendTime: {{ formatTime .Load.EarliestLoadSendTime}}
     LatestLoadSendTime: {{ formatTime .Load.LatestLoadSendTime}}
+    TimeToCompleteLoad: {{ formatDuration .Load.TotalTime }}
 
 {{ if gt (len .Load.ErrorCountByType) 0 }}  Error distribution:{{ range $err, $num := .Load.ErrorCountByType }}
   [{{ $num }}]   {{ $err }}{{ end }}{{ end }}
@@ -41,6 +42,7 @@ var functions = template.FuncMap{
 	"formatNumberUint":  formatNumberUint,
 	"formatNumberInt64": formatNumberInt64,
 	"formatTime":        formatTime,
+	"formatDuration":    formatDuration,
 }
 
 const timeFormat = "January 02, 2006 15:04:05 MST"
@@ -59,6 +61,10 @@ func formatNumberInt64(value int64) string {
 
 func formatTime(time time.Time) string {
 	return time.Format(timeFormat)
+}
+
+func formatDuration(duration time.Duration) string {
+	return duration.String()
 }
 
 func print(writer io.Writer, report *Report) error {

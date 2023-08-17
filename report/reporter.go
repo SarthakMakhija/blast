@@ -21,9 +21,10 @@ type LoadMetrics struct {
 	AveragePayloadLengthBytes float64
 	EarliestLoadSendTime      time.Time
 	LatestLoadSendTime        time.Time
+	TotalTime                 time.Duration
 }
 
-// TODO: connection time, total responses
+// TODO: connection time, total responses, time to get the responses
 type ResponseMetrics struct {
 	SuccessCount                      uint
 	ErrorCount                        uint
@@ -120,6 +121,7 @@ func (reporter *Reporter) collectLoadMetrics() {
 		startTime := reporter.report.Load.EarliestLoadSendTime
 		timeToCompleteLoad := time.Now().Sub(startTime)
 
+		reporter.report.Load.TotalTime = timeToCompleteLoad
 		reporter.report.Load.TotalRequests = totalGeneratedLoad
 		reporter.report.Load.RequestsPerSecond = float64(
 			totalGeneratedLoad,

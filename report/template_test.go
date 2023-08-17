@@ -20,7 +20,8 @@ Summary:
     TotalPayloadSize: 2000 bytes
     AveragePayloadSize: 20.0000 bytes
     EarliestLoadSendTime: August 21, 2023 04:14:00 IST
-    LatestLoadSendTime: August 21, 2023 04:14:00 IST
+    LatestLoadSendTime: August 21, 2023 04:14:10 IST
+    TimeToCompleteLoad: 10s
 
   Error distribution:
   [1]   load error
@@ -32,13 +33,16 @@ Summary:
     TotalResponsePayloadSize: 1800 bytes
     AverageResponsePayloadSize: 18.0000 bytes
     EarliestResponseReceivedTime: August 21, 2023 04:14:00 IST
-    LatestResponseReceivedTime: August 21, 2023 04:14:00 IST
+    LatestResponseReceivedTime: August 21, 2023 04:14:10 IST
   
   Error distribution: 
   [1]   response error
 
 `
-	time, err := time.Parse(timeFormat, "August 21, 2023 04:14:00 IST")
+	startTime, err := time.Parse(timeFormat, "August 21, 2023 04:14:00 IST")
+	assert.Nil(t, err)
+
+	tenSecondsLater, err := time.Parse(timeFormat, "August 21, 2023 04:14:10 IST")
 	assert.Nil(t, err)
 
 	report := &Report{
@@ -50,8 +54,9 @@ Summary:
 			ErrorCountByType:          map[string]uint{"load error": 1},
 			TotalPayloadLengthBytes:   2000,
 			AveragePayloadLengthBytes: 20.0,
-			EarliestLoadSendTime:      time,
-			LatestLoadSendTime:        time,
+			EarliestLoadSendTime:      startTime,
+			LatestLoadSendTime:        tenSecondsLater,
+			TotalTime:                 tenSecondsLater.Sub(startTime),
 		},
 		Response: ResponseMetrics{
 			SuccessCount:                      1000,
@@ -59,8 +64,8 @@ Summary:
 			ErrorCountByType:                  map[string]uint{"response error": 1},
 			TotalResponsePayloadLengthBytes:   1800,
 			AverageResponsePayloadLengthBytes: 18.0,
-			EarliestResponseReceivedTime:      time,
-			LatestResponseReceivedTime:        time,
+			EarliestResponseReceivedTime:      startTime,
+			LatestResponseReceivedTime:        tenSecondsLater,
 			IsAvailableForReporting:           true,
 		},
 	}
@@ -83,6 +88,7 @@ Summary:
     AveragePayloadSize: 20.0000 bytes
     EarliestLoadSendTime: August 21, 2023 04:14:00 IST
     LatestLoadSendTime: August 21, 2023 04:14:00 IST
+    TimeToCompleteLoad: 0s
 
   Error distribution:
   [1]   load error
@@ -103,6 +109,7 @@ Summary:
 			AveragePayloadLengthBytes: 20.0,
 			EarliestLoadSendTime:      time,
 			LatestLoadSendTime:        time,
+			TotalTime:                 time.Sub(time),
 		},
 		Response: ResponseMetrics{
 			IsAvailableForReporting: false,
