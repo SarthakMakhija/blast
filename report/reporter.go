@@ -2,6 +2,8 @@ package report
 
 import (
 	"time"
+
+	"github.com/gogo/protobuf/io"
 )
 
 type Report struct {
@@ -81,6 +83,10 @@ func (reporter *Reporter) Run() {
 	if reporter.responseChannel != nil {
 		reporter.collectResponseMetrics()
 	}
+}
+
+func (reporter *Reporter) PrintReport(writer io.Writer) {
+	print(writer, reporter.report)
 }
 
 func (reporter *Reporter) collectLoadMetrics() {
