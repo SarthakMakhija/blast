@@ -17,7 +17,6 @@ func (worker Worker) run(wg *sync.WaitGroup) {
 	go func() {
 		defer wg.Done()
 		worker.sendRequests()
-		// TODO: close connection?
 	}()
 }
 

@@ -41,6 +41,7 @@ func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
 	return loadGenerationResponseChannel
 }
 
+// TODO: close the connection if response reader is nil
 func (group *WorkerGroup) runWorkers(
 	loadGenerationResponseChannel chan report.LoadGenerationResponse,
 ) {

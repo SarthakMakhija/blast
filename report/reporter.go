@@ -24,7 +24,6 @@ type LoadMetrics struct {
 	TotalTime                 time.Duration
 }
 
-// TODO: connection time
 type ResponseMetrics struct {
 	TotalResponses                    uint
 	SuccessCount                      uint
