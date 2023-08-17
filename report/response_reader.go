@@ -45,6 +45,7 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 	go func(connection net.Conn) {
 		for {
 			defer func() {
+				_ = connection.Close()
 				if err := recover(); err != nil {
 					println("received error in ResponseReader", err.(error).Error())
 				}
@@ -78,7 +79,7 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 	}(connection)
 }
 
-func (responseReader *ResponseReader) close() {
+func (responseReader *ResponseReader) Close() {
 	close(responseReader.stopChannel)
 }
 
