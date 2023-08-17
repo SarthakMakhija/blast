@@ -1,9 +1,8 @@
 package report
 
 import (
+	"io"
 	"time"
-
-	"github.com/gogo/protobuf/io"
 )
 
 type Report struct {
