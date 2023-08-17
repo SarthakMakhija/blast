@@ -34,6 +34,7 @@ Summary:
     AverageResponsePayloadSize: 18.0000 bytes
     EarliestResponseReceivedTime: August 21, 2023 04:14:00 IST
     LatestResponseReceivedTime: August 21, 2023 04:14:10 IST
+    TimeToGetResponses: 10s
   
   Error distribution: 
   [1]   response error
@@ -66,6 +67,7 @@ Summary:
 			AverageResponsePayloadLengthBytes: 18.0,
 			EarliestResponseReceivedTime:      startTime,
 			LatestResponseReceivedTime:        tenSecondsLater,
+			TotalTime:                         tenSecondsLater.Sub(startTime),
 			IsAvailableForReporting:           true,
 		},
 	}

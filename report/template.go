@@ -31,6 +31,7 @@ Summary:
     AverageResponsePayloadSize: {{ formatNumberFloat .Response.AverageResponsePayloadLengthBytes }} bytes
     EarliestResponseReceivedTime: {{ formatTime .Response.EarliestResponseReceivedTime }}
     LatestResponseReceivedTime: {{ formatTime .Response.LatestResponseReceivedTime }}
+    TimeToGetResponses: {{ formatDuration .Response.TotalTime }}
   
 {{ if gt (len .Response.ErrorCountByType) 0 }}  Error distribution:{{ range $err, $num := .Response.ErrorCountByType }} 
   [{{ $num }}]   {{ $err }}{{ end }}{{ end }}
