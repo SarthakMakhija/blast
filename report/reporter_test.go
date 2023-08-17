@@ -161,6 +161,24 @@ func TestReportWithAndWithoutErrorInReceivingResponse(t *testing.T) {
 	assert.Equal(t, uint(1), reporter.report.Response.ErrorCount)
 }
 
+func TestReportWithTotalResponses(t *testing.T) {
+	responseChannel := make(chan SubjectServerResponse, 1)
+	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
+	reporter.Run()
+
+	responseChannel <- SubjectServerResponse{
+		PayloadLengthBytes: 10,
+	}
+	responseChannel <- SubjectServerResponse{
+		PayloadLengthBytes: 10,
+	}
+
+	close(responseChannel)
+	time.Sleep(2 * time.Millisecond)
+
+	assert.Equal(t, uint(2), reporter.report.Response.TotalResponses)
+}
+
 func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
 	responseChannel := make(chan SubjectServerResponse, 1)
 	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)

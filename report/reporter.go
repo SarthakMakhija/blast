@@ -24,8 +24,9 @@ type LoadMetrics struct {
 	TotalTime                 time.Duration
 }
 
-// TODO: connection time, total responses,
+// TODO: connection time
 type ResponseMetrics struct {
+	TotalResponses                    uint
 	SuccessCount                      uint
 	ErrorCount                        uint
 	ErrorCountByType                  map[string]uint
@@ -167,5 +168,6 @@ func (reporter *Reporter) collectResponseMetrics() {
 				Sub(reporter.report.Response.EarliestResponseReceivedTime)
 			reporter.report.Response.TotalTime = timeToCompleteResponses
 		}
+		reporter.report.Response.TotalResponses = uint(totalResponses)
 	}()
 }
