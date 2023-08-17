@@ -85,11 +85,15 @@ func (group *WorkerGroup) runWorker(
 	wg *sync.WaitGroup,
 	loadGenerationResponseChannel chan report.LoadGenerationResponse,
 ) {
+	totalRequests := group.options.totalRequests
+	if group.options.totalRequests%group.options.concurrency != 0 {
+		totalRequests = ((group.options.totalRequests / group.options.concurrency) + 1) * group.options.concurrency
+	}
 	Worker{
 		connection: connection,
 		options: WorkerOptions{
 			totalRequests: uint(
-				group.options.totalRequests / group.options.concurrency,
+				totalRequests / group.options.concurrency,
 			),
 			payload:                group.options.payload,
 			targetAddress:          group.options.targetAddress,

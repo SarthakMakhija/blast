@@ -28,10 +28,13 @@ func TestSendsRequestsWithSingleConnection(t *testing.T) {
 			),
 		).Run()
 
+	totalRequestsSent := 0
 	for response := range loadGenerationResponseChannel {
+		totalRequestsSent = totalRequestsSent + 1
 		assert.Nil(t, response.Err)
 		assert.Equal(t, int64(10), response.PayloadLengthBytes)
 	}
+	assert.Equal(t, 20, totalRequestsSent)
 }
 
 func TestSendsRequestsWithMultipleConnections(t *testing.T) {
@@ -98,4 +101,32 @@ func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 		assert.Nil(t, response.Err)
 		assert.Equal(t, int64(10), response.PayloadLengthBytes)
 	}
+}
+
+func TestSendsAdditionalRequestsThanConfiguredWithSingleConnection(t *testing.T) {
+	payloadSizeBytes := int64(10)
+	server, err := NewEchoServer("tcp", "localhost:8083", payloadSizeBytes)
+	assert.Nil(t, err)
+
+	server.accept(t)
+	defer server.stop()
+
+	concurrency, totalRequests := uint(6), uint(20)
+	loadGenerationResponseChannel := workers.
+		NewWorkerGroup(
+			workers.NewGroupOptions(
+				concurrency,
+				totalRequests,
+				[]byte("HelloWorld"),
+				"localhost:8083",
+			),
+		).Run()
+
+	totalRequestsSent := 0
+	for response := range loadGenerationResponseChannel {
+		totalRequestsSent = totalRequestsSent + 1
+		assert.Nil(t, response.Err)
+		assert.Equal(t, int64(10), response.PayloadLengthBytes)
+	}
+	assert.Equal(t, 24, totalRequestsSent)
 }
