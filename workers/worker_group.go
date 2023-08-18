@@ -64,7 +64,7 @@ func (group *WorkerGroup) runWorkers(
 
 	var connection net.Conn
 	for count := 0; count < int(group.options.concurrency); count++ {
-		if count%int(connectionsSharedByWorker) == 0 {
+		if count%int(connectionsSharedByWorker) == 0 || connection == nil {
 			connection, _ = group.newConnection()
 			// TODO: Handle error
 			if group.responseReader != nil && connection != nil {
