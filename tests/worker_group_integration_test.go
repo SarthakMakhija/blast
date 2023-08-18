@@ -18,15 +18,17 @@ func TestSendsRequestsWithSingleConnection(t *testing.T) {
 	defer server.stop()
 
 	concurrency, totalRequests := uint(10), uint(20)
-	loadGenerationResponseChannel := workers.
-		NewWorkerGroup(
-			workers.NewGroupOptions(
-				concurrency,
-				totalRequests,
-				[]byte("HelloWorld"),
-				"localhost:8080",
-			),
-		).Run()
+
+	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
+		concurrency,
+		totalRequests,
+		[]byte("HelloWorld"),
+		"localhost:8080",
+	))
+	loadGenerationResponseChannel := workerGroup.Run()
+
+	workerGroup.WaitTillDone()
+	close(loadGenerationResponseChannel)
 
 	totalRequestsSent := 0
 	for response := range loadGenerationResponseChannel {
@@ -46,16 +48,17 @@ func TestSendsRequestsWithMultipleConnections(t *testing.T) {
 	defer server.stop()
 
 	concurrency, connections, totalRequests := uint(20), uint(10), uint(40)
-	loadGenerationResponseChannel := workers.
-		NewWorkerGroup(
-			workers.NewGroupOptionsWithConnections(
-				concurrency,
-				connections,
-				totalRequests,
-				[]byte("HelloWorld"),
-				"localhost:8081",
-			),
-		).Run()
+	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptionsWithConnections(
+		concurrency,
+		connections,
+		totalRequests,
+		[]byte("HelloWorld"),
+		"localhost:8081",
+	))
+	loadGenerationResponseChannel := workerGroup.Run()
+
+	workerGroup.WaitTillDone()
+	close(loadGenerationResponseChannel)
 
 	for response := range loadGenerationResponseChannel {
 		assert.Nil(t, response.Err)
@@ -78,18 +81,18 @@ func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 		close(responseChannel)
 	}()
 
-	loadGenerationResponseChannel := workers.NewWorkerGroupWithResponseReader(
+	workerGroup := workers.NewWorkerGroupWithResponseReader(
 		workers.NewGroupOptions(
 			concurrency,
 			totalRequests,
 			[]byte("HelloWorld"),
 			"localhost:8082",
-		),
-		report.NewResponseReader(
-			responseSizeBytes,
-			responseChannel,
-		),
-	).Run()
+		), report.NewResponseReader(responseSizeBytes, responseChannel),
+	)
+	loadGenerationResponseChannel := workerGroup.Run()
+
+	workerGroup.WaitTillDone()
+	close(loadGenerationResponseChannel)
 
 	for response := range loadGenerationResponseChannel {
 		assert.Nil(t, response.Err)
@@ -112,15 +115,17 @@ func TestSendsAdditionalRequestsThanConfiguredWithSingleConnection(t *testing.T)
 	defer server.stop()
 
 	concurrency, totalRequests := uint(6), uint(20)
-	loadGenerationResponseChannel := workers.
-		NewWorkerGroup(
-			workers.NewGroupOptions(
-				concurrency,
-				totalRequests,
-				[]byte("HelloWorld"),
-				"localhost:8083",
-			),
-		).Run()
+
+	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
+		concurrency,
+		totalRequests,
+		[]byte("HelloWorld"),
+		"localhost:8083",
+	))
+	loadGenerationResponseChannel := workerGroup.Run()
+
+	workerGroup.WaitTillDone()
+	close(loadGenerationResponseChannel)
 
 	totalRequestsSent := 0
 	for response := range loadGenerationResponseChannel {

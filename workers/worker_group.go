@@ -10,6 +10,7 @@ import (
 type WorkerGroup struct {
 	options        GroupOptions
 	stopChannel    chan struct{}
+	doneChannel    chan struct{}
 	responseReader *report.ResponseReader
 }
 
@@ -24,11 +25,15 @@ func NewWorkerGroupWithResponseReader(
 	return &WorkerGroup{
 		options:        options,
 		stopChannel:    make(chan struct{}, options.concurrency),
+		doneChannel:    make(chan struct{}, 1),
 		responseReader: responseReader,
 	}
 }
 
 func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
+	if group.options.totalRequests%group.options.concurrency != 0 {
+		group.options.totalRequests = ((group.options.totalRequests / group.options.concurrency) + 1) * group.options.concurrency
+	}
 	loadGenerationResponseChannel := make(
 		chan report.LoadGenerationResponse,
 		group.options.totalRequests,
@@ -36,7 +41,8 @@ func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
 
 	go func() {
 		group.runWorkers(loadGenerationResponseChannel)
-		group.finish(loadGenerationResponseChannel)
+		group.WaitTillDone()
+		return
 	}()
 	return loadGenerationResponseChannel
 }
@@ -72,10 +78,11 @@ func (group *WorkerGroup) runWorkers(
 		group.runWorker(connection, &wg, loadGenerationResponseChannel)
 	}
 	wg.Wait()
+	group.doneChannel <- struct{}{}
 }
 
-func (group *WorkerGroup) finish(loadGenerationResponseChannel chan report.LoadGenerationResponse) {
-	close(loadGenerationResponseChannel)
+func (group *WorkerGroup) WaitTillDone() {
+	<-group.doneChannel
 }
 
 func (group *WorkerGroup) newConnection() (net.Conn, error) {
@@ -92,9 +99,6 @@ func (group *WorkerGroup) runWorker(
 	loadGenerationResponseChannel chan report.LoadGenerationResponse,
 ) {
 	totalRequests := group.options.totalRequests
-	if group.options.totalRequests%group.options.concurrency != 0 {
-		totalRequests = ((group.options.totalRequests / group.options.concurrency) + 1) * group.options.concurrency
-	}
 	Worker{
 		connection: connection,
 		options: WorkerOptions{

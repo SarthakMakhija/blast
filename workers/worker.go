@@ -36,6 +36,7 @@ func (worker Worker) sendRequests() {
 			if worker.options.requestsPerSecond > 0 {
 				<-throttle
 			}
+
 			worker.sendRequest()
 		}
 	}
