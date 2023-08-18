@@ -14,7 +14,6 @@ func TestPrintsTheReportWithLoadAndResponseMetrics(t *testing.T) {
 Summary:
   LoadMetrics:
     TotalRequests: 1000
-    RequestsPerSecond: 55.3200
     SuccessCount: 999
     ErrorCount: 1
     TotalPayloadSize: 2000 bytes
@@ -49,7 +48,6 @@ Summary:
 	report := &Report{
 		Load: LoadMetrics{
 			TotalRequests:             1000,
-			RequestsPerSecond:         55.32,
 			SuccessCount:              999,
 			ErrorCount:                1,
 			ErrorCountByType:          map[string]uint{"load error": 1},
@@ -83,7 +81,6 @@ func TestPrintsTheReportWithLoadMetrics(t *testing.T) {
 Summary:
   LoadMetrics:
     TotalRequests: 1000
-    RequestsPerSecond: 55.3200
     SuccessCount: 999
     ErrorCount: 1
     TotalPayloadSize: 2000 bytes
@@ -103,7 +100,6 @@ Summary:
 	report := &Report{
 		Load: LoadMetrics{
 			TotalRequests:             1000,
-			RequestsPerSecond:         55.32,
 			SuccessCount:              999,
 			ErrorCount:                1,
 			ErrorCountByType:          map[string]uint{"load error": 1},

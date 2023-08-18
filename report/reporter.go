@@ -13,7 +13,6 @@ type Report struct {
 // TODO: Total connections
 type LoadMetrics struct {
 	TotalRequests             uint
-	RequestsPerSecond         float64
 	SuccessCount              uint
 	ErrorCount                uint
 	ErrorCountByType          map[string]uint
@@ -124,11 +123,6 @@ func (reporter *Reporter) collectLoadMetrics() {
 
 		reporter.report.Load.TotalTime = timeToCompleteLoad
 		reporter.report.Load.TotalRequests = totalGeneratedLoad
-		reporter.report.Load.RequestsPerSecond = float64(
-			totalGeneratedLoad,
-		) / float64(
-			timeToCompleteLoad.Seconds(),
-		)
 	}()
 }
 
