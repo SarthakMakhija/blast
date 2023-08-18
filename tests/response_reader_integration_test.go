@@ -99,8 +99,8 @@ func TestTracksTheNumberOfResponsesRead(t *testing.T) {
 	responseReader.StartReading(connection)
 
 	_ = <-responseChannel
-	assert.Equal(t, uint32(1), responseReader.TotalResponsesRead())
-	assert.Equal(t, uint32(1), responseReader.TotalSuccessfulResponsesRead())
+	assert.Equal(t, uint64(1), responseReader.TotalResponsesRead())
+	assert.Equal(t, uint64(1), responseReader.TotalSuccessfulResponsesRead())
 }
 
 func connectTo(t *testing.T, address string) net.Conn {

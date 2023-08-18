@@ -22,8 +22,8 @@ type SubjectServerResponse struct {
 
 type ResponseReader struct {
 	responseSizeBytes       int64
-	readTotalResponses      atomic.Uint32
-	readSuccessfulResponses atomic.Uint32
+	readTotalResponses      atomic.Uint64
+	readSuccessfulResponses atomic.Uint64
 	stopChannel             chan struct{}
 	responseChannel         chan SubjectServerResponse
 }
@@ -82,10 +82,10 @@ func (responseReader *ResponseReader) Close() {
 	close(responseReader.stopChannel)
 }
 
-func (responseReader *ResponseReader) TotalResponsesRead() uint32 {
+func (responseReader *ResponseReader) TotalResponsesRead() uint64 {
 	return responseReader.readTotalResponses.Load()
 }
 
-func (responseReader *ResponseReader) TotalSuccessfulResponsesRead() uint32 {
+func (responseReader *ResponseReader) TotalSuccessfulResponsesRead() uint64 {
 	return responseReader.readSuccessfulResponses.Load()
 }
