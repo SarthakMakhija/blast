@@ -1,7 +1,9 @@
 package report
 
 import (
+	"bytes"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -239,4 +241,50 @@ func TestReportWithTotalLoadReported(t *testing.T) {
 	close(loadGenerationChannel)
 
 	assert.Equal(t, uint64(2), reporter.TotalLoadReportedTillNow())
+}
+
+func TestPrintsTheReportWithLoadMetricsOnly(t *testing.T) {
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
+	reporter.Run()
+
+	loadGenerationChannel <- LoadGenerationResponse{
+		Err: errors.New("test error"),
+	}
+	time.Sleep(2 * time.Millisecond)
+	close(loadGenerationChannel)
+
+	buffer := &bytes.Buffer{}
+	reporter.PrintReport(buffer)
+
+	output := string(buffer.Bytes())
+	assert.True(t, strings.Contains(output, "TotalRequests: 1"))
+	assert.True(t, strings.Contains(output, "SuccessCount: 0"))
+	assert.True(t, strings.Contains(output, "ErrorCount: 1"))
+}
+
+func TestPrintsTheReportWithLoadAndResponseMetricsTogether(t *testing.T) {
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
+	responseChannel := make(chan SubjectServerResponse, 1)
+	reporter := NewResponseMetricsCollectingReporter(loadGenerationChannel, responseChannel)
+	reporter.Run()
+
+	loadGenerationChannel <- LoadGenerationResponse{
+		PayloadLengthBytes: 10,
+	}
+	responseChannel <- SubjectServerResponse{
+		PayloadLengthBytes: 10,
+	}
+	time.Sleep(2 * time.Millisecond)
+	close(loadGenerationChannel)
+	close(responseChannel)
+
+	buffer := &bytes.Buffer{}
+	reporter.PrintReport(buffer)
+
+	output := string(buffer.Bytes())
+	assert.True(t, strings.Contains(output, "TotalRequests: 1"))
+	assert.True(t, strings.Contains(output, "SuccessCount: 1"))
+	assert.True(t, strings.Contains(output, "ErrorCount: 0"))
+	assert.True(t, strings.Contains(output, "TotalResponses: 1"))
 }
