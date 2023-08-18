@@ -124,7 +124,7 @@ func (reporter *Reporter) collectLoadMetrics() {
 			}
 		}
 		startTime := reporter.report.Load.EarliestLoadSendTime
-		timeToCompleteLoad := time.Now().Sub(startTime)
+		timeToCompleteLoad := reporter.report.Load.LatestLoadSendTime.Sub(startTime)
 
 		reporter.report.Load.TotalTime = timeToCompleteLoad
 		reporter.report.Load.TotalRequests = totalGeneratedLoad
@@ -162,11 +162,11 @@ func (reporter *Reporter) collectResponseMetrics() {
 				) {
 				reporter.report.Response.LatestResponseReceivedTime = response.ResponseTime
 			}
-
-			timeToCompleteResponses := time.Now().
-				Sub(reporter.report.Response.EarliestResponseReceivedTime)
-			reporter.report.Response.TotalTime = timeToCompleteResponses
 		}
 		reporter.report.Response.TotalResponses = uint(totalResponses)
+
+		timeToCompleteResponses := reporter.report.Response.LatestResponseReceivedTime.
+			Sub(reporter.report.Response.EarliestResponseReceivedTime)
+		reporter.report.Response.TotalTime = timeToCompleteResponses
 	}()
 }

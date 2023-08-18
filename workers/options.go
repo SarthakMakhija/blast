@@ -72,3 +72,7 @@ func NewGroupOptionsFullyLoaded(
 		requestsPerSecond: requestsPerSecond,
 	}
 }
+
+func (groupOptions GroupOptions) TotalRequests() uint {
+	return groupOptions.totalRequests
+}

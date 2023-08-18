@@ -46,6 +46,9 @@ func (worker Worker) sendRequests() {
 }
 
 func (worker Worker) sendRequest() {
+	defer func() {
+		_ = recover()
+	}()
 	if worker.connection != nil {
 		_, err := worker.connection.Write(worker.options.payload)
 		worker.options.loadGenerationResponse <- report.LoadGenerationResponse{

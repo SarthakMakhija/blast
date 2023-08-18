@@ -81,6 +81,10 @@ func (group *WorkerGroup) WaitTillDone() {
 	<-group.doneChannel
 }
 
+func (group *WorkerGroup) DoneChannel() chan struct{} {
+	return group.doneChannel
+}
+
 func (group *WorkerGroup) newConnection() (net.Conn, error) {
 	connection, err := net.Dial("tcp", group.options.targetAddress)
 	if err != nil {
