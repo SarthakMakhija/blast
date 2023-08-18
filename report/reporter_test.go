@@ -223,3 +223,20 @@ func TestReportWithLoadTimeInReceivingResponse(t *testing.T) {
 	assert.Equal(t, now, reporter.report.Response.EarliestResponseReceivedTime)
 	assert.Equal(t, laterByTenSeconds, reporter.report.Response.LatestResponseReceivedTime)
 }
+
+func TestReportWithTotalLoadReported(t *testing.T) {
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
+	reporter.Run()
+
+	loadGenerationChannel <- LoadGenerationResponse{
+		PayloadLengthBytes: 15,
+	}
+	loadGenerationChannel <- LoadGenerationResponse{
+		Err: errors.New("test error"),
+	}
+	time.Sleep(2 * time.Millisecond)
+	close(loadGenerationChannel)
+
+	assert.Equal(t, uint64(2), reporter.TotalLoadReportedTillNow())
+}

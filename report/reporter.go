@@ -2,6 +2,7 @@ package report
 
 import (
 	"io"
+	"sync/atomic"
 	"time"
 )
 
@@ -37,9 +38,10 @@ type ResponseMetrics struct {
 }
 
 type Reporter struct {
-	report                *Report
-	loadGenerationChannel chan LoadGenerationResponse
-	responseChannel       chan SubjectServerResponse
+	report                   *Report
+	totalLoadReportedTillNow atomic.Uint64
+	loadGenerationChannel    chan LoadGenerationResponse
+	responseChannel          chan SubjectServerResponse
 }
 
 func NewLoadGenerationMetricsCollectingReporter(
@@ -89,11 +91,16 @@ func (reporter *Reporter) PrintReport(writer io.Writer) {
 	print(writer, reporter.report)
 }
 
+func (reporter *Reporter) TotalLoadReportedTillNow() uint64 {
+	return reporter.totalLoadReportedTillNow.Load()
+}
+
 func (reporter *Reporter) collectLoadMetrics() {
 	go func() {
 		totalGeneratedLoad := uint(0)
 		for load := range reporter.loadGenerationChannel {
 			totalGeneratedLoad++
+			reporter.totalLoadReportedTillNow.Add(1)
 
 			if load.Err != nil {
 				reporter.report.Load.ErrorCount++
