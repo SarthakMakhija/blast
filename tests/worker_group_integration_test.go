@@ -135,3 +135,23 @@ func TestSendsAdditionalRequestsThanConfiguredWithSingleConnection(t *testing.T)
 	}
 	assert.Equal(t, 24, totalRequestsSent)
 }
+
+func TestSendsRequestsOnANonRunningServer(t *testing.T) {
+	concurrency, totalRequests := uint(10), uint(20)
+
+	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
+		concurrency,
+		totalRequests,
+		[]byte("HelloWorld"),
+		"localhost:8084",
+	))
+	loadGenerationResponseChannel := workerGroup.Run()
+
+	workerGroup.WaitTillDone()
+	close(loadGenerationResponseChannel)
+
+	for response := range loadGenerationResponseChannel {
+		assert.Error(t, response.Err)
+		assert.Equal(t, workers.ErrNilConnection, response.Err)
+	}
+}

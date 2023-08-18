@@ -1,12 +1,15 @@
 package workers
 
 import (
+	"errors"
 	"io"
 	"sync"
 	"time"
 
 	"blast/report"
 )
+
+var ErrNilConnection = errors.New("attempting to send request on a nil connection")
 
 type Worker struct {
 	connection io.WriteCloser
@@ -43,10 +46,18 @@ func (worker Worker) sendRequests() {
 }
 
 func (worker Worker) sendRequest() {
-	_, err := worker.connection.Write(worker.options.payload)
+	if worker.connection != nil {
+		_, err := worker.connection.Write(worker.options.payload)
+		worker.options.loadGenerationResponse <- report.LoadGenerationResponse{
+			Err:                err,
+			PayloadLengthBytes: int64(len(worker.options.payload)),
+			LoadGenerationTime: time.Now(),
+		}
+		return
+	}
 	worker.options.loadGenerationResponse <- report.LoadGenerationResponse{
-		Err:                err,
-		PayloadLengthBytes: int64(len(worker.options.payload)),
+		Err:                ErrNilConnection,
+		PayloadLengthBytes: 0,
 		LoadGenerationTime: time.Now(),
 	}
 }
