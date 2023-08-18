@@ -16,8 +16,8 @@ Summary:
     TotalRequests: 1000
     SuccessCount: 999
     ErrorCount: 1
-    TotalPayloadSize: 2000 bytes
-    AveragePayloadSize: 20.0000 bytes
+    TotalPayloadSize: 2.0 kB
+    AveragePayloadSize: 20 B
     EarliestLoadSendTime: August 21, 2023 04:14:00 IST
     LatestLoadSendTime: August 21, 2023 04:14:10 IST
     TimeToCompleteLoad: 10s
@@ -29,8 +29,8 @@ Summary:
   ResponseMetrics:
     SuccessCount: 1000
     ErrorCount: 1
-    TotalResponsePayloadSize: 1800 bytes
-    AverageResponsePayloadSize: 18.0000 bytes
+    TotalResponsePayloadSize: 1.8 kB
+    AverageResponsePayloadSize: 18 B 
     EarliestResponseReceivedTime: August 21, 2023 04:14:00 IST
     LatestResponseReceivedTime: August 21, 2023 04:14:10 IST
     TimeToGetResponses: 10s
@@ -83,8 +83,8 @@ Summary:
     TotalRequests: 1000
     SuccessCount: 999
     ErrorCount: 1
-    TotalPayloadSize: 2000 bytes
-    AveragePayloadSize: 20.0000 bytes
+    TotalPayloadSize: 2.0 kB
+    AveragePayloadSize: 20 B
     EarliestLoadSendTime: August 21, 2023 04:14:00 IST
     LatestLoadSendTime: August 21, 2023 04:14:00 IST
     TimeToCompleteLoad: 0s

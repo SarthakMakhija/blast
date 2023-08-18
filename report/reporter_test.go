@@ -85,7 +85,7 @@ func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
 	close(loadGenerationChannel)
 
 	assert.Equal(t, int64(20), reporter.report.Load.TotalPayloadLengthBytes)
-	assert.Equal(t, float64(10.0), reporter.report.Load.AveragePayloadLengthBytes)
+	assert.Equal(t, int64(10), reporter.report.Load.AveragePayloadLengthBytes)
 }
 
 func TestReportWithLoadTimeInGeneratingLoad(t *testing.T) {
@@ -197,7 +197,7 @@ func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
 	assert.Equal(t, int64(20), reporter.report.Response.TotalResponsePayloadLengthBytes)
 	assert.Equal(
 		t,
-		float64(10.0),
+		int64(10),
 		reporter.report.Response.AverageResponsePayloadLengthBytes,
 	)
 }

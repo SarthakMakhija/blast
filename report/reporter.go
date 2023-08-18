@@ -18,7 +18,7 @@ type LoadMetrics struct {
 	ErrorCount                uint
 	ErrorCountByType          map[string]uint
 	TotalPayloadLengthBytes   int64
-	AveragePayloadLengthBytes float64
+	AveragePayloadLengthBytes int64
 	EarliestLoadSendTime      time.Time
 	LatestLoadSendTime        time.Time
 	TotalTime                 time.Duration
@@ -30,7 +30,7 @@ type ResponseMetrics struct {
 	ErrorCount                        uint
 	ErrorCountByType                  map[string]uint
 	TotalResponsePayloadLengthBytes   int64
-	AverageResponsePayloadLengthBytes float64
+	AverageResponsePayloadLengthBytes int64
 	EarliestResponseReceivedTime      time.Time
 	LatestResponseReceivedTime        time.Time
 	IsAvailableForReporting           bool
@@ -109,9 +109,7 @@ func (reporter *Reporter) collectLoadMetrics() {
 				reporter.report.Load.SuccessCount++
 			}
 			reporter.report.Load.TotalPayloadLengthBytes += load.PayloadLengthBytes
-			reporter.report.Load.AveragePayloadLengthBytes = float64(
-				reporter.report.Load.TotalPayloadLengthBytes,
-			) / float64(
+			reporter.report.Load.AveragePayloadLengthBytes = reporter.report.Load.TotalPayloadLengthBytes / int64(
 				totalGeneratedLoad,
 			)
 
@@ -146,9 +144,10 @@ func (reporter *Reporter) collectResponseMetrics() {
 				reporter.report.Response.SuccessCount++
 			}
 			reporter.report.Response.TotalResponsePayloadLengthBytes += response.PayloadLengthBytes
-			reporter.report.Response.AverageResponsePayloadLengthBytes = float64(
-				reporter.report.Response.TotalResponsePayloadLengthBytes,
-			) / float64(totalResponses)
+			reporter.report.Response.AverageResponsePayloadLengthBytes = reporter.report.Response.TotalResponsePayloadLengthBytes /
+				int64(
+					totalResponses,
+				)
 
 			if reporter.report.Response.EarliestResponseReceivedTime.IsZero() ||
 				response.ResponseTime.Before(
