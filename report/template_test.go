@@ -27,7 +27,8 @@ Summary:
 
   
   ResponseMetrics:
-    SuccessCount: 1000
+    TotalResponses: 1000
+    SuccessCount: 999
     ErrorCount: 1
     TotalResponsePayloadSize: 1.8 kB
     AverageResponsePayloadSize: 18 B 
@@ -58,7 +59,8 @@ Summary:
 			TotalTime:                 tenSecondsLater.Sub(startTime),
 		},
 		Response: ResponseMetrics{
-			SuccessCount:                      1000,
+			TotalResponses:                    1000,
+			SuccessCount:                      999,
 			ErrorCount:                        1,
 			ErrorCountByType:                  map[string]uint{"response error": 1},
 			TotalResponsePayloadLengthBytes:   1800,

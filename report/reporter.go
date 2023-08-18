@@ -38,10 +38,12 @@ type ResponseMetrics struct {
 }
 
 type Reporter struct {
-	report                   *Report
-	totalLoadReportedTillNow atomic.Uint64
-	loadGenerationChannel    chan LoadGenerationResponse
-	responseChannel          chan SubjectServerResponse
+	report                     *Report
+	totalLoadReportedTillNow   atomic.Uint64
+	loadGenerationChannel      chan LoadGenerationResponse
+	responseChannel            chan SubjectServerResponse
+	loadMetricsDoneChannel     chan struct{}
+	responseMetricsDoneChannel chan struct{}
 }
 
 func NewLoadGenerationMetricsCollectingReporter(
@@ -56,8 +58,10 @@ func NewLoadGenerationMetricsCollectingReporter(
 				IsAvailableForReporting: false,
 			},
 		},
-		loadGenerationChannel: loadGenerationChannel,
-		responseChannel:       nil,
+		loadGenerationChannel:      loadGenerationChannel,
+		responseChannel:            nil,
+		loadMetricsDoneChannel:     make(chan struct{}),
+		responseMetricsDoneChannel: nil,
 	}
 }
 
@@ -75,8 +79,10 @@ func NewResponseMetricsCollectingReporter(
 				ErrorCountByType:        make(map[string]uint),
 			},
 		},
-		loadGenerationChannel: loadGenerationChannel,
-		responseChannel:       responseChannel,
+		loadGenerationChannel:      loadGenerationChannel,
+		responseChannel:            responseChannel,
+		loadMetricsDoneChannel:     make(chan struct{}),
+		responseMetricsDoneChannel: make(chan struct{}),
 	}
 }
 
@@ -88,6 +94,11 @@ func (reporter *Reporter) Run() {
 }
 
 func (reporter *Reporter) PrintReport(writer io.Writer) {
+	println("printing report...")
+	<-reporter.loadMetricsDoneChannel
+	if reporter.responseMetricsDoneChannel != nil {
+		<-reporter.responseMetricsDoneChannel
+	}
 	print(writer, reporter.report)
 }
 
@@ -128,6 +139,7 @@ func (reporter *Reporter) collectLoadMetrics() {
 
 		reporter.report.Load.TotalTime = timeToCompleteLoad
 		reporter.report.Load.TotalRequests = totalGeneratedLoad
+		close(reporter.loadMetricsDoneChannel)
 	}()
 }
 
@@ -168,5 +180,6 @@ func (reporter *Reporter) collectResponseMetrics() {
 		timeToCompleteResponses := reporter.report.Response.LatestResponseReceivedTime.
 			Sub(reporter.report.Response.EarliestResponseReceivedTime)
 		reporter.report.Response.TotalTime = timeToCompleteResponses
+		close(reporter.responseMetricsDoneChannel)
 	}()
 }

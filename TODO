@@ -1,0 +1,9 @@
+1. Integrate blast.go in main
+2. Format report (unnecessary new lines)
+3. Add total connections in the report
+4. Add total responses in the report
+5. Validate the options in main
+6. Run against a sample server
+    - with input from a file
+    - with input from a process
+7. Take a look at TODOs

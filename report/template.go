@@ -26,6 +26,7 @@ Summary:
 
 {{ if eq (.Response.IsAvailableForReporting) true }}  
   ResponseMetrics:
+    TotalResponses: {{ formatNumberUint .Response.TotalResponses }}
     SuccessCount: {{ formatNumberUint .Response.SuccessCount }}
     ErrorCount: {{ formatNumberUint .Response.ErrorCount }}
     TotalResponsePayloadSize: {{ humanizePayloadSize .Response.TotalResponsePayloadLengthBytes }}
