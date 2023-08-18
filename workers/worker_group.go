@@ -41,6 +41,12 @@ func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
 	return loadGenerationResponseChannel
 }
 
+func (group *WorkerGroup) Close() {
+	for count := 1; count <= int(group.options.concurrency); count++ {
+		group.stopChannel <- struct{}{}
+	}
+}
+
 // TODO: close the connection if response reader is nil
 func (group *WorkerGroup) runWorkers(
 	loadGenerationResponseChannel chan report.LoadGenerationResponse,
