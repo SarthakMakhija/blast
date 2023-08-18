@@ -143,7 +143,7 @@ func TestSendsRequestsOnANonRunningServer(t *testing.T) {
 		concurrency,
 		totalRequests,
 		[]byte("HelloWorld"),
-		"localhost:8084",
+		"localhost:8090",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
 
