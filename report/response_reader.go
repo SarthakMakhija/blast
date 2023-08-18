@@ -34,7 +34,7 @@ func NewResponseReader(
 ) *ResponseReader {
 	return &ResponseReader{
 		responseSizeBytes: responseSizeBytes,
-		stopChannel:       make(chan struct{}),
+		stopChannel:       make(chan struct{}), // TODO: size of the channel?
 		responseChannel:   responseChannel,
 	}
 }
