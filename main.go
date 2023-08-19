@@ -13,18 +13,18 @@ import (
 )
 
 var (
+	numberOfRequests        = flag.Uint("n", 1000, "")
 	concurrency             = flag.Uint("c", 50, "")
 	connections             = flag.Uint("conn", 1, "")
-	numberOfRequests        = flag.Uint("n", 1000, "")
+	filePath                = flag.String("f", "", "")
+	processPath             = flag.String("p", "", "")
 	requestsPerSecond       = flag.Float64("rps", 0, "")
+	loadDuration            = flag.Duration("z", 20*time.Second, "")
 	requestTimeout          = flag.Int("t", 3, "")
 	readResponses           = flag.Bool("Rr", false, "")
 	responsePayloadSize     = flag.Int64("Rrs", -1, "")
 	readTotalResponses      = flag.Uint("Rtr", 0, "")
 	readSuccessfulResponses = flag.Uint("Rsr", 0, "")
-	loadDuration            = flag.Duration("z", 20*time.Second, "")
-	filePath                = flag.String("f", "", "")
-	processPath             = flag.String("p", "", "")
 	cpus                    = flag.Int("cpus", runtime.GOMAXPROCS(-1), "")
 )
 
@@ -36,7 +36,7 @@ Options:
   -n      Number of requests to run. Default is 1000.
   -c      Number of workers to run concurrently. Total number of requests cannot
           be smaller than the concurrency level. Default is 50.
-  -f      Payload file.
+  -f      Payload file path.
   -p      External executable process path. The external process should print the payload
           on stdout. Load generation payload can be either specified through -f or -p.
   -rps    Rate limit in requests per second (RPS) per worker. Default is no rate limit.
@@ -45,13 +45,13 @@ Options:
           Example usage: -z 10s or -z 3m.
   -t      Timeout for each request in seconds. Default is 3 seconds, use 0 for infinite.
   -Rr     Read responses from the target server. Default is false.
-  -Rrs    Read response size, the size of the responses in bytes returned by the target server. 
+  -Rrs    Read response size is the size of the responses in bytes returned by the target server. 
           This flag is applied only if "Read responses" (-Rr) is true.
-  -Rtr    Read total responses, total responses to read from the target server. 
+  -Rtr    Read total responses is the total responses to read from the target server. 
           The load generation will stop if either the duration (-z) has exceeded or the total 
           responses have been read. This flag is applied only if "Read responses" (-Rr)
           is true.
-  -Rsr    Read successful responses, successful responses to read from the target server. 
+  -Rsr    Read successful responses  is the successful responses to read from the target server. 
           The load generation will stop if either the duration (-z) has exceeded or 
           the total successful responses have been read. Either of "-Rtr"
           or "-Rsr" should be specified. This flag is applied only if 
@@ -150,10 +150,7 @@ func assertTotalConcurrentRequestsWithClientConnections(
 		exitFunction("-n and -c cannot be smaller than 1.")
 	}
 	if totalRequests < concurrency {
-		exitFunction("-n cannot be less than -c.")
-	}
-	if connections <= 0 {
-		exitFunction("-conn cannot be smaller than 1.")
+		exitFunction("-n cannot be smaller than -c.")
 	}
 	if connections > concurrency {
 		exitFunction("-conn cannot be greater than -c.")
