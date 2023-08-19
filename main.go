@@ -37,7 +37,7 @@ Options:
   -c      Number of workers to run concurrently. Total number of requests cannot
           be smaller than the concurrency level. Default is 50.
   -f      Payload file path.
-  -p      External executable process path. The external process should print the payload
+  -p      External executable process path. The external process must print the payload
           on stdout. Load generation payload can be either specified through -f or -p.
   -rps    Rate limit in requests per second (RPS) per worker. Default is no rate limit.
   -z      Duration of blast to send requests. When duration is reached,
@@ -54,7 +54,7 @@ Options:
   -Rsr    Read successful responses  is the successful responses to read from the target server. 
           The load generation will stop if either the duration (-z) has exceeded or 
           the total successful responses have been read. Either of "-Rtr"
-          or "-Rsr" should be specified. This flag is applied only if 
+          or "-Rsr" must be specified, if -Rr is set. This flag is applied only if 
           "Read responses" (-Rr) is true.
 
   -conn   Number of connections to open with the target URL.
@@ -120,6 +120,9 @@ func assertFileAndProcessPath(filePath string, processPath string) {
 	if len(strings.Trim(filePath, " ")) == 0 && len(strings.Trim(processPath, " ")) == 0 {
 		exitFunction("both -f and -p cannot be blank.")
 	}
+	if len(strings.Trim(filePath, " ")) != 0 && len(strings.Trim(processPath, " ")) != 0 {
+		exitFunction("both -f and -p cannot be specified.")
+	}
 }
 
 func assertRequestTimeout(timeout int) {
@@ -178,6 +181,9 @@ func assertResponseReading(
 		}
 		if readTotalResponses > 0 && readSuccessfulResponses > 0 {
 			exitFunction("both -Rtr and -Rsr cannot be specified.")
+		}
+		if readTotalResponses == 0 && readSuccessfulResponses == 0 {
+			exitFunction("either of -Rtr or -Rsr must be specified.")
 		}
 	}
 }

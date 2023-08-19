@@ -39,6 +39,13 @@ func TestRunBlastWithEmptyFileAndProcessPath(t *testing.T) {
 	})
 }
 
+func TestRunBlastWithNonEmptyFilePathAndNonEmptyProcessPath(t *testing.T) {
+	exitFunction = exitWithPanic
+	assert.Panics(t, func() {
+		assertFileAndProcessPath("./filePayload", "./exe")
+	})
+}
+
 func TestRunBlastWithEmptyFileAndNonEmptyProcessPath(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {

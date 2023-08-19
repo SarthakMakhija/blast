@@ -1,5 +1,4 @@
 1. Integrate blast.go in main
-5. Validate the options in main
 8. Incorporate request timeout
 
 6. Run against a sample server
