@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math"
 	"os"
 	"os/signal"
 	"runtime"
@@ -14,14 +13,19 @@ import (
 )
 
 var (
-	concurrency       = flag.Uint("c", 50, "")
-	connections       = flag.Uint("conn", 1, "")
-	numberOfRequests  = flag.Uint("n", 1000, "")
-	requestsPerSecond = flag.Float64("r", 0, "")
-	requestTimeout    = flag.Int("t", 20, "")
-	loadDuration      = flag.Duration("z", 0, "")
-	filePath          = flag.String("f", "", "")
-	cpus              = flag.Int("cpus", runtime.GOMAXPROCS(-1), "")
+	concurrency             = flag.Uint("c", 50, "")
+	connections             = flag.Uint("conn", 1, "")
+	numberOfRequests        = flag.Uint("n", 1000, "")
+	requestsPerSecond       = flag.Float64("r", 0, "")
+	requestTimeout          = flag.Int("t", 3, "")
+	readResponses           = flag.Bool("Rr", false, "")
+	responsePayloadSize     = flag.Int64("Rrs", -1, "")
+	readTotalResponses      = flag.Uint("Rtr", 0, "")
+	readSuccessfulResponses = flag.Uint("Rsr", 0, "")
+	loadDuration            = flag.Duration("z", 20*time.Second, "")
+	filePath                = flag.String("f", "", "")
+	processPath             = flag.String("p", "", "")
+	cpus                    = flag.Int("cpus", runtime.GOMAXPROCS(-1), "")
 )
 
 var exitFunction = usageAndExit
@@ -33,11 +37,25 @@ Options:
   -c      Number of workers to run concurrently. Total number of requests cannot
           be smaller than the concurrency level. Default is 50.
   -f      Payload file.
-  -r      Rate limit, in requests per second (RPS) per worker. Default is no rate limit.
-  -z      Duration of application to send requests. When duration is reached,
-          application stops and exits. If duration is specified, n is ignored.
-          Examples: -z 10s or -z 3m.
-  -t      Timeout for each request in seconds. Default is 20 seconds, use 0 for infinite.
+  -p      External executable process path. The external process should print the payload
+          on stdout. Load generation payload can be either specified through -f or -p.
+  -r      Rate limit in requests per second (RPS) per worker. Default is no rate limit.
+  -z      Duration of blast to send requests. When duration is reached,
+          application stops and exits. Default is 20 seconds.
+          Example usage: -z 10s or -z 3m.
+  -t      Timeout for each request in seconds. Default is 3 seconds, use 0 for infinite.
+  -Rr     Read responses from the target server. Default is false.
+  -Rrs    Read response size, the size of the responses in bytes returned by the target server. 
+          This flag is applied only if "Read responses" (-Rr) is true.
+  -Rtr    Read total responses, total responses to read from the target server. 
+          The load generation will stop if either the duration (-z) has exceeded or the total 
+          responses have been read. This flag is applied only if "Read responses" (-Rr)
+          is true.
+  -Rsr    Read successful responses, successful responses to read from the target server. 
+          The load generation will stop if either the duration (-z) has exceeded or 
+          the total successful responses have been read. Either of "-Rtr"
+          or "-Rsr" should be specified. This flag is applied only if 
+          "Read responses" (-Rr) is true.
 
   -conn   Number of connections to open with the target URL.
           Total number of connections cannot be greater than the concurrency level.
@@ -62,12 +80,20 @@ func main() {
 	}
 
 	assertUrl(flag.Args()[0])
-	assertFilePath(*filePath)
+	assertFileAndProcessPath(*filePath, *processPath)
+	assertRequestTimeout(*requestTimeout)
+	assertRequestsPerSecond(*requestsPerSecond)
+	assertLoadDuration(*loadDuration)
 	assertTotalConcurrentRequestsWithClientConnections(
-		*loadDuration,
 		*numberOfRequests,
 		*concurrency,
 		*connections,
+	)
+	assertResponseReading(
+		*readResponses,
+		*responsePayloadSize,
+		*readTotalResponses,
+		*readSuccessfulResponses,
 	)
 	assertAndSetMaxProcs(*cpus)
 
@@ -90,28 +116,41 @@ func assertUrl(url string) {
 	}
 }
 
-func assertFilePath(filePath string) {
-	if len(strings.Trim(filePath, " ")) == 0 {
-		exitFunction("-f cannot be blank.")
+func assertFileAndProcessPath(filePath string, processPath string) {
+	if len(strings.Trim(filePath, " ")) == 0 && len(strings.Trim(processPath, " ")) == 0 {
+		exitFunction("both -f and -p cannot be blank.")
+	}
+}
+
+func assertRequestTimeout(timeout int) {
+	if timeout < 0 {
+		exitFunction("-t cannot be smaller than zero.")
+	}
+}
+
+func assertRequestsPerSecond(requestsPerSecond float64) {
+	if requestsPerSecond < 0 {
+		exitFunction("-r cannot be smaller than zero.")
+	}
+}
+
+func assertLoadDuration(duration time.Duration) {
+	if duration <= time.Duration(0) {
+		exitFunction("-z cannot be smaller than or equal to zero.")
 	}
 }
 
 func assertTotalConcurrentRequestsWithClientConnections(
-	loadDuration time.Duration,
 	totalRequests, concurrency, connections uint,
 ) {
-	if loadDuration > 0 {
-		totalRequests = math.MaxUint
-		if concurrency <= 0 {
-			exitFunction("-c cannot be smaller than 1.")
-		}
-	} else {
-		if totalRequests <= 0 || concurrency <= 0 {
-			exitFunction("-n and -c cannot be smaller than 1.")
-		}
-		if totalRequests < concurrency {
-			exitFunction("-n cannot be less than -c.")
-		}
+	if connections <= 0 {
+		exitFunction("-conn cannot be smaller than 1.")
+	}
+	if totalRequests <= 0 || concurrency <= 0 {
+		exitFunction("-n and -c cannot be smaller than 1.")
+	}
+	if totalRequests < concurrency {
+		exitFunction("-n cannot be less than -c.")
 	}
 	if connections <= 0 {
 		exitFunction("-conn cannot be smaller than 1.")
@@ -129,6 +168,21 @@ func assertAndSetMaxProcs(cpus int) {
 		exitFunction("-cpus cannot be smaller than 1.")
 	}
 	runtime.GOMAXPROCS(cpus)
+}
+
+func assertResponseReading(
+	readResponses bool,
+	responsePayloadSize int64,
+	readTotalResponses, readSuccessfulResponses uint,
+) {
+	if readResponses {
+		if responsePayloadSize < 0 {
+			exitFunction("-Rrs cannot be smaller than 0.")
+		}
+		if readTotalResponses > 0 && readSuccessfulResponses > 0 {
+			exitFunction("both -Rtr and -Rsr cannot be specified.")
+		}
+	}
 }
 
 func usageAndExit(msg string) {
