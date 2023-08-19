@@ -16,11 +16,13 @@ type LoadMetrics struct {
 	SuccessCount              uint
 	ErrorCount                uint
 	ErrorCountByType          map[string]uint
+	TotalConnections          uint
 	TotalPayloadLengthBytes   int64
 	AveragePayloadLengthBytes int64
 	EarliestLoadSendTime      time.Time
 	LatestLoadSendTime        time.Time
 	TotalTime                 time.Duration
+	uniqueConnectionIds       map[int]bool
 }
 
 type ResponseMetrics struct {
@@ -51,7 +53,8 @@ func NewLoadGenerationMetricsCollectingReporter(
 	return &Reporter{
 		report: &Report{
 			Load: LoadMetrics{
-				ErrorCountByType: make(map[string]uint),
+				ErrorCountByType:    make(map[string]uint),
+				uniqueConnectionIds: make(map[int]bool),
 			},
 			Response: ResponseMetrics{
 				IsAvailableForReporting: false,
@@ -71,7 +74,8 @@ func NewResponseMetricsCollectingReporter(
 	return &Reporter{
 		report: &Report{
 			Load: LoadMetrics{
-				ErrorCountByType: make(map[string]uint),
+				ErrorCountByType:    make(map[string]uint),
+				uniqueConnectionIds: make(map[int]bool),
 			},
 			Response: ResponseMetrics{
 				IsAvailableForReporting: true,
@@ -111,6 +115,10 @@ func (reporter *Reporter) collectLoadMetrics() {
 			totalGeneratedLoad++
 			reporter.totalLoadReportedTillNow.Add(1)
 
+			if load.ConnectionId != NilConnectionId {
+				reporter.report.Load.uniqueConnectionIds[load.ConnectionId] = true
+			}
+
 			if load.Err != nil {
 				reporter.report.Load.ErrorCount++
 				reporter.report.Load.ErrorCountByType[load.Err.Error()]++
@@ -141,6 +149,8 @@ func (reporter *Reporter) collectLoadMetrics() {
 		}
 		reporter.report.Load.TotalTime = timeToCompleteLoad
 		reporter.report.Load.TotalRequests = totalGeneratedLoad
+		reporter.report.Load.TotalConnections = uint(len(reporter.report.Load.uniqueConnectionIds))
+
 		close(reporter.loadMetricsDoneChannel)
 	}()
 }
@@ -186,6 +196,7 @@ func (reporter *Reporter) collectResponseMetrics() {
 		timeToCompleteResponses := reporter.report.Response.LatestResponseReceivedTime.
 			Sub(reporter.report.Response.EarliestResponseReceivedTime)
 		reporter.report.Response.TotalTime = timeToCompleteResponses
+
 		close(reporter.responseMetricsDoneChannel)
 	}()
 }

@@ -40,7 +40,7 @@ func TestReportWithoutErrorInGeneratingLoad(t *testing.T) {
 }
 
 func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
-	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
+	loadGenerationChannel := make(chan LoadGenerationResponse, 2)
 	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
 	reporter.Run()
 
@@ -55,6 +55,42 @@ func TestReportWithAndWithoutErrorInGeneratingLoad(t *testing.T) {
 
 	assert.Equal(t, uint(1), reporter.report.Load.SuccessCount)
 	assert.Equal(t, uint(1), reporter.report.Load.ErrorCount)
+}
+
+func TestReportWithTotalConnections(t *testing.T) {
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
+	reporter.Run()
+
+	loadGenerationChannel <- LoadGenerationResponse{
+		ConnectionId: 1,
+	}
+	loadGenerationChannel <- LoadGenerationResponse{
+		ConnectionId: 2,
+	}
+	time.Sleep(2 * time.Millisecond)
+	close(loadGenerationChannel)
+	time.Sleep(2 * time.Millisecond)
+
+	assert.Equal(t, uint(2), reporter.report.Load.TotalConnections)
+}
+
+func TestReportWithTotalConnectionsIncludingAnErrorInAConnection(t *testing.T) {
+	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
+	reporter.Run()
+
+	loadGenerationChannel <- LoadGenerationResponse{
+		ConnectionId: NilConnectionId,
+	}
+	loadGenerationChannel <- LoadGenerationResponse{
+		ConnectionId: 2,
+	}
+	time.Sleep(2 * time.Millisecond)
+	close(loadGenerationChannel)
+	time.Sleep(2 * time.Millisecond)
+
+	assert.Equal(t, uint(1), reporter.report.Load.TotalConnections)
 }
 
 func TestReportWithTotalRequests(t *testing.T) {
