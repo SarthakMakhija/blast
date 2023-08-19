@@ -16,7 +16,7 @@ var (
 	concurrency             = flag.Uint("c", 50, "")
 	connections             = flag.Uint("conn", 1, "")
 	numberOfRequests        = flag.Uint("n", 1000, "")
-	requestsPerSecond       = flag.Float64("r", 0, "")
+	requestsPerSecond       = flag.Float64("rps", 0, "")
 	requestTimeout          = flag.Int("t", 3, "")
 	readResponses           = flag.Bool("Rr", false, "")
 	responsePayloadSize     = flag.Int64("Rrs", -1, "")
@@ -39,7 +39,7 @@ Options:
   -f      Payload file.
   -p      External executable process path. The external process should print the payload
           on stdout. Load generation payload can be either specified through -f or -p.
-  -r      Rate limit in requests per second (RPS) per worker. Default is no rate limit.
+  -rps    Rate limit in requests per second (RPS) per worker. Default is no rate limit.
   -z      Duration of blast to send requests. When duration is reached,
           application stops and exits. Default is 20 seconds.
           Example usage: -z 10s or -z 3m.
@@ -130,7 +130,7 @@ func assertRequestTimeout(timeout int) {
 
 func assertRequestsPerSecond(requestsPerSecond float64) {
 	if requestsPerSecond < 0 {
-		exitFunction("-r cannot be smaller than zero.")
+		exitFunction("-rps cannot be smaller than zero.")
 	}
 }
 
