@@ -12,6 +12,7 @@ import (
 var templateText = `
 Summary:
   LoadMetrics:
+    TotalConnections: {{ formatNumberUint .Load.TotalConnections }}
     TotalRequests: {{ formatNumberUint .Load.TotalRequests }}
     SuccessCount: {{ formatNumberUint .Load.SuccessCount }}
     ErrorCount: {{ formatNumberUint .Load.ErrorCount }}

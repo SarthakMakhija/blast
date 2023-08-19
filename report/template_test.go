@@ -13,6 +13,7 @@ func TestPrintsTheReportWithLoadAndResponseMetrics(t *testing.T) {
 	expected := `
 Summary:
   LoadMetrics:
+    TotalConnections: 5
     TotalRequests: 1000
     SuccessCount: 999
     ErrorCount: 1
@@ -46,6 +47,7 @@ Summary:
 
 	report := &Report{
 		Load: LoadMetrics{
+			TotalConnections:          5,
 			TotalRequests:             1000,
 			SuccessCount:              999,
 			ErrorCount:                1,
@@ -80,6 +82,7 @@ func TestPrintsTheReportWithLoadMetrics(t *testing.T) {
 	expected := `
 Summary:
   LoadMetrics:
+    TotalConnections: 4
     TotalRequests: 1000
     SuccessCount: 999
     ErrorCount: 1
@@ -98,6 +101,7 @@ Summary:
 
 	report := &Report{
 		Load: LoadMetrics{
+			TotalConnections:          4,
 			TotalRequests:             1000,
 			SuccessCount:              999,
 			ErrorCount:                1,
@@ -123,6 +127,7 @@ func TestPrintsTheReportWithLoadAndResponseMetricsWithoutErrors(t *testing.T) {
 	expected := `
 Summary:
   LoadMetrics:
+    TotalConnections: 10
     TotalRequests: 1000
     SuccessCount: 1000
     ErrorCount: 0
@@ -156,6 +161,7 @@ Summary:
 
 	report := &Report{
 		Load: LoadMetrics{
+			TotalConnections:          10,
 			TotalRequests:             1000,
 			SuccessCount:              1000,
 			ErrorCount:                0,
