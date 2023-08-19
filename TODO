@@ -1,7 +1,12 @@
 1. Integrate blast.go in main
 8. Incorporate request timeout
-
+9. Hide logs
+10. Goreleaser
+11. README
+12. Go doc
+-------------------------------------
 6. Run against a sample server
     - with input from a file
     - with input from a process
 7. Take a look at TODOs
+    - ok for now

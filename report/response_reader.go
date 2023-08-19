@@ -2,8 +2,10 @@ package report
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net"
+	"os"
 	"sync/atomic"
 	"time"
 )
@@ -34,7 +36,7 @@ func NewResponseReader(
 ) *ResponseReader {
 	return &ResponseReader{
 		responseSizeBytes: responseSizeBytes,
-		stopChannel:       make(chan struct{}), // TODO: size of the channel?
+		stopChannel:       make(chan struct{}),
 		responseChannel:   responseChannel,
 	}
 }
@@ -45,7 +47,7 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 			defer func() {
 				_ = connection.Close()
 				if err := recover(); err != nil {
-					println("received error in ResponseReader", err.(error).Error())
+					fmt.Fprintf(os.Stderr, "[ResponseReader] %v\n", err.(error).Error())
 				}
 			}()
 

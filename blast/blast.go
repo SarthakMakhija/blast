@@ -1,6 +1,7 @@
 package blast
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"time"
@@ -147,7 +148,7 @@ func (blast Blast) runWithoutResponseReading() {
 		for {
 			select {
 			case <-blast.workerGroup.DoneChannel():
-				println("load completed")
+				fmt.Fprintln(os.Stdout, "load completed")
 			case <-loadReportedInspectionTimer.C:
 				if blast.reporter.TotalLoadReportedTillNow() >= uint64(
 					blast.groupOptions.TotalRequests(),
@@ -181,7 +182,7 @@ func (blast Blast) runwWithResponseReading() {
 		for {
 			select {
 			case <-blast.workerGroup.DoneChannel():
-				println("load completed")
+				fmt.Fprintln(os.Stdout, "load completed")
 			case <-responsesCapturedInspectionTimer.C:
 				if blast.responseOptions.ReadingOption == ReadTotalResponses {
 					if blast.responseReader.TotalResponsesRead() >= uint64(
