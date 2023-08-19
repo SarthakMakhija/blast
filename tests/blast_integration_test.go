@@ -151,3 +151,38 @@ func TestBlastWithLoadGenerationAndResponseReadingForMaximumDuration(t *testing.
 
 	assert.True(t, totalRequestsMade < 2_00_000)
 }
+
+func TestBlastWithResponseReadingGivenTheTargetServerFailsInSendingResponses(t *testing.T) {
+	payloadSizeBytes := int64(10)
+	server, err := NewEchoServerWithNoWriteback("tcp", "localhost:10005", payloadSizeBytes, 2)
+	assert.Nil(t, err)
+
+	server.accept(t)
+	defer server.stop()
+
+	concurrency, totalRequests := uint(10), uint(20)
+
+	groupOptions := workers.NewGroupOptions(
+		concurrency,
+		totalRequests,
+		[]byte("HelloWorld"),
+		"localhost:10005",
+	)
+	responseOptions := blast.ResponseOptions{
+		ResponsePayloadSizeBytes: payloadSizeBytes,
+		TotalResponsesToRead:     20,
+		ReadingOption:            blast.ReadTotalResponses,
+	}
+	buffer := &bytes.Buffer{}
+	blast.OutputStream = buffer
+	blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Second)
+
+	output := string(buffer.Bytes())
+
+	assert.True(t, strings.Contains(output, "ResponseMetrics"))
+	assert.True(t, strings.Contains(output, "TotalResponses: 20"))
+	assert.True(t, strings.Contains(output, "SuccessCount: 10"))
+	assert.True(t, strings.Contains(output, "ErrorCount: 10"))
+	assert.True(t, strings.Contains(output, "TotalResponsePayloadSize: 100 B"))
+	assert.True(t, strings.Contains(output, "AveragePayloadSize: 10 B"))
+}

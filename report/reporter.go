@@ -11,7 +11,6 @@ type Report struct {
 	Response ResponseMetrics
 }
 
-// TODO: Total connections
 type LoadMetrics struct {
 	TotalRequests             uint
 	SuccessCount              uint
@@ -94,7 +93,6 @@ func (reporter *Reporter) Run() {
 }
 
 func (reporter *Reporter) PrintReport(writer io.Writer) {
-	println("printing report...")
 	<-reporter.loadMetricsDoneChannel
 	if reporter.responseMetricsDoneChannel != nil {
 		<-reporter.responseMetricsDoneChannel
@@ -118,11 +116,8 @@ func (reporter *Reporter) collectLoadMetrics() {
 				reporter.report.Load.ErrorCountByType[load.Err.Error()]++
 			} else {
 				reporter.report.Load.SuccessCount++
+				reporter.report.Load.TotalPayloadLengthBytes += load.PayloadLengthBytes
 			}
-			reporter.report.Load.TotalPayloadLengthBytes += load.PayloadLengthBytes
-			reporter.report.Load.AveragePayloadLengthBytes = reporter.report.Load.TotalPayloadLengthBytes / int64(
-				totalGeneratedLoad,
-			)
 
 			if reporter.report.Load.EarliestLoadSendTime.IsZero() ||
 				load.LoadGenerationTime.Before(reporter.report.Load.EarliestLoadSendTime) {
@@ -137,6 +132,13 @@ func (reporter *Reporter) collectLoadMetrics() {
 		startTime := reporter.report.Load.EarliestLoadSendTime
 		timeToCompleteLoad := reporter.report.Load.LatestLoadSendTime.Sub(startTime)
 
+		if reporter.report.Load.SuccessCount != 0 {
+			reporter.report.Load.AveragePayloadLengthBytes = reporter.report.Load.TotalPayloadLengthBytes / int64(
+				reporter.report.Load.SuccessCount,
+			)
+		} else {
+			reporter.report.Load.AveragePayloadLengthBytes = 0
+		}
 		reporter.report.Load.TotalTime = timeToCompleteLoad
 		reporter.report.Load.TotalRequests = totalGeneratedLoad
 		close(reporter.loadMetricsDoneChannel)
@@ -154,12 +156,8 @@ func (reporter *Reporter) collectResponseMetrics() {
 				reporter.report.Response.ErrorCountByType[response.Err.Error()]++
 			} else {
 				reporter.report.Response.SuccessCount++
+				reporter.report.Response.TotalResponsePayloadLengthBytes += response.PayloadLengthBytes
 			}
-			reporter.report.Response.TotalResponsePayloadLengthBytes += response.PayloadLengthBytes
-			reporter.report.Response.AverageResponsePayloadLengthBytes = reporter.report.Response.TotalResponsePayloadLengthBytes /
-				int64(
-					totalResponses,
-				)
 
 			if reporter.report.Response.EarliestResponseReceivedTime.IsZero() ||
 				response.ResponseTime.Before(
@@ -176,6 +174,14 @@ func (reporter *Reporter) collectResponseMetrics() {
 			}
 		}
 		reporter.report.Response.TotalResponses = uint(totalResponses)
+		if reporter.report.Response.SuccessCount != 0 {
+			reporter.report.Response.AverageResponsePayloadLengthBytes = reporter.report.Response.TotalResponsePayloadLengthBytes /
+				int64(
+					reporter.report.Response.SuccessCount,
+				)
+		} else {
+			reporter.report.Response.AverageResponsePayloadLengthBytes = 0
+		}
 
 		timeToCompleteResponses := reporter.report.Response.LatestResponseReceivedTime.
 			Sub(reporter.report.Response.EarliestResponseReceivedTime)

@@ -72,7 +72,7 @@ func TestReportWithTotalRequests(t *testing.T) {
 }
 
 func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
-	loadGenerationChannel := make(chan LoadGenerationResponse, 1)
+	loadGenerationChannel := make(chan LoadGenerationResponse, 2)
 	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
 	reporter.Run()
 
@@ -83,11 +83,55 @@ func TestReportWithPayloadLengthInGeneratingLoad(t *testing.T) {
 		PayloadLengthBytes: 10,
 	}
 
-	time.Sleep(2 * time.Millisecond)
+	time.Sleep(4 * time.Millisecond)
 	close(loadGenerationChannel)
 
+	time.Sleep(2 * time.Millisecond)
 	assert.Equal(t, int64(20), reporter.report.Load.TotalPayloadLengthBytes)
 	assert.Equal(t, int64(10), reporter.report.Load.AveragePayloadLengthBytes)
+}
+
+func TestReportWithPayloadLengthInGeneratingLoadWithAnError(t *testing.T) {
+	loadGenerationChannel := make(chan LoadGenerationResponse, 2)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
+	reporter.Run()
+
+	loadGenerationChannel <- LoadGenerationResponse{
+		PayloadLengthBytes: 10,
+	}
+	loadGenerationChannel <- LoadGenerationResponse{
+		Err:                errors.New("test error"),
+		PayloadLengthBytes: 10,
+	}
+
+	time.Sleep(4 * time.Millisecond)
+	close(loadGenerationChannel)
+
+	time.Sleep(2 * time.Millisecond)
+	assert.Equal(t, int64(10), reporter.report.Load.TotalPayloadLengthBytes)
+	assert.Equal(t, int64(10), reporter.report.Load.AveragePayloadLengthBytes)
+}
+
+func TestReportWithPayloadLengthInGeneratingLoadWithAllErrors(t *testing.T) {
+	loadGenerationChannel := make(chan LoadGenerationResponse, 2)
+	reporter := NewLoadGenerationMetricsCollectingReporter(loadGenerationChannel)
+	reporter.Run()
+
+	loadGenerationChannel <- LoadGenerationResponse{
+		Err:                errors.New("test error"),
+		PayloadLengthBytes: 10,
+	}
+	loadGenerationChannel <- LoadGenerationResponse{
+		Err:                errors.New("test error"),
+		PayloadLengthBytes: 10,
+	}
+
+	time.Sleep(4 * time.Millisecond)
+	close(loadGenerationChannel)
+
+	time.Sleep(2 * time.Millisecond)
+	assert.Equal(t, int64(0), reporter.report.Load.TotalPayloadLengthBytes)
+	assert.Equal(t, int64(0), reporter.report.Load.AveragePayloadLengthBytes)
 }
 
 func TestReportWithLoadTimeInGeneratingLoad(t *testing.T) {
@@ -182,7 +226,7 @@ func TestReportWithTotalResponses(t *testing.T) {
 }
 
 func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
-	responseChannel := make(chan SubjectServerResponse, 1)
+	responseChannel := make(chan SubjectServerResponse, 2)
 	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
 	reporter.Run()
 
@@ -196,10 +240,65 @@ func TestReportWithResponsePayloadLengthInReceivingResponse(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(responseChannel)
 
+	time.Sleep(2 * time.Millisecond)
+
 	assert.Equal(t, int64(20), reporter.report.Response.TotalResponsePayloadLengthBytes)
 	assert.Equal(
 		t,
 		int64(10),
+		reporter.report.Response.AverageResponsePayloadLengthBytes,
+	)
+}
+
+func TestReportWithResponsePayloadLengthInReceivingResponseWithAnError(t *testing.T) {
+	responseChannel := make(chan SubjectServerResponse, 2)
+	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
+	reporter.Run()
+
+	responseChannel <- SubjectServerResponse{
+		PayloadLengthBytes: 10,
+	}
+	responseChannel <- SubjectServerResponse{
+		Err:                errors.New("test error"),
+		PayloadLengthBytes: 10,
+	}
+
+	time.Sleep(2 * time.Millisecond)
+	close(responseChannel)
+
+	time.Sleep(2 * time.Millisecond)
+
+	assert.Equal(t, int64(10), reporter.report.Response.TotalResponsePayloadLengthBytes)
+	assert.Equal(
+		t,
+		int64(10),
+		reporter.report.Response.AverageResponsePayloadLengthBytes,
+	)
+}
+
+func TestReportWithResponsePayloadLengthInReceivingResponseWithAllErrors(t *testing.T) {
+	responseChannel := make(chan SubjectServerResponse, 2)
+	reporter := NewResponseMetricsCollectingReporter(nil, responseChannel)
+	reporter.Run()
+
+	responseChannel <- SubjectServerResponse{
+		Err:                errors.New("test error"),
+		PayloadLengthBytes: 10,
+	}
+	responseChannel <- SubjectServerResponse{
+		Err:                errors.New("test error"),
+		PayloadLengthBytes: 10,
+	}
+
+	time.Sleep(2 * time.Millisecond)
+	close(responseChannel)
+
+	time.Sleep(2 * time.Millisecond)
+
+	assert.Equal(t, int64(0), reporter.report.Response.TotalResponsePayloadLengthBytes)
+	assert.Equal(
+		t,
+		int64(0),
 		reporter.report.Response.AverageResponsePayloadLengthBytes,
 	)
 }
