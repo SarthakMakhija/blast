@@ -12,8 +12,9 @@ import (
 var ErrNilConnection = errors.New("attempting to send request on a nil connection")
 
 type Worker struct {
-	connection io.WriteCloser
-	options    WorkerOptions
+	connection   io.WriteCloser
+	connectionId int
+	options      WorkerOptions
 }
 
 func (worker Worker) run(wg *sync.WaitGroup) {
@@ -55,6 +56,7 @@ func (worker Worker) sendRequest() {
 			Err:                err,
 			PayloadLengthBytes: int64(len(worker.options.payload)),
 			LoadGenerationTime: time.Now(),
+			ConnectionId:       worker.connectionId,
 		}
 		return
 	}
@@ -62,5 +64,6 @@ func (worker Worker) sendRequest() {
 		Err:                ErrNilConnection,
 		PayloadLengthBytes: 0,
 		LoadGenerationTime: time.Now(),
+		ConnectionId:       report.NilConnectionId,
 	}
 }

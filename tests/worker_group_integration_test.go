@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -60,10 +61,20 @@ func TestSendsRequestsWithMultipleConnections(t *testing.T) {
 	workerGroup.WaitTillDone()
 	close(loadGenerationResponseChannel)
 
+	uniqueConnectionIds := make(map[int]bool)
 	for response := range loadGenerationResponseChannel {
+		uniqueConnectionIds[response.ConnectionId] = true
 		assert.Nil(t, response.Err)
 		assert.Equal(t, int64(10), response.PayloadLengthBytes)
 	}
+
+	connectionIds := make([]int, 0, len(uniqueConnectionIds))
+	for connectionId := range uniqueConnectionIds {
+		connectionIds = append(connectionIds, connectionId)
+	}
+	sort.Ints(connectionIds)
+
+	assert.Equal(t, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, connectionIds)
 }
 
 func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {

@@ -10,10 +10,13 @@ import (
 	"time"
 )
 
+const NilConnectionId int = -1
+
 type LoadGenerationResponse struct {
 	Err                error
 	PayloadLengthBytes int64
 	LoadGenerationTime time.Time
+	ConnectionId       int
 }
 
 type SubjectServerResponse struct {

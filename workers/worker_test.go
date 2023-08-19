@@ -99,7 +99,7 @@ func TestWritesMultiplePayloadsByWorkerWithThrottle(t *testing.T) {
 	}
 }
 
-func TestWritesOnANilConnection(t *testing.T) {
+func TestWritesOnANilConnectionWithConnectionId(t *testing.T) {
 	totalRequests := uint(2)
 	loadGenerationResponse := make(chan report.LoadGenerationResponse, totalRequests)
 	defer close(loadGenerationResponse)
@@ -121,6 +121,33 @@ func TestWritesOnANilConnection(t *testing.T) {
 	for count := 1; count <= int(totalRequests); count++ {
 		response := <-loadGenerationResponse
 		assert.Error(t, response.Err)
+		assert.Equal(t, -1, response.ConnectionId)
 		assert.Equal(t, ErrNilConnection, response.Err)
 	}
+}
+
+func TestWritesPayloadByWorkerWithConnectionId(t *testing.T) {
+	loadGenerationResponse := make(chan report.LoadGenerationResponse, 1)
+	defer close(loadGenerationResponse)
+
+	var buffer bytes.Buffer
+	worker := Worker{
+		connection:   &BytesWriteCloser{bufio.NewWriter(&buffer)},
+		connectionId: 10,
+		options: WorkerOptions{
+			totalRequests:          uint(1),
+			payload:                []byte("payload"),
+			loadGenerationResponse: loadGenerationResponse,
+		},
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	worker.run(&wg)
+	wg.Wait()
+
+	response := <-worker.options.loadGenerationResponse
+
+	assert.Nil(t, response.Err)
+	assert.Equal(t, 10, response.ConnectionId)
 }

@@ -1,5 +1,7 @@
 1. Integrate blast.go in main
 8. Incorporate request timeout
+13. Incorporate total connections in the report
+
 10. Goreleaser
 11. README
 12. Go doc

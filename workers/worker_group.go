@@ -1,7 +1,9 @@
 package workers
 
 import (
+	"fmt"
 	"net"
+	"os"
 	"sync"
 
 	"blast/report"
@@ -62,15 +64,22 @@ func (group *WorkerGroup) runWorkers(
 	connectionsSharedByWorker := group.options.concurrency / group.options.connections
 
 	var connection net.Conn
+	var err error
+
+	var connectionId int = -1
 	for count := 0; count < int(group.options.concurrency); count++ {
 		if count%int(connectionsSharedByWorker) == 0 || connection == nil {
-			connection, _ = group.newConnection()
-			// TODO: Handle error
+			connection, err = group.newConnection()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "[WorkerGroup] %v\n", err.Error())
+			} else {
+				connectionId = connectionId + 1
+			}
 			if group.responseReader != nil && connection != nil {
 				group.responseReader.StartReading(connection)
 			}
 		}
-		group.runWorker(connection, &wg, loadGenerationResponseChannel)
+		group.runWorker(connection, connectionId, &wg, loadGenerationResponseChannel)
 	}
 	wg.Wait()
 	group.doneChannel <- struct{}{}
@@ -94,12 +103,14 @@ func (group *WorkerGroup) newConnection() (net.Conn, error) {
 
 func (group *WorkerGroup) runWorker(
 	connection net.Conn,
+	connectionId int,
 	wg *sync.WaitGroup,
 	loadGenerationResponseChannel chan report.LoadGenerationResponse,
 ) {
 	totalRequests := group.options.totalRequests
 	Worker{
-		connection: connection,
+		connection:   connection,
+		connectionId: connectionId,
 		options: WorkerOptions{
 			totalRequests: uint(
 				totalRequests / group.options.concurrency,
