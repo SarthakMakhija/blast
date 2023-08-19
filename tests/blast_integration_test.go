@@ -35,6 +35,7 @@ func TestBlastWithLoadGeneration(t *testing.T) {
 	blast.NewBlastWithoutResponseReading(groupOptions, 5*time.Minute)
 
 	output := string(buffer.Bytes())
+	assert.True(t, strings.Contains(output, "TotalConnections: 1"))
 	assert.True(t, strings.Contains(output, "TotalRequests: 20"))
 	assert.True(t, strings.Contains(output, "SuccessCount: 20"))
 	assert.True(t, strings.Contains(output, "ErrorCount: 0"))
@@ -105,6 +106,7 @@ func TestBlastWithLoadGenerationAndResponseReading(t *testing.T) {
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "ResponseMetrics"))
 	assert.True(t, strings.Contains(output, "TotalResponses: 20"))
+	assert.True(t, strings.Contains(output, "TotalConnections: 1"))
 	assert.True(t, strings.Contains(output, "SuccessCount: 20"))
 	assert.True(t, strings.Contains(output, "ErrorCount: 0"))
 	assert.True(t, strings.Contains(output, "TotalPayloadSize: 200 B"))
