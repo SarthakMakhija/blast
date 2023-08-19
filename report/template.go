@@ -22,8 +22,8 @@ Summary:
     TimeToCompleteLoad: {{ formatDuration .Load.TotalTime }}
 
 {{ if gt (len .Load.ErrorCountByType) 0 }}  Error distribution:{{ range $err, $num := .Load.ErrorCountByType }}
-  [{{ $num }}]   {{ $err }}{{ end }}{{ end }}
-
+  [{{ $num }}]   {{ $err }}{{ end }}{{ else }}  Error distribution:
+  none{{ end }}
 {{ if eq (.Response.IsAvailableForReporting) true }}  
   ResponseMetrics:
     TotalResponses: {{ formatNumberUint .Response.TotalResponses }}
@@ -36,8 +36,8 @@ Summary:
     TimeToGetResponses: {{ formatDuration .Response.TotalTime }}
   
 {{ if gt (len .Response.ErrorCountByType) 0 }}  Error distribution:{{ range $err, $num := .Response.ErrorCountByType }} 
-  [{{ $num }}]   {{ $err }}{{ end }}{{ end }}
-{{end}}
+  [{{ $num }}]   {{ $err }}{{ end }}{{ else }}  Error distribution:
+  none{{ end }}{{ end }}
 `
 
 var functions = template.FuncMap{

@@ -24,7 +24,6 @@ Summary:
 
   Error distribution:
   [1]   load error
-
   
   ResponseMetrics:
     TotalResponses: 1000
@@ -38,7 +37,6 @@ Summary:
   
   Error distribution: 
   [1]   response error
-
 `
 	startTime, err := time.Parse(timeFormat, "August 21, 2023 04:14:00 IST")
 	assert.Nil(t, err)
@@ -94,7 +92,6 @@ Summary:
   Error distribution:
   [1]   load error
 
-
 `
 	time, err := time.Parse(timeFormat, "August 21, 2023 04:14:00 IST")
 	assert.Nil(t, err)
@@ -113,6 +110,73 @@ Summary:
 		},
 		Response: ResponseMetrics{
 			IsAvailableForReporting: false,
+		},
+	}
+
+	buffer := &bytes.Buffer{}
+	err = print(buffer, report)
+
+	assert.Equal(t, strings.Trim(expected, " "), strings.Trim(string(buffer.Bytes()), " "))
+}
+
+func TestPrintsTheReportWithLoadAndResponseMetricsWithoutErrors(t *testing.T) {
+	expected := `
+Summary:
+  LoadMetrics:
+    TotalRequests: 1000
+    SuccessCount: 1000
+    ErrorCount: 0
+    TotalPayloadSize: 2.0 kB
+    AveragePayloadSize: 20 B
+    EarliestLoadSendTime: August 21, 2023 04:14:00 IST
+    LatestLoadSendTime: August 21, 2023 04:14:10 IST
+    TimeToCompleteLoad: 10s
+
+  Error distribution:
+  none
+  
+  ResponseMetrics:
+    TotalResponses: 1000
+    SuccessCount: 1000
+    ErrorCount: 0
+    TotalResponsePayloadSize: 1.8 kB
+    AverageResponsePayloadSize: 18 B 
+    EarliestResponseReceivedTime: August 21, 2023 04:14:00 IST
+    LatestResponseReceivedTime: August 21, 2023 04:14:10 IST
+    TimeToGetResponses: 10s
+  
+  Error distribution:
+  none
+`
+	startTime, err := time.Parse(timeFormat, "August 21, 2023 04:14:00 IST")
+	assert.Nil(t, err)
+
+	tenSecondsLater, err := time.Parse(timeFormat, "August 21, 2023 04:14:10 IST")
+	assert.Nil(t, err)
+
+	report := &Report{
+		Load: LoadMetrics{
+			TotalRequests:             1000,
+			SuccessCount:              1000,
+			ErrorCount:                0,
+			ErrorCountByType:          make(map[string]uint),
+			TotalPayloadLengthBytes:   2000,
+			AveragePayloadLengthBytes: 20.0,
+			EarliestLoadSendTime:      startTime,
+			LatestLoadSendTime:        tenSecondsLater,
+			TotalTime:                 tenSecondsLater.Sub(startTime),
+		},
+		Response: ResponseMetrics{
+			TotalResponses:                    1000,
+			SuccessCount:                      1000,
+			ErrorCount:                        0,
+			ErrorCountByType:                  make(map[string]uint),
+			TotalResponsePayloadLengthBytes:   1800,
+			AverageResponsePayloadLengthBytes: 18.0,
+			EarliestResponseReceivedTime:      startTime,
+			LatestResponseReceivedTime:        tenSecondsLater,
+			TotalTime:                         tenSecondsLater.Sub(startTime),
+			IsAvailableForReporting:           true,
 		},
 	}
 

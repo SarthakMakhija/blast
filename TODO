@@ -2,6 +2,7 @@
 2. Format report (unnecessary new lines)
 3. Add total connections in the report
 4. Add total responses in the report
+    - done
 5. Validate the options in main
 6. Run against a sample server
     - with input from a file
