@@ -94,9 +94,9 @@ func TestBlastWithLoadGenerationAndResponseReading(t *testing.T) {
 		"localhost:10003",
 	)
 	responseOptions := blast.ResponseOptions{
-		ResponsePayloadSizeBytes:       payloadSizeBytes,
-		TotalResponsesToRead:           totalRequests,
-		TotalSuccessfulResponsesToRead: totalRequests,
+		ResponsePayloadSizeBytes: payloadSizeBytes,
+		TotalResponsesToRead:     totalRequests,
+		ReadingOption:            blast.ReadTotalResponses,
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
@@ -129,9 +129,9 @@ func TestBlastWithLoadGenerationAndResponseReadingForMaximumDuration(t *testing.
 		"localhost:10004",
 	)
 	responseOptions := blast.ResponseOptions{
-		ResponsePayloadSizeBytes:       payloadSizeBytes,
-		TotalResponsesToRead:           totalRequests,
-		TotalSuccessfulResponsesToRead: totalRequests,
+		ResponsePayloadSizeBytes: payloadSizeBytes,
+		TotalResponsesToRead:     totalRequests,
+		ReadingOption:            blast.ReadTotalResponses,
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer

@@ -13,10 +13,18 @@ var OutputStream io.Writer = os.Stdout
 
 const MaxResponsesToRead = 10_00_000
 
+type ResponseReadingOption uint8
+
+const (
+	ReadTotalResponses      ResponseReadingOption = iota
+	ReadSuccessfulResponses                       = 1
+)
+
 type ResponseOptions struct {
 	ResponsePayloadSizeBytes       int64
 	TotalResponsesToRead           uint
 	TotalSuccessfulResponsesToRead uint
+	ReadingOption                  ResponseReadingOption
 }
 
 type Blast struct {
@@ -170,19 +178,23 @@ func (blast Blast) runwWithResponseReading() {
 			close(blast.doneChannel)
 		}
 
-		// TODO: ensure that totalresponsestoread >= totalrequests
 		for {
 			select {
 			case <-blast.workerGroup.DoneChannel():
 				println("load completed")
 			case <-responsesCapturedInspectionTimer.C:
-				if blast.responseReader.TotalResponsesRead() >= uint64(
-					blast.responseOptions.TotalResponsesToRead,
-				) || blast.responseReader.TotalSuccessfulResponsesRead() >= uint64(
-					blast.responseOptions.TotalSuccessfulResponsesToRead,
-				) {
-					stopAll()
-					return
+				if blast.responseOptions.ReadingOption == ReadTotalResponses {
+					if blast.responseReader.TotalResponsesRead() >= uint64(
+						blast.responseOptions.TotalResponsesToRead) {
+						stopAll()
+						return
+					}
+				} else if blast.responseOptions.ReadingOption == ReadSuccessfulResponses {
+					if blast.responseReader.TotalSuccessfulResponsesRead() >= uint64(
+						blast.responseOptions.TotalSuccessfulResponsesToRead) {
+						stopAll()
+						return
+					}
 				}
 			case <-maxRunTimer.C:
 				stopAll()
