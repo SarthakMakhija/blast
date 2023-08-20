@@ -10,6 +10,10 @@ import (
 	"time"
 
 	"github.com/dimiro1/banner"
+
+	"blast/blast"
+	payloadprovider "blast/payload_provider"
+	"blast/workers"
 )
 
 var (
@@ -82,7 +86,8 @@ func main() {
 		usageAndExit("")
 	}
 
-	assertUrl(flag.Args()[0])
+	url := flag.Args()[0]
+	assertUrl(url)
 	assertFileAndProcessPath(*filePath, *processPath)
 	assertConnectTimeout(*connectTimeout)
 	assertRequestsPerSecond(*requestsPerSecond)
@@ -100,17 +105,17 @@ func main() {
 	)
 	assertAndSetMaxProcs(*cpus)
 
+	blastInstance := setUpBlast(url)
+
 	interruptChannel := make(chan os.Signal, 1)
 	signal.Notify(interruptChannel, os.Interrupt)
+
 	go func() {
 		<-interruptChannel
+		blastInstance.Stop()
 	}()
 
-	if *loadDuration > 0 {
-		go func() {
-			time.Sleep(*loadDuration)
-		}()
-	}
+	blastInstance.WaitForCompletion()
 }
 
 func assertUrl(url string) {
@@ -189,6 +194,44 @@ func assertResponseReading(
 			exitFunction("either of -Rtr or -Rsr must be specified.")
 		}
 	}
+}
+
+func setUpBlast(url string) blast.Blast {
+	groupOptions := workers.NewGroupOptionsFullyLoaded(
+		*concurrency,
+		*connections,
+		*numberOfRequests,
+		getFilePayload(*filePath),
+		url,
+		*requestsPerSecond,
+		*connectTimeout,
+	)
+
+	var instance blast.Blast
+	if *readResponses {
+		readingOption := blast.ReadTotalResponses
+		if *readSuccessfulResponses > 0 {
+			readingOption = blast.ReadSuccessfulResponses
+		}
+		responseOptions := blast.ResponseOptions{
+			ResponsePayloadSizeBytes:       *responsePayloadSize,
+			TotalResponsesToRead:           *readTotalResponses,
+			TotalSuccessfulResponsesToRead: *readSuccessfulResponses,
+			ReadingOption:                  readingOption,
+		}
+		instance = blast.NewBlastWithResponseReading(groupOptions, responseOptions, *loadDuration)
+	} else {
+		instance = blast.NewBlastWithoutResponseReading(groupOptions, *loadDuration)
+	}
+	return instance
+}
+
+func getFilePayload(filePath string) []byte {
+	provider, err := payloadprovider.NewFilePayloadProvider(filePath)
+	if err != nil {
+		exitFunction(fmt.Sprintf("file path: %v does not exist.", filePath))
+	}
+	return provider.Get()
 }
 
 func usageAndExit(msg string) {

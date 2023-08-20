@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -237,5 +238,23 @@ func TestBlastWithoutResponseReading(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
 		assertResponseReading(false, 100, 10, 10)
+	})
+}
+
+func TestBlastWithNonExistingFile(t *testing.T) {
+	assert.Panics(t, func() {
+		getFilePayload("./non-existing")
+	})
+}
+
+func TestBlastWithAnExistingFile(t *testing.T) {
+	file, err := os.Create("testFile")
+	assert.Nil(t, err)
+	defer func() {
+		_ = os.Remove(file.Name())
+	}()
+
+	assert.NotPanics(t, func() {
+		getFilePayload("./testFile")
 	})
 }
