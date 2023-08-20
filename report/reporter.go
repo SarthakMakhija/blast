@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+// Reports represents the report that is displayed to the user after the load is completed.
+// Report contains LoadMetrics and ResponseMetrics.
+// LoadMetrics defines fields that are relevant to the generated load, whereas
+// ResponseMetrics defines the fields that are relevant to the response read by blast.
+// ResponseMetrics is only captured if NewResponseMetricsCollectingReporter method is called.
 type Report struct {
 	Load     LoadMetrics
 	Response ResponseMetrics
@@ -38,6 +43,10 @@ type ResponseMetrics struct {
 	TotalTime                         time.Duration
 }
 
+// Reporter generates the report.
+// It is implemented as two goroutines, one that listens to the loadGenerationChannel and other
+// that listens to the responseChannel.
+// One goroutine populates the LoadMetrics, and the other goroutine populates the ResponseMetrics.
 type Reporter struct {
 	report                     *Report
 	totalLoadReportedTillNow   atomic.Uint64
@@ -47,6 +56,8 @@ type Reporter struct {
 	responseMetricsDoneChannel chan struct{}
 }
 
+// NewLoadGenerationMetricsCollectingReporter creates a new Reporter that only populates
+// the LoadMetrics.
 func NewLoadGenerationMetricsCollectingReporter(
 	loadGenerationChannel chan LoadGenerationResponse,
 ) *Reporter {
@@ -67,6 +78,8 @@ func NewLoadGenerationMetricsCollectingReporter(
 	}
 }
 
+// NewResponseMetricsCollectingReporter creates a new Reporter that populates both the
+// LoadMetrics and ResponseMetrics.
 func NewResponseMetricsCollectingReporter(
 	loadGenerationChannel chan LoadGenerationResponse,
 	responseChannel chan SubjectServerResponse,
@@ -89,6 +102,7 @@ func NewResponseMetricsCollectingReporter(
 	}
 }
 
+// Run runs the Reporter goroutines.
 func (reporter *Reporter) Run() {
 	reporter.collectLoadMetrics()
 	if reporter.responseChannel != nil {
@@ -96,6 +110,11 @@ func (reporter *Reporter) Run() {
 	}
 }
 
+// PrintReport prints the report on the provided io.Writer.
+// Before the report is ready to be printed, PrintReport waits for
+// the goroutines to finish.
+// This method can only be called after the loadGenerationChannel and responseChannel
+// are closed.
 func (reporter *Reporter) PrintReport(writer io.Writer) {
 	<-reporter.loadMetricsDoneChannel
 	if reporter.responseMetricsDoneChannel != nil {
@@ -104,10 +123,12 @@ func (reporter *Reporter) PrintReport(writer io.Writer) {
 	print(writer, reporter.report)
 }
 
+// TotalLoadReportedTillNow returns the total load that has reporter so far.
 func (reporter *Reporter) TotalLoadReportedTillNow() uint64 {
 	return reporter.totalLoadReportedTillNow.Load()
 }
 
+// collectLoadMetrics runs a goroutine that reports the LoadMetrics.
 func (reporter *Reporter) collectLoadMetrics() {
 	go func() {
 		totalGeneratedLoad := uint(0)
@@ -155,6 +176,7 @@ func (reporter *Reporter) collectLoadMetrics() {
 	}()
 }
 
+// collectResponseMetrics runs a goroutine that reports the ResponseMetrics.
 func (reporter *Reporter) collectResponseMetrics() {
 	go func() {
 		totalResponses := 0

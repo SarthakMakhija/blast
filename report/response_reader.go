@@ -10,8 +10,10 @@ import (
 	"time"
 )
 
+// NilConnectionId represents the connection id for an unestablished connection.
 const NilConnectionId int = -1
 
+// LoadGenerationResponse represents the load generated on the target server.
 type LoadGenerationResponse struct {
 	Err                error
 	PayloadLengthBytes int64
@@ -19,12 +21,14 @@ type LoadGenerationResponse struct {
 	ConnectionId       int
 }
 
+// SubjectServerResponse represents the response read from the target server.
 type SubjectServerResponse struct {
 	Err                error
 	ResponseTime       time.Time
 	PayloadLengthBytes int64
 }
 
+// ResponseReader reads the response from the specified net.Conn.
 type ResponseReader struct {
 	responseSizeBytes       int64
 	readDeadline            time.Duration
@@ -34,6 +38,8 @@ type ResponseReader struct {
 	responseChannel         chan SubjectServerResponse
 }
 
+// NewResponseReader creates a new instance of ResponseReader.
+// All the read responses are sent to responseChannel.
 func NewResponseReader(
 	responseSizeBytes int64,
 	readDeadline time.Duration,
@@ -47,6 +53,11 @@ func NewResponseReader(
 	}
 }
 
+// StartReading runs a goroutine that reads from the provided net.Conn.
+// It keepts on reading from the connection until either of the two happen:
+// 1) Reading from the connnection returns an io.EOF error
+// 2) ResponseReader gets stopped
+// ResponseReader implements one goroutine for each new connection created by the workers.WorkerGroup.
 func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 	go func(connection net.Conn) {
 		for {
@@ -89,14 +100,18 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 	}(connection)
 }
 
+// Closes closes the stopChannel which stops all the goroutines.
 func (responseReader *ResponseReader) Close() {
 	close(responseReader.stopChannel)
 }
 
+// TotalResponsesRead returns the total responses read from the target server.
+// It includes successful and failed responses.
 func (responseReader *ResponseReader) TotalResponsesRead() uint64 {
 	return responseReader.readTotalResponses.Load()
 }
 
+// TotalSuccessfulResponsesRead returns the total successful responses read from the target server.
 func (responseReader *ResponseReader) TotalSuccessfulResponsesRead() uint64 {
 	return responseReader.readSuccessfulResponses.Load()
 }
