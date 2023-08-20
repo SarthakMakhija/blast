@@ -125,16 +125,16 @@ func (reporter *Reporter) collectLoadMetrics() {
 			} else {
 				reporter.report.Load.SuccessCount++
 				reporter.report.Load.TotalPayloadLengthBytes += load.PayloadLengthBytes
-			}
 
-			if reporter.report.Load.EarliestLoadSendTime.IsZero() ||
-				load.LoadGenerationTime.Before(reporter.report.Load.EarliestLoadSendTime) {
-				reporter.report.Load.EarliestLoadSendTime = load.LoadGenerationTime
-			}
+				if reporter.report.Load.EarliestLoadSendTime.IsZero() ||
+					load.LoadGenerationTime.Before(reporter.report.Load.EarliestLoadSendTime) {
+					reporter.report.Load.EarliestLoadSendTime = load.LoadGenerationTime
+				}
 
-			if reporter.report.Load.LatestLoadSendTime.IsZero() ||
-				load.LoadGenerationTime.After(reporter.report.Load.LatestLoadSendTime) {
-				reporter.report.Load.LatestLoadSendTime = load.LoadGenerationTime
+				if reporter.report.Load.LatestLoadSendTime.IsZero() ||
+					load.LoadGenerationTime.After(reporter.report.Load.LatestLoadSendTime) {
+					reporter.report.Load.LatestLoadSendTime = load.LoadGenerationTime
+				}
 			}
 		}
 		startTime := reporter.report.Load.EarliestLoadSendTime
@@ -167,20 +167,20 @@ func (reporter *Reporter) collectResponseMetrics() {
 			} else {
 				reporter.report.Response.SuccessCount++
 				reporter.report.Response.TotalResponsePayloadLengthBytes += response.PayloadLengthBytes
-			}
 
-			if reporter.report.Response.EarliestResponseReceivedTime.IsZero() ||
-				response.ResponseTime.Before(
-					reporter.report.Response.EarliestResponseReceivedTime,
-				) {
-				reporter.report.Response.EarliestResponseReceivedTime = response.ResponseTime
-			}
+				if reporter.report.Response.EarliestResponseReceivedTime.IsZero() ||
+					response.ResponseTime.Before(
+						reporter.report.Response.EarliestResponseReceivedTime,
+					) {
+					reporter.report.Response.EarliestResponseReceivedTime = response.ResponseTime
+				}
 
-			if reporter.report.Response.LatestResponseReceivedTime.IsZero() ||
-				response.ResponseTime.After(
-					reporter.report.Response.LatestResponseReceivedTime,
-				) {
-				reporter.report.Response.LatestResponseReceivedTime = response.ResponseTime
+				if reporter.report.Response.LatestResponseReceivedTime.IsZero() ||
+					response.ResponseTime.After(
+						reporter.report.Response.LatestResponseReceivedTime,
+					) {
+					reporter.report.Response.LatestResponseReceivedTime = response.ResponseTime
+				}
 			}
 		}
 		reporter.report.Response.TotalResponses = uint(totalResponses)
