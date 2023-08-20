@@ -94,7 +94,11 @@ func (group *WorkerGroup) DoneChannel() chan struct{} {
 }
 
 func (group *WorkerGroup) newConnection() (net.Conn, error) {
-	connection, err := net.Dial("tcp", group.options.targetAddress)
+	connection, err := net.DialTimeout(
+		"tcp",
+		group.options.targetAddress,
+		group.options.dialTimeout,
+	)
 	if err != nil {
 		return nil, err
 	}

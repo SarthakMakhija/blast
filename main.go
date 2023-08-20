@@ -20,7 +20,7 @@ var (
 	processPath             = flag.String("p", "", "")
 	requestsPerSecond       = flag.Float64("rps", 0, "")
 	loadDuration            = flag.Duration("z", 20*time.Second, "")
-	requestTimeout          = flag.Int("t", 3, "")
+	connectTimeout          = flag.Duration("t", 3*time.Second, "")
 	readResponses           = flag.Bool("Rr", false, "")
 	responsePayloadSize     = flag.Int64("Rrs", -1, "")
 	readTotalResponses      = flag.Uint("Rtr", 0, "")
@@ -43,7 +43,8 @@ Options:
   -z      Duration of blast to send requests. When duration is reached,
           application stops and exits. Default is 20 seconds.
           Example usage: -z 10s or -z 3m.
-  -t      Timeout for each request in seconds. Default is 3 seconds, use 0 for infinite.
+  -t      Timeout for establishing connection with the target server. Default is 3 seconds.
+          Also called as DialTimeout.
   -Rr     Read responses from the target server. Default is false.
   -Rrs    Read response size is the size of the responses in bytes returned by the target server. 
           This flag is applied only if "Read responses" (-Rr) is true.
@@ -81,7 +82,7 @@ func main() {
 
 	assertUrl(flag.Args()[0])
 	assertFileAndProcessPath(*filePath, *processPath)
-	assertRequestTimeout(*requestTimeout)
+	assertConnectTimeout(*connectTimeout)
 	assertRequestsPerSecond(*requestsPerSecond)
 	assertLoadDuration(*loadDuration)
 	assertTotalConcurrentRequestsWithClientConnections(
@@ -125,9 +126,9 @@ func assertFileAndProcessPath(filePath string, processPath string) {
 	}
 }
 
-func assertRequestTimeout(timeout int) {
-	if timeout < 0 {
-		exitFunction("-t cannot be smaller than zero.")
+func assertConnectTimeout(timeout time.Duration) {
+	if timeout <= time.Duration(0) {
+		exitFunction("-t cannot be smaller than or equal to zero.")
 	}
 }
 

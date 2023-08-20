@@ -3,6 +3,7 @@ package tests
 import (
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -164,5 +165,35 @@ func TestSendsRequestsOnANonRunningServer(t *testing.T) {
 	for response := range loadGenerationResponseChannel {
 		assert.Error(t, response.Err)
 		assert.Equal(t, workers.ErrNilConnection, response.Err)
+	}
+}
+
+func TestSendsRequestsWithDialTimeout(t *testing.T) {
+	payloadSizeBytes := int64(10)
+	server, err := NewEchoServer("tcp", "localhost:8098", payloadSizeBytes)
+	assert.Nil(t, err)
+
+	server.accept(t)
+	defer server.stop()
+
+	concurrency, totalRequests := uint(1), uint(1)
+
+	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptionsFullyLoaded(
+		concurrency,
+		1,
+		totalRequests,
+		[]byte("HelloWorld"),
+		"localhost:8098",
+		0.0,
+		1*time.Nanosecond,
+	))
+	loadGenerationResponseChannel := workerGroup.Run()
+
+	workerGroup.WaitTillDone()
+	close(loadGenerationResponseChannel)
+
+	for response := range loadGenerationResponseChannel {
+		assert.Error(t, response.Err)
+		println(response.Err.Error())
 	}
 }

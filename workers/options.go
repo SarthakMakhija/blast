@@ -1,8 +1,12 @@
 package workers
 
 import (
+	"time"
+
 	"blast/report"
 )
+
+const dialTimeout = 3 * time.Second
 
 type GroupOptions struct {
 	concurrency       uint
@@ -11,6 +15,7 @@ type GroupOptions struct {
 	payload           []byte
 	targetAddress     string
 	requestsPerSecond float64
+	dialTimeout       time.Duration
 }
 
 type WorkerOptions struct {
@@ -35,6 +40,7 @@ func NewGroupOptions(
 		payload,
 		targetAddress,
 		0.0,
+		dialTimeout,
 	)
 }
 
@@ -52,6 +58,7 @@ func NewGroupOptionsWithConnections(
 		payload,
 		targetAddress,
 		0.0,
+		dialTimeout,
 	)
 }
 
@@ -62,6 +69,7 @@ func NewGroupOptionsFullyLoaded(
 	payload []byte,
 	targetAddress string,
 	requestsPerSecond float64,
+	dialTimeout time.Duration,
 ) GroupOptions {
 	return GroupOptions{
 		concurrency:       concurrency,
@@ -70,6 +78,7 @@ func NewGroupOptionsFullyLoaded(
 		payload:           payload,
 		targetAddress:     targetAddress,
 		requestsPerSecond: requestsPerSecond,
+		dialTimeout:       dialTimeout,
 	}
 }
 

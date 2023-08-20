@@ -60,15 +60,15 @@ func TestRunBlastWithNonEmptyFileAndEmptyProcessPath(t *testing.T) {
 	})
 }
 
-func TestBlastWithRequestTimeoutLessThanZero(t *testing.T) {
+func TestBlastWithConnectTimeoutEqualToZero(t *testing.T) {
 	assert.Panics(t, func() {
-		assertRequestTimeout(-1)
+		assertConnectTimeout(time.Duration(0))
 	})
 }
 
-func TestBlastWithRequestTimeout(t *testing.T) {
+func TestBlastWithConnectTimeout(t *testing.T) {
 	assert.NotPanics(t, func() {
-		assertRequestTimeout(1)
+		assertConnectTimeout(time.Duration(1))
 	})
 }
 
