@@ -30,7 +30,9 @@ var (
 
 var exitFunction = usageAndExit
 
-var usage = `Usage: blast [options...] <url>
+var usage = `blast is a load generator for TCP servers which maintain persistent connections.
+
+Usage: blast [options...] <url>
 
 Options:
   -n      Number of requests to run. Default is 1000.
