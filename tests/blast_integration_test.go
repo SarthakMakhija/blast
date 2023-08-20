@@ -34,7 +34,7 @@ func TestBlastWithLoadGeneration(t *testing.T) {
 	blast.OutputStream = buffer
 
 	blast := blast.NewBlastWithoutResponseReading(groupOptions, 5*time.Minute)
-	blast.WaitForLoadToComplete()
+	blast.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalConnections: 1"))
@@ -66,7 +66,7 @@ func TestBlastWithLoadGenerationForMaximumDuration(t *testing.T) {
 	blast.OutputStream = buffer
 
 	blast := blast.NewBlastWithoutResponseReading(groupOptions, 10*time.Millisecond)
-	blast.WaitForLoadToComplete()
+	blast.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
@@ -107,7 +107,7 @@ func TestBlastWithLoadGenerationAndResponseReading(t *testing.T) {
 	blast.OutputStream = buffer
 
 	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Minute)
-	blast.WaitForResponsesToComplete()
+	blast.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "ResponseMetrics"))
@@ -145,7 +145,7 @@ func TestBlastWithLoadGenerationAndResponseReadingForMaximumDuration(t *testing.
 	blast.OutputStream = buffer
 
 	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 10*time.Millisecond)
-	blast.WaitForResponsesToComplete()
+	blast.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
@@ -187,7 +187,7 @@ func TestBlastWithResponseReadingGivenTheTargetServerFailsInSendingResponses(t *
 	blast.OutputStream = buffer
 
 	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Second)
-	blast.WaitForResponsesToComplete()
+	blast.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 
@@ -223,7 +223,7 @@ func TestBlastWithLoadGenerationAndAStopSignal(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 		blast.Stop()
 	}()
-	blast.WaitForLoadToComplete()
+	blast.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
@@ -269,7 +269,7 @@ func TestBlastWithLoadGenerationAndResponseReadingWithStopSignal(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 		blast.Stop()
 	}()
-	blast.WaitForResponsesToComplete()
+	blast.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))

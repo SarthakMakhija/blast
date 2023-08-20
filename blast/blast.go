@@ -124,13 +124,23 @@ func NewBlastWithResponseReading(
 	return setUpBlast()
 }
 
+func (blast Blast) WaitForCompletion() {
+	if blast.responseReader != nil {
+		blast.waitForResponsesToComplete()
+	} else {
+		blast.waitForLoadToComplete()
+	}
+	<-blast.doneChannel
+	blast.reporter.PrintReport(OutputStream)
+}
+
 func (blast Blast) Stop() {
 	if !isClosed(blast.doneChannel) {
 		close(blast.doneChannel)
 	}
 }
 
-func (blast Blast) WaitForLoadToComplete() {
+func (blast Blast) waitForLoadToComplete() {
 	loadReportedInspectionTimer := time.NewTicker(5 * time.Millisecond)
 	maxRunTimer := time.NewTimer(blast.maxRunDuration)
 
@@ -165,11 +175,9 @@ func (blast Blast) WaitForLoadToComplete() {
 			}
 		}
 	}()
-	<-blast.doneChannel
-	blast.reporter.PrintReport(OutputStream)
 }
 
-func (blast Blast) WaitForResponsesToComplete() {
+func (blast Blast) waitForResponsesToComplete() {
 	responsesCapturedInspectionTimer := time.NewTicker(5 * time.Millisecond)
 	maxRunTimer := time.NewTimer(blast.maxRunDuration)
 
@@ -213,8 +221,6 @@ func (blast Blast) WaitForResponsesToComplete() {
 			}
 		}
 	}()
-	<-blast.doneChannel
-	blast.reporter.PrintReport(OutputStream)
 }
 
 func isClosed(ch <-chan struct{}) bool {
