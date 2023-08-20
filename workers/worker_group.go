@@ -9,6 +9,14 @@ import (
 	"blast/report"
 )
 
+// WorkerGroup is a collection of workers that sends totalRequests to the server.
+// WorkerGroup creates a total of options.concurrency Workers.
+// Each Worker takes a part of the totalRequests.
+// Consider that 100 requests are to be sent with 5 workers, then each Worker will send
+// a total of 20 requests.
+// Consider that 100 requests are to be sent with 6 workers, then the system will end up
+// sending a total of 102 requests, and each Worker will send 17 requests.
+// WorkerGroup also provides support for triggering response reading from the connection.
 type WorkerGroup struct {
 	options        GroupOptions
 	stopChannel    chan struct{}
@@ -16,10 +24,14 @@ type WorkerGroup struct {
 	responseReader *report.ResponseReader
 }
 
+// NewWorkerGroup returns a new instance of WorkerGroup without supporting reading from the
+// connection.
 func NewWorkerGroup(options GroupOptions) *WorkerGroup {
 	return NewWorkerGroupWithResponseReader(options, nil)
 }
 
+// NewWorkerGroupWithResponseReader returns a new instance of WorkerGroup
+// that also supports reading from the connection.
 func NewWorkerGroupWithResponseReader(
 	options GroupOptions,
 	responseReader *report.ResponseReader,
@@ -32,6 +44,10 @@ func NewWorkerGroupWithResponseReader(
 	}
 }
 
+// Run runs the WorkerGroup and returns a channel of type report.LoadGenerationResponse.
+// report.LoadGenerationResponse will contain each request sent by the Worker.
+// This method runs a separate goroutine that runs the workers and the goroutine waits until
+// all the workers are done.
 func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
 	if group.options.totalRequests%group.options.concurrency != 0 {
 		group.options.totalRequests = ((group.options.totalRequests / group.options.concurrency) + 1) * group.options.concurrency
@@ -49,12 +65,21 @@ func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
 	return loadGenerationResponseChannel
 }
 
+// Closes sends a stop signal to all the workers.
 func (group *WorkerGroup) Close() {
 	for count := 1; count <= int(group.options.concurrency); count++ {
 		group.stopChannel <- struct{}{}
 	}
 }
 
+// runWorkers runs all the workers.
+// The numbers of workers that will run is determined by the concurrency field in GroupOptions.
+// These workers will share the tcp connections and the sharing of tcp connections is determined
+// by the number of workers and the connections.
+// Consider that 100 workers are supposed to be running and blast needs to create 25 connections.
+// This configuration will end up sharing a single connection with four workers.
+// runWorkers also starts the report.ResponseReader to read from the connection,
+// if it is configured to do so.
 func (group *WorkerGroup) runWorkers(
 	loadGenerationResponseChannel chan report.LoadGenerationResponse,
 ) {
@@ -85,14 +110,17 @@ func (group *WorkerGroup) runWorkers(
 	group.doneChannel <- struct{}{}
 }
 
+// WaitTillDone waits till all the workers are done.
 func (group *WorkerGroup) WaitTillDone() {
 	<-group.doneChannel
 }
 
+// DoneChannel returns the doneChannel.
 func (group *WorkerGroup) DoneChannel() chan struct{} {
 	return group.doneChannel
 }
 
+// newConnection creates a new TCP connection.
 func (group *WorkerGroup) newConnection() (net.Conn, error) {
 	connection, err := net.DialTimeout(
 		"tcp",
@@ -105,6 +133,7 @@ func (group *WorkerGroup) newConnection() (net.Conn, error) {
 	return connection, nil
 }
 
+// runWorker runs a Worker.
 func (group *WorkerGroup) runWorker(
 	connection net.Conn,
 	connectionId int,

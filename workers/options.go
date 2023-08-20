@@ -8,6 +8,7 @@ import (
 
 const dialTimeout = 3 * time.Second
 
+// GroupOptions defines the configuration options for the WorkerGroup.
 type GroupOptions struct {
 	concurrency       uint
 	connections       uint
@@ -18,6 +19,7 @@ type GroupOptions struct {
 	dialTimeout       time.Duration
 }
 
+// WorkerOptions defines the configuration options for a running Worker.
 type WorkerOptions struct {
 	totalRequests          uint
 	payload                []byte
@@ -27,6 +29,7 @@ type WorkerOptions struct {
 	loadGenerationResponse chan report.LoadGenerationResponse
 }
 
+// Creates a new instance of GroupOptions.
 func NewGroupOptions(
 	concurrency uint,
 	totalRequests uint,
@@ -44,6 +47,7 @@ func NewGroupOptions(
 	)
 }
 
+// Creates a new instance of GroupOptions.
 func NewGroupOptionsWithConnections(
 	concurrency uint,
 	connections uint,
@@ -62,6 +66,7 @@ func NewGroupOptionsWithConnections(
 	)
 }
 
+// Creates a new instance of GroupOptions.
 func NewGroupOptionsFullyLoaded(
 	concurrency uint,
 	connections uint,
@@ -82,6 +87,7 @@ func NewGroupOptionsFullyLoaded(
 	}
 }
 
+// TotalRequests returns the total number of requests set in GroupOptions.
 func (groupOptions GroupOptions) TotalRequests() uint {
 	return groupOptions.totalRequests
 }
