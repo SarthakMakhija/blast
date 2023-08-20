@@ -125,7 +125,9 @@ func NewBlastWithResponseReading(
 }
 
 func (blast Blast) Stop() {
-	close(blast.doneChannel)
+	if !isClosed(blast.doneChannel) {
+		close(blast.doneChannel)
+	}
 }
 
 func (blast Blast) WaitForLoadToComplete() {
@@ -138,7 +140,9 @@ func (blast Blast) WaitForLoadToComplete() {
 			loadReportedInspectionTimer.Stop()
 			maxRunTimer.Stop()
 			close(blast.loadGenerationResponseChannel)
-			close(blast.doneChannel)
+			if !isClosed(blast.doneChannel) {
+				close(blast.doneChannel)
+			}
 		}
 
 		for {
@@ -177,7 +181,9 @@ func (blast Blast) WaitForResponsesToComplete() {
 			maxRunTimer.Stop()
 			close(blast.loadGenerationResponseChannel)
 			close(blast.responseChannel)
-			close(blast.doneChannel)
+			if !isClosed(blast.doneChannel) {
+				close(blast.doneChannel)
+			}
 		}
 
 		for {
@@ -209,4 +215,16 @@ func (blast Blast) WaitForResponsesToComplete() {
 	}()
 	<-blast.doneChannel
 	blast.reporter.PrintReport(OutputStream)
+}
+
+func isClosed(ch <-chan struct{}) bool {
+	select {
+	case _, ok := <-ch:
+		if !ok {
+			return true
+		}
+		return false
+	default:
+	}
+	return false
 }
