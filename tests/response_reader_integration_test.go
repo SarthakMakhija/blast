@@ -31,6 +31,7 @@ func TestReadsResponseFromASingleConnection(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
+		100*time.Millisecond,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)
@@ -64,6 +65,7 @@ func TestReadsResponseFromTwoConnections(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
+		100*time.Millisecond,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)
@@ -94,6 +96,7 @@ func TestTracksTheNumberOfResponsesRead(t *testing.T) {
 
 	responseReader := report.NewResponseReader(
 		payloadSizeBytes,
+		100*time.Millisecond,
 		responseChannel,
 	)
 	responseReader.StartReading(connection)

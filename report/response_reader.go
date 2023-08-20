@@ -27,6 +27,7 @@ type SubjectServerResponse struct {
 
 type ResponseReader struct {
 	responseSizeBytes       int64
+	readDeadline            time.Duration
 	readTotalResponses      atomic.Uint64
 	readSuccessfulResponses atomic.Uint64
 	stopChannel             chan struct{}
@@ -35,10 +36,12 @@ type ResponseReader struct {
 
 func NewResponseReader(
 	responseSizeBytes int64,
+	readDeadline time.Duration,
 	responseChannel chan SubjectServerResponse,
 ) *ResponseReader {
 	return &ResponseReader{
 		responseSizeBytes: responseSizeBytes,
+		readDeadline:      readDeadline,
 		stopChannel:       make(chan struct{}),
 		responseChannel:   responseChannel,
 	}
@@ -58,7 +61,9 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 			case <-responseReader.stopChannel:
 				return
 			default:
-				connection.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
+				if responseReader.readDeadline != time.Duration(0) {
+					connection.SetReadDeadline(time.Now().Add(responseReader.readDeadline))
+				}
 				buffer := make([]byte, responseReader.responseSizeBytes)
 				_, err := connection.Read(buffer)
 

@@ -27,6 +27,7 @@ var (
 	connectTimeout          = flag.Duration("t", 3*time.Second, "")
 	readResponses           = flag.Bool("Rr", false, "")
 	responsePayloadSize     = flag.Int64("Rrs", -1, "")
+	readResponseDeadline    = flag.Duration("Rrd", 0*time.Second, "")
 	readTotalResponses      = flag.Uint("Rtr", 0, "")
 	readSuccessfulResponses = flag.Uint("Rsr", 0, "")
 	cpus                    = flag.Int("cpus", runtime.GOMAXPROCS(-1), "")
@@ -53,6 +54,8 @@ Options:
           Also called as DialTimeout.
   -Rr     Read responses from the target server. Default is false.
   -Rrs    Read response size is the size of the responses in bytes returned by the target server. 
+  -Rrd    Read response deadline defines the deadline for the read calls on connection.
+          Default is no deadline which means the read calls do not timeout.
           This flag is applied only if "Read responses" (-Rr) is true.
   -Rtr    Read total responses is the total responses to read from the target server. 
           The load generation will stop if either the duration (-z) has exceeded or the total 
@@ -218,6 +221,7 @@ func setUpBlast(url string) blast.Blast {
 			TotalResponsesToRead:           *readTotalResponses,
 			TotalSuccessfulResponsesToRead: *readSuccessfulResponses,
 			ReadingOption:                  readingOption,
+			ReadDeadline:                   *readResponseDeadline,
 		}
 		instance = blast.NewBlastWithResponseReading(groupOptions, responseOptions, *loadDuration)
 	} else {

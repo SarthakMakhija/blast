@@ -26,6 +26,7 @@ type ResponseOptions struct {
 	TotalResponsesToRead           uint
 	TotalSuccessfulResponsesToRead uint
 	ReadingOption                  ResponseReadingOption
+	ReadDeadline                   time.Duration
 }
 
 type Blast struct {
@@ -83,6 +84,7 @@ func NewBlastWithResponseReading(
 		responseChannel := make(chan report.SubjectServerResponse, MaxResponsesToRead)
 		return report.NewResponseReader(
 				responseOptions.ResponsePayloadSizeBytes,
+				responseOptions.ReadDeadline,
 				responseChannel,
 			),
 			responseChannel

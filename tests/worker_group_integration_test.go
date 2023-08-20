@@ -99,7 +99,7 @@ func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 			totalRequests,
 			[]byte("HelloWorld"),
 			"localhost:8082",
-		), report.NewResponseReader(responseSizeBytes, responseChannel),
+		), report.NewResponseReader(responseSizeBytes, 100*time.Millisecond, responseChannel),
 	)
 	loadGenerationResponseChannel := workerGroup.Run()
 

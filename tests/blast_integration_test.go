@@ -102,6 +102,7 @@ func TestBlastWithLoadGenerationAndResponseReading(t *testing.T) {
 		ResponsePayloadSizeBytes: payloadSizeBytes,
 		TotalResponsesToRead:     totalRequests,
 		ReadingOption:            blast.ReadTotalResponses,
+		ReadDeadline:             100 * time.Millisecond,
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
@@ -140,6 +141,7 @@ func TestBlastWithLoadGenerationAndResponseReadingForMaximumDuration(t *testing.
 		ResponsePayloadSizeBytes: payloadSizeBytes,
 		TotalResponsesToRead:     totalRequests,
 		ReadingOption:            blast.ReadTotalResponses,
+		ReadDeadline:             100 * time.Millisecond,
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
@@ -182,6 +184,7 @@ func TestBlastWithResponseReadingGivenTheTargetServerFailsInSendingResponses(t *
 		ResponsePayloadSizeBytes: payloadSizeBytes,
 		TotalResponsesToRead:     20,
 		ReadingOption:            blast.ReadTotalResponses,
+		ReadDeadline:             100 * time.Millisecond,
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
@@ -260,6 +263,7 @@ func TestBlastWithLoadGenerationAndResponseReadingWithStopSignal(t *testing.T) {
 		ResponsePayloadSizeBytes: payloadSizeBytes,
 		TotalResponsesToRead:     totalRequests,
 		ReadingOption:            blast.ReadTotalResponses,
+		ReadDeadline:             100 * time.Millisecond,
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
