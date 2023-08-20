@@ -65,24 +65,25 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 					connection.SetReadDeadline(time.Now().Add(responseReader.readDeadline))
 				}
 				buffer := make([]byte, responseReader.responseSizeBytes)
-				_, err := connection.Read(buffer)
+				n, err := connection.Read(buffer)
 
 				if err != nil {
 					if errors.Is(err, io.EOF) {
 						return
 					}
+					responseReader.readTotalResponses.Add(1)
 					responseReader.responseChannel <- SubjectServerResponse{
 						Err:          err,
 						ResponseTime: time.Now(),
 					}
-				} else {
+				} else if n > 0 && buffer != nil && len(buffer) > 0 {
 					responseReader.readSuccessfulResponses.Add(1)
+					responseReader.readTotalResponses.Add(1)
 					responseReader.responseChannel <- SubjectServerResponse{
 						ResponseTime:       time.Now(),
 						PayloadLengthBytes: int64(len(buffer)),
 					}
 				}
-				responseReader.readTotalResponses.Add(1)
 			}
 		}
 	}(connection)
