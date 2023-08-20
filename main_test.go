@@ -26,38 +26,24 @@ func TestRunBlastWithEmptyUrl(t *testing.T) {
 	})
 }
 
-func TestRunBlastWithoutFileAndProcessPath(t *testing.T) {
+func TestRunBlastWithoutFilePath(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		assertFileAndProcessPath("", "")
+		assertFilePath("")
 	})
 }
 
-func TestRunBlastWithEmptyFileAndProcessPath(t *testing.T) {
+func TestRunBlastWithEmptyFilePath(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		assertFileAndProcessPath(" ", " ")
+		assertFilePath(" ")
 	})
 }
 
-func TestRunBlastWithNonEmptyFilePathAndNonEmptyProcessPath(t *testing.T) {
-	exitFunction = exitWithPanic
-	assert.Panics(t, func() {
-		assertFileAndProcessPath("./filePayload", "./exe")
-	})
-}
-
-func TestRunBlastWithEmptyFileAndNonEmptyProcessPath(t *testing.T) {
+func TestRunBlastWithNonEmptyFilePath(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		assertFileAndProcessPath(" ", "./exe")
-	})
-}
-
-func TestRunBlastWithNonEmptyFileAndEmptyProcessPath(t *testing.T) {
-	exitFunction = exitWithPanic
-	assert.NotPanics(t, func() {
-		assertFileAndProcessPath("./payload", "")
+		assertFilePath("./filePayload")
 	})
 }
 

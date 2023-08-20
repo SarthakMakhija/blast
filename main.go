@@ -21,7 +21,6 @@ var (
 	concurrency             = flag.Uint("c", 50, "")
 	connections             = flag.Uint("conn", 1, "")
 	filePath                = flag.String("f", "", "")
-	processPath             = flag.String("p", "", "")
 	requestsPerSecond       = flag.Float64("rps", 0, "")
 	loadDuration            = flag.Duration("z", 20*time.Second, "")
 	connectTimeout          = flag.Duration("t", 3*time.Second, "")
@@ -43,9 +42,7 @@ Options:
   -n      Number of requests to run. Default is 1000.
   -c      Number of workers to run concurrently. Total number of requests cannot
           be smaller than the concurrency level. Default is 50.
-  -f      Payload file path.
-  -p      External executable process path. The external process must print the payload
-          on stdout. Load generation payload can be either specified through -f or -p.
+  -f      File path containing the load payload.
   -rps    Rate limit in requests per second (RPS) per worker. Default is no rate limit.
   -z      Duration of blast to send requests. When duration is reached,
           application stops and exits. Default is 20 seconds.
@@ -91,7 +88,7 @@ func main() {
 
 	url := flag.Args()[0]
 	assertUrl(url)
-	assertFileAndProcessPath(*filePath, *processPath)
+	assertFilePath(*filePath)
 	assertConnectTimeout(*connectTimeout)
 	assertRequestsPerSecond(*requestsPerSecond)
 	assertLoadDuration(*loadDuration)
@@ -127,12 +124,9 @@ func assertUrl(url string) {
 	}
 }
 
-func assertFileAndProcessPath(filePath string, processPath string) {
-	if len(strings.Trim(filePath, " ")) == 0 && len(strings.Trim(processPath, " ")) == 0 {
-		exitFunction("both -f and -p cannot be blank.")
-	}
-	if len(strings.Trim(filePath, " ")) != 0 && len(strings.Trim(processPath, " ")) != 0 {
-		exitFunction("both -f and -p cannot be specified.")
+func assertFilePath(filePath string) {
+	if len(strings.Trim(filePath, " ")) == 0 {
+		exitFunction("-f cannot be blank.")
 	}
 }
 
