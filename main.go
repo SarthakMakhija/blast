@@ -73,6 +73,7 @@ Options:
           (default for current machine is %d cores)
 `
 
+// main is the entrypoint for the blast application.
 func main() {
 	file, _ := os.Open("banner.txt")
 	banner.Init(os.Stdout, true, false, file)
@@ -118,36 +119,43 @@ func main() {
 	blastInstance.WaitForCompletion()
 }
 
+// assertUrl asserts that the URL is not empty.
 func assertUrl(url string) {
 	if len(strings.Trim(url, " ")) == 0 {
 		exitFunction("URL cannot be blank. URL is of the form host:port.")
 	}
 }
 
+// assertFilePath asserts that the filePath is not empty.
 func assertFilePath(filePath string) {
 	if len(strings.Trim(filePath, " ")) == 0 {
 		exitFunction("-f cannot be blank.")
 	}
 }
 
+// assertConnectTimeout asserts that the connectTimeout is greater than zero.
 func assertConnectTimeout(timeout time.Duration) {
 	if timeout <= time.Duration(0) {
 		exitFunction("-t cannot be smaller than or equal to zero.")
 	}
 }
 
+// assertRequestsPerSecond asserts that the requestsPerSecond is greater than or equal to zero.
 func assertRequestsPerSecond(requestsPerSecond float64) {
 	if requestsPerSecond < 0 {
 		exitFunction("-rps cannot be smaller than zero.")
 	}
 }
 
+// assertLoadDuration asserts that the loadDuration is greater than zero.
 func assertLoadDuration(duration time.Duration) {
 	if duration <= time.Duration(0) {
 		exitFunction("-z cannot be smaller than or equal to zero.")
 	}
 }
 
+// assertTotalConcurrentRequestsWithClientConnections asserts the relationship between concurrency, totalRequests and
+// client connections.
 func assertTotalConcurrentRequestsWithClientConnections(
 	totalRequests, concurrency, connections uint,
 ) {
@@ -168,6 +176,7 @@ func assertTotalConcurrentRequestsWithClientConnections(
 	}
 }
 
+// assertAndSetMaxProcs asserts the maximum number of cpus and sets the value in GOMAXPROCS.
 func assertAndSetMaxProcs(cpus int) {
 	if cpus <= 0 {
 		exitFunction("-cpus cannot be smaller than 1.")
@@ -175,6 +184,7 @@ func assertAndSetMaxProcs(cpus int) {
 	runtime.GOMAXPROCS(cpus)
 }
 
+// assertResponseReading asserts the options related to reading responses.
 func assertResponseReading(
 	readResponses bool,
 	responsePayloadSize int64,
@@ -193,6 +203,7 @@ func assertResponseReading(
 	}
 }
 
+// setUpBlast creates a new instance of blast.Blast.
 func setUpBlast(url string) blast.Blast {
 	groupOptions := workers.NewGroupOptionsFullyLoaded(
 		*concurrency,
@@ -224,6 +235,7 @@ func setUpBlast(url string) blast.Blast {
 	return instance
 }
 
+// getFilePayload returns the file content.
 func getFilePayload(filePath string) []byte {
 	provider, err := payloadprovider.NewFilePayloadProvider(filePath)
 	if err != nil {
@@ -232,6 +244,7 @@ func getFilePayload(filePath string) []byte {
 	return provider.Get()
 }
 
+// usageAndExit defines the usage of blast application and exits the application.
 func usageAndExit(msg string) {
 	if msg != "" {
 		fmt.Fprintf(os.Stderr, msg)
