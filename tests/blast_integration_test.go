@@ -32,7 +32,9 @@ func TestBlastWithLoadGeneration(t *testing.T) {
 	)
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
-	blast.NewBlastWithoutResponseReading(groupOptions, 5*time.Minute)
+
+	blast := blast.NewBlastWithoutResponseReading(groupOptions, 5*time.Minute)
+	blast.WaitForLoadToComplete()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalConnections: 1"))
@@ -62,7 +64,9 @@ func TestBlastWithLoadGenerationForMaximumDuration(t *testing.T) {
 	)
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
-	blast.NewBlastWithoutResponseReading(groupOptions, 10*time.Millisecond)
+
+	blast := blast.NewBlastWithoutResponseReading(groupOptions, 10*time.Millisecond)
+	blast.WaitForLoadToComplete()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
@@ -101,7 +105,9 @@ func TestBlastWithLoadGenerationAndResponseReading(t *testing.T) {
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
-	blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Minute)
+
+	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Minute)
+	blast.WaitForResponsesToComplete()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "ResponseMetrics"))
@@ -137,7 +143,9 @@ func TestBlastWithLoadGenerationAndResponseReadingForMaximumDuration(t *testing.
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
-	blast.NewBlastWithResponseReading(groupOptions, responseOptions, 10*time.Millisecond)
+
+	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 10*time.Millisecond)
+	blast.WaitForResponsesToComplete()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
@@ -177,7 +185,9 @@ func TestBlastWithResponseReadingGivenTheTargetServerFailsInSendingResponses(t *
 	}
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
-	blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Second)
+
+	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Second)
+	blast.WaitForResponsesToComplete()
 
 	output := string(buffer.Bytes())
 

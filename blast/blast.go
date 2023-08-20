@@ -43,7 +43,7 @@ type Blast struct {
 func NewBlastWithoutResponseReading(
 	workerGroupOptions workers.GroupOptions,
 	maxRunDuration time.Duration,
-) {
+) Blast {
 	startLoad := func() (*workers.WorkerGroup, chan report.LoadGenerationResponse) {
 		workerGroup := workers.NewWorkerGroup(workerGroupOptions)
 		return workerGroup, workerGroup.Run()
@@ -71,18 +71,14 @@ func NewBlastWithoutResponseReading(
 		}
 	}
 
-	blast := setUpBlast()
-	blast.runWithoutResponseReading()
-
-	<-blast.doneChannel
-	blast.reporter.PrintReport(OutputStream)
+	return setUpBlast()
 }
 
 func NewBlastWithResponseReading(
 	workerGroupOptions workers.GroupOptions,
 	responseOptions ResponseOptions,
 	maxRunDuration time.Duration,
-) {
+) Blast {
 	newResponseReader := func() (*report.ResponseReader, chan report.SubjectServerResponse) {
 		responseChannel := make(chan report.SubjectServerResponse, MaxResponsesToRead)
 		return report.NewResponseReader(
@@ -125,14 +121,14 @@ func NewBlastWithResponseReading(
 		}
 	}
 
-	blast := setUpBlast()
-	blast.runwWithResponseReading()
-
-	<-blast.doneChannel
-	blast.reporter.PrintReport(OutputStream)
+	return setUpBlast()
 }
 
-func (blast Blast) runWithoutResponseReading() {
+func (blast Blast) Stop() {
+	close(blast.doneChannel)
+}
+
+func (blast Blast) WaitForLoadToComplete() {
 	loadReportedInspectionTimer := time.NewTicker(5 * time.Millisecond)
 	maxRunTimer := time.NewTimer(blast.maxRunDuration)
 
@@ -159,12 +155,17 @@ func (blast Blast) runWithoutResponseReading() {
 			case <-maxRunTimer.C:
 				stopAll()
 				return
+			case <-blast.doneChannel:
+				stopAll()
+				return
 			}
 		}
 	}()
+	<-blast.doneChannel
+	blast.reporter.PrintReport(OutputStream)
 }
 
-func (blast Blast) runwWithResponseReading() {
+func (blast Blast) WaitForResponsesToComplete() {
 	responsesCapturedInspectionTimer := time.NewTicker(5 * time.Millisecond)
 	maxRunTimer := time.NewTimer(blast.maxRunDuration)
 
@@ -200,7 +201,12 @@ func (blast Blast) runwWithResponseReading() {
 			case <-maxRunTimer.C:
 				stopAll()
 				return
+			case <-blast.doneChannel:
+				stopAll()
+				return
 			}
 		}
 	}()
+	<-blast.doneChannel
+	blast.reporter.PrintReport(OutputStream)
 }
