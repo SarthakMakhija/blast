@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"blast/blast"
+	"blast/cmd"
 	"blast/workers"
 )
 

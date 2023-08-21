@@ -11,7 +11,7 @@ import (
 
 	"github.com/dimiro1/banner"
 
-	"blast/blast"
+	"blast/cmd"
 	payloadprovider "blast/payload_provider"
 	"blast/workers"
 )
