@@ -34,7 +34,7 @@ var (
 
 const (
 	version      = "0.0.1"
-	versionLabel = "Version: %s\n\n"
+	versionLabel = " Version: %s\n\n"
 )
 
 var exitFunction = usageAndExit
@@ -80,14 +80,9 @@ Options:
 
 // main is the CLI for the blast application.
 func main() {
-	file, _ := os.Open("banner.txt")
-	banner.Init(os.Stdout, true, false, file)
-
+	logo := `{{ .Title "blast" "" 0}}`
+	banner.InitString(os.Stdout, true, false, logo)
 	fmt.Fprintf(os.Stdout, versionLabel, version)
-
-	defer func() {
-		_ = file.Close()
-	}()
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprintf(usage, runtime.NumCPU()))
