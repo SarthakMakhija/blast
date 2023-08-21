@@ -32,13 +32,15 @@ var (
 	cpus                    = flag.Int("cpus", runtime.GOMAXPROCS(-1), "")
 )
 
-const version = "0.0.1"
+const (
+	version      = "0.0.1"
+	versionLabel = "Version: %s\n\n"
+)
 
 var exitFunction = usageAndExit
 
 var usage = `blast is a load generator for TCP servers which maintain persistent connections.
 
-Version: %s
 Usage: blast [options...] <url>
 
 Options:
@@ -81,8 +83,14 @@ func main() {
 	file, _ := os.Open("banner.txt")
 	banner.Init(os.Stdout, true, false, file)
 
+	fmt.Fprintf(os.Stdout, versionLabel, version)
+
+	defer func() {
+		_ = file.Close()
+	}()
+
 	flag.Usage = func() {
-		fmt.Fprint(os.Stderr, fmt.Sprintf(usage, version, runtime.NumCPU()))
+		fmt.Fprint(os.Stderr, fmt.Sprintf(usage, runtime.NumCPU()))
 	}
 
 	flag.Parse()
