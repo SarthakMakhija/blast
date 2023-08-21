@@ -196,7 +196,7 @@ func (blast Blast) waitForLoadToComplete() {
 		for {
 			select {
 			case <-blast.workerGroup.DoneChannel():
-				fmt.Fprintln(os.Stdout, "load completed")
+				fmt.Fprintln(os.Stdout, "[Load completed]")
 			case <-loadReportedInspectionTimer.C:
 				if blast.reporter.TotalLoadReportedTillNow() >= uint64(
 					blast.groupOptions.TotalRequests(),
@@ -240,7 +240,7 @@ func (blast Blast) waitForResponsesToComplete() {
 		for {
 			select {
 			case <-blast.workerGroup.DoneChannel():
-				fmt.Fprintln(os.Stdout, "load completed")
+				fmt.Fprintln(os.Stdout, "[Load completed]")
 			case <-responsesCapturedInspectionTimer.C:
 				if blast.responseOptions.ReadingOption == ReadTotalResponses {
 					if blast.responseReader.TotalResponsesRead() >= uint64(

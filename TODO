@@ -1,8 +1,5 @@
-1. Integrate blast.go in main
-
 10. Goreleaser
 11. README
-12. Go doc
 -------------------------------------
 6. Run against a sample server
     - with input from a file
