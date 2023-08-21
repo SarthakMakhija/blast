@@ -188,8 +188,8 @@ func TestReportWithLoadTimeInGeneratingLoad(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(loadGenerationChannel)
 
-	assert.Equal(t, now, reporter.report.Load.EarliestLoadSendTime)
-	assert.Equal(t, laterByTenSeconds, reporter.report.Load.LatestLoadSendTime)
+	assert.Equal(t, now, reporter.report.Load.EarliestSuccessfulLoadSendTime)
+	assert.Equal(t, laterByTenSeconds, reporter.report.Load.LatestSuccessfulLoadSendTime)
 }
 
 func TestReportWithErrorInReceivingResponse(t *testing.T) {
@@ -357,8 +357,12 @@ func TestReportWithLoadTimeInReceivingResponse(t *testing.T) {
 	time.Sleep(2 * time.Millisecond)
 	close(responseChannel)
 
-	assert.Equal(t, now, reporter.report.Response.EarliestResponseReceivedTime)
-	assert.Equal(t, laterByTenSeconds, reporter.report.Response.LatestResponseReceivedTime)
+	assert.Equal(t, now, reporter.report.Response.EarliestSuccessfulResponseReceivedTime)
+	assert.Equal(
+		t,
+		laterByTenSeconds,
+		reporter.report.Response.LatestSuccessfulResponseReceivedTime,
+	)
 }
 
 func TestReportWithTotalLoadReported(t *testing.T) {

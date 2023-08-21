@@ -19,8 +19,8 @@ Summary:
     ErrorCount: 1
     TotalPayloadSize: 2.0 kB
     AveragePayloadSize: 20 B
-    EarliestLoadSendTime: August 21, 2023 04:14:00 IST
-    LatestLoadSendTime: August 21, 2023 04:14:10 IST
+    EarliestSuccessfulLoadSendTime: August 21, 2023 04:14:00 IST
+    LatestSuccessfulLoadSendTime: August 21, 2023 04:14:10 IST
     TimeToCompleteLoad: 10s
 
   Error distribution:
@@ -32,8 +32,8 @@ Summary:
     ErrorCount: 1
     TotalResponsePayloadSize: 1.8 kB
     AverageResponsePayloadSize: 18 B 
-    EarliestResponseReceivedTime: August 21, 2023 04:14:00 IST
-    LatestResponseReceivedTime: August 21, 2023 04:14:10 IST
+    EarliestSuccessfulResponseReceivedTime: August 21, 2023 04:14:00 IST
+    LatestSuccessfulResponseReceivedTime: August 21, 2023 04:14:10 IST
     TimeToGetResponses: 10s
   
   Error distribution: 
@@ -47,28 +47,28 @@ Summary:
 
 	report := &Report{
 		Load: LoadMetrics{
-			TotalConnections:          5,
-			TotalRequests:             1000,
-			SuccessCount:              999,
-			ErrorCount:                1,
-			ErrorCountByType:          map[string]uint{"load error": 1},
-			TotalPayloadLengthBytes:   2000,
-			AveragePayloadLengthBytes: 20.0,
-			EarliestLoadSendTime:      startTime,
-			LatestLoadSendTime:        tenSecondsLater,
-			TotalTime:                 tenSecondsLater.Sub(startTime),
+			TotalConnections:               5,
+			TotalRequests:                  1000,
+			SuccessCount:                   999,
+			ErrorCount:                     1,
+			ErrorCountByType:               map[string]uint{"load error": 1},
+			TotalPayloadLengthBytes:        2000,
+			AveragePayloadLengthBytes:      20.0,
+			EarliestSuccessfulLoadSendTime: startTime,
+			LatestSuccessfulLoadSendTime:   tenSecondsLater,
+			TotalTime:                      tenSecondsLater.Sub(startTime),
 		},
 		Response: ResponseMetrics{
-			TotalResponses:                    1000,
-			SuccessCount:                      999,
-			ErrorCount:                        1,
-			ErrorCountByType:                  map[string]uint{"response error": 1},
-			TotalResponsePayloadLengthBytes:   1800,
-			AverageResponsePayloadLengthBytes: 18.0,
-			EarliestResponseReceivedTime:      startTime,
-			LatestResponseReceivedTime:        tenSecondsLater,
-			TotalTime:                         tenSecondsLater.Sub(startTime),
-			IsAvailableForReporting:           true,
+			TotalResponses:                         1000,
+			SuccessCount:                           999,
+			ErrorCount:                             1,
+			ErrorCountByType:                       map[string]uint{"response error": 1},
+			TotalResponsePayloadLengthBytes:        1800,
+			AverageResponsePayloadLengthBytes:      18.0,
+			EarliestSuccessfulResponseReceivedTime: startTime,
+			LatestSuccessfulResponseReceivedTime:   tenSecondsLater,
+			TotalTime:                              tenSecondsLater.Sub(startTime),
+			IsAvailableForReporting:                true,
 		},
 	}
 
@@ -88,8 +88,8 @@ Summary:
     ErrorCount: 1
     TotalPayloadSize: 2.0 kB
     AveragePayloadSize: 20 B
-    EarliestLoadSendTime: August 21, 2023 04:14:00 IST
-    LatestLoadSendTime: August 21, 2023 04:14:00 IST
+    EarliestSuccessfulLoadSendTime: August 21, 2023 04:14:00 IST
+    LatestSuccessfulLoadSendTime: August 21, 2023 04:14:00 IST
     TimeToCompleteLoad: 0s
 
   Error distribution:
@@ -101,16 +101,16 @@ Summary:
 
 	report := &Report{
 		Load: LoadMetrics{
-			TotalConnections:          4,
-			TotalRequests:             1000,
-			SuccessCount:              999,
-			ErrorCount:                1,
-			ErrorCountByType:          map[string]uint{"load error": 1},
-			TotalPayloadLengthBytes:   2000,
-			AveragePayloadLengthBytes: 20.0,
-			EarliestLoadSendTime:      time,
-			LatestLoadSendTime:        time,
-			TotalTime:                 time.Sub(time),
+			TotalConnections:               4,
+			TotalRequests:                  1000,
+			SuccessCount:                   999,
+			ErrorCount:                     1,
+			ErrorCountByType:               map[string]uint{"load error": 1},
+			TotalPayloadLengthBytes:        2000,
+			AveragePayloadLengthBytes:      20.0,
+			EarliestSuccessfulLoadSendTime: time,
+			LatestSuccessfulLoadSendTime:   time,
+			TotalTime:                      time.Sub(time),
 		},
 		Response: ResponseMetrics{
 			IsAvailableForReporting: false,
@@ -133,8 +133,8 @@ Summary:
     ErrorCount: 0
     TotalPayloadSize: 2.0 kB
     AveragePayloadSize: 20 B
-    EarliestLoadSendTime: August 21, 2023 04:14:00 IST
-    LatestLoadSendTime: August 21, 2023 04:14:10 IST
+    EarliestSuccessfulLoadSendTime: August 21, 2023 04:14:00 IST
+    LatestSuccessfulLoadSendTime: August 21, 2023 04:14:10 IST
     TimeToCompleteLoad: 10s
 
   Error distribution:
@@ -146,8 +146,8 @@ Summary:
     ErrorCount: 0
     TotalResponsePayloadSize: 1.8 kB
     AverageResponsePayloadSize: 18 B 
-    EarliestResponseReceivedTime: August 21, 2023 04:14:00 IST
-    LatestResponseReceivedTime: August 21, 2023 04:14:10 IST
+    EarliestSuccessfulResponseReceivedTime: August 21, 2023 04:14:00 IST
+    LatestSuccessfulResponseReceivedTime: August 21, 2023 04:14:10 IST
     TimeToGetResponses: 10s
   
   Error distribution:
@@ -161,28 +161,28 @@ Summary:
 
 	report := &Report{
 		Load: LoadMetrics{
-			TotalConnections:          10,
-			TotalRequests:             1000,
-			SuccessCount:              1000,
-			ErrorCount:                0,
-			ErrorCountByType:          make(map[string]uint),
-			TotalPayloadLengthBytes:   2000,
-			AveragePayloadLengthBytes: 20.0,
-			EarliestLoadSendTime:      startTime,
-			LatestLoadSendTime:        tenSecondsLater,
-			TotalTime:                 tenSecondsLater.Sub(startTime),
+			TotalConnections:               10,
+			TotalRequests:                  1000,
+			SuccessCount:                   1000,
+			ErrorCount:                     0,
+			ErrorCountByType:               make(map[string]uint),
+			TotalPayloadLengthBytes:        2000,
+			AveragePayloadLengthBytes:      20.0,
+			EarliestSuccessfulLoadSendTime: startTime,
+			LatestSuccessfulLoadSendTime:   tenSecondsLater,
+			TotalTime:                      tenSecondsLater.Sub(startTime),
 		},
 		Response: ResponseMetrics{
-			TotalResponses:                    1000,
-			SuccessCount:                      1000,
-			ErrorCount:                        0,
-			ErrorCountByType:                  make(map[string]uint),
-			TotalResponsePayloadLengthBytes:   1800,
-			AverageResponsePayloadLengthBytes: 18.0,
-			EarliestResponseReceivedTime:      startTime,
-			LatestResponseReceivedTime:        tenSecondsLater,
-			TotalTime:                         tenSecondsLater.Sub(startTime),
-			IsAvailableForReporting:           true,
+			TotalResponses:                         1000,
+			SuccessCount:                           1000,
+			ErrorCount:                             0,
+			ErrorCountByType:                       make(map[string]uint),
+			TotalResponsePayloadLengthBytes:        1800,
+			AverageResponsePayloadLengthBytes:      18.0,
+			EarliestSuccessfulResponseReceivedTime: startTime,
+			LatestSuccessfulResponseReceivedTime:   tenSecondsLater,
+			TotalTime:                              tenSecondsLater.Sub(startTime),
+			IsAvailableForReporting:                true,
 		},
 	}
 

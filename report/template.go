@@ -20,8 +20,8 @@ Summary:
     ErrorCount: {{ formatNumberUint .Load.ErrorCount }}
     TotalPayloadSize: {{ humanizePayloadSize .Load.TotalPayloadLengthBytes }}
     AveragePayloadSize: {{ humanizePayloadSize .Load.AveragePayloadLengthBytes }}
-    EarliestLoadSendTime: {{ formatTime .Load.EarliestLoadSendTime}}
-    LatestLoadSendTime: {{ formatTime .Load.LatestLoadSendTime}}
+    EarliestSuccessfulLoadSendTime: {{ formatTime .Load.EarliestSuccessfulLoadSendTime}}
+    LatestSuccessfulLoadSendTime: {{ formatTime .Load.LatestSuccessfulLoadSendTime}}
     TimeToCompleteLoad: {{ formatDuration .Load.TotalTime }}
 
 {{ if gt (len .Load.ErrorCountByType) 0 }}  Error distribution:{{ range $err, $num := .Load.ErrorCountByType }}
@@ -34,8 +34,8 @@ Summary:
     ErrorCount: {{ formatNumberUint .Response.ErrorCount }}
     TotalResponsePayloadSize: {{ humanizePayloadSize .Response.TotalResponsePayloadLengthBytes }}
     AverageResponsePayloadSize: {{ humanizePayloadSize .Response.AverageResponsePayloadLengthBytes }} 
-    EarliestResponseReceivedTime: {{ formatTime .Response.EarliestResponseReceivedTime }}
-    LatestResponseReceivedTime: {{ formatTime .Response.LatestResponseReceivedTime }}
+    EarliestSuccessfulResponseReceivedTime: {{ formatTime .Response.EarliestSuccessfulResponseReceivedTime }}
+    LatestSuccessfulResponseReceivedTime: {{ formatTime .Response.LatestSuccessfulResponseReceivedTime }}
     TimeToGetResponses: {{ formatDuration .Response.TotalTime }}
   
 {{ if gt (len .Response.ErrorCountByType) 0 }}  Error distribution:{{ range $err, $num := .Response.ErrorCountByType }} 
