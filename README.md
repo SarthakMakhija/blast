@@ -142,15 +142,15 @@ Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseRea
 
 - **Sending load on the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989` 2> err.log
 
-  <img width="715" alt="Sending load on the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/476cec77-f390-4ede-bab1-3ce375ed8edc">
+  <img width="715" alt="Sending load on the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/669b9116-ca11-4b07-ac77-9e489c8780f6">
 
 - **Reading responses from the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rtr 200000 localhost:8989` 2> err.log
   
-  <img width="715" alt="Reading responses from the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/2d94660e-a494-410d-8288-7af0e0ccb284">
+  <img width="715" alt="Reading responses from the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/0678c3f6-138c-42f6-8c6a-c310d7f97150">
 
 - **Error distribution:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989` 2> err.log
 
-  <img width="715" alt="Error distribution" src="https://github.com/SarthakMakhija/blast/assets/21108320/b6f4eb6d-699a-430f-b211-17d0a99d05ad">
+  <img width="715" alt="Error distribution" src="https://github.com/SarthakMakhija/blast/assets/21108320/bb081d85-054c-4c5e-b711-9150acf62a4b">
 
 ## References
 [hey](https://github.com/rakyll/hey)
