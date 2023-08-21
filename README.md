@@ -63,9 +63,62 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 | Rtr      | Read total responses is the total responses to read from the target server. The load generation will stop if either the duration (-z) has exceeded or the total responses have been read. This flag is applied only if "Read responses" (-Rr) is true.                                            |
 | Rsr      | Read successful responses  is the successful responses to read from the target server. The load generation will stop if either the duration (-z) has exceeded or the total successful responses have been read. Either of "-Rtr" or "-Rsr" must be specified, if -Rr is set. This flag is applied only if "Read responses" (-Rr) is true.|
 | conn     | Number of connections to open with the target server. **Default is 1.**                                                                                                                                                                                                                                                                         |
-| cpu      | Number of cpu cores to use. **Default is the number of logical CPUs.**                                                                                                                                                                                                                                                                                                                
-
+| cpu      | Number of cpu cores to use. **Default is the number of logical CPUs.**                                                                                                                                                                                                                                                                                                       
 ## FAQs
+
+1. **Can I use blast to only send the load and not worrry about getting the responses back?**
+   
+Yes.
+
+The following command sends 200000 requests, over 10 TCP connections using 100 concurrent workers.
+```sh
+./blast -n 200000 -c 100 -conn 10  -f ./payload localhost:8989
+```
+
+2. **Are the workers implemented using goroutines?**
+   
+Yes, workers are implemented as cooperative goroutines. You can refer the code [here](https://github.com/SarthakMakhija/blast/blob/main/workers/worker.go).
+
+3. **I want to send 1001 requests using 100 workers. How many requests will each worker send?**
+
+Let's consider two cases. 
+
+**Case1**: Number of requests % workers = 0. Let's consider **200 requests** using **10 workers**. **Each** **worker** will send **20 requests**.
+
+**Case2**: Number of requests % workers != 0. Let's consider **1001 requests** using **100 workers**. **blast** will end up sending **1100 requests**, and **each worker** will send **11 requests**.
+
+You can refer the code [here](https://github.com/SarthakMakhija/blast/blob/main/workers/worker_group.go#L52).
+
+4. **Can I create more connections than workers?**
+
+No, you can not create more connections that workers. The relationship between the concurrency and the workers is simple: `concurrency % workers must be equal to zero`.
+This means, we can have 100 workers with 10 connections, where a group of 10 workers will share one connection.
+
+You can refer the code [here](https://github.com/SarthakMakhija/blast/blob/main/workers/worker_group.go#L89).
+
+5. **My server takes a protobuf encoded byte slice. How do I pass the payload to blast?**
+
+**blast** supports reading the payload from a file. The payload that needs to be sent to the target server can be written to a file in a separate process and then the file can be passed
+as an option to the **blast**. Let's look at the pseudocode:
+
+```go
+    func main() {
+        message := &ProtoMessage {....}
+        encoded, err := proto.Marshal(message)
+        assert.Nil(err)
+
+        file, err := os.Create("payload")
+        assert.Nil(err)
+        defer func() {
+            _ = file.Close()
+        }()
+
+        _, err = file.Write(encoded)
+	    assert.Nil(t, err)
+    }
+```
+
+The above code creates a protobuf encoded message and writes it to a file. The file can then be provided using `-f` option to the **blast**.
 
 ## Screenshots
 
