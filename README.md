@@ -12,6 +12,13 @@
 
 ## Content Organization
 
+- [Why blast](#why-blast)
+- [Features](#features)
+- [Installation](#installation)
+- [FAQs](#faqs)
+- [Screenshots](#screenshots)
+- [References](#references)
+
 ## Why blast
 
 I am a part of the team that is developing a strongly consistent distributed key/value storage engine with support for rich queries.
@@ -40,6 +47,24 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 
 ## Installation
 
+## Supported flags
+
+| **Flag** | **Description**                                                                                                                                                                                                                                                                                                                             |
+|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| n        | Number of requests to run. **Default is 1000.**                                                                                                                                                                                                                                                                                                 |
+| c        | Number of workers to run concurrently. **Default is 50.**                                                                                                                                                                                                                                                                                       |
+| f        | File path containing the payload.                                                                                                                                                                                                                                                                                                           |
+| rps      | Rate limit in requests per second per worker. **Default is no rate limit.**                                                                                                                                                                                                                                                                     |
+| z        | Duration of the blast to send requests. **Default is 20 seconds.**                                                                                                                                                                                                                                                                                                   |
+| t        | Timeout for establishing connection with the target server. **Default is 3 seconds.**                                                                                                                                                                                                                                                           |
+| Rr       | Read responses from the target server. **Default is false.**                                                                                                                                                                                                                                                                                    |
+| Rrs      | Read response size is the size of the responses in bytes returned by the target server.                                                                                                                                                                                                                                                     |
+| Rrd      | Read response deadline defines the deadline for the read calls on connection. **Default is no deadline** which means the read calls do not timeout.                                                                                                                                                                                             |
+| Rtr      | Read total responses is the total responses to read from the target server. The load generation will stop if either the duration (-z) has exceeded or the total responses have been read. This flag is applied only if "Read responses" (-Rr) is true.                                            |
+| Rsr      | Read successful responses  is the successful responses to read from the target server. The load generation will stop if either the duration (-z) has exceeded or the total successful responses have been read. Either of "-Rtr" or "-Rsr" must be specified, if -Rr is set. This flag is applied only if "Read responses" (-Rr) is true.|
+| conn     | Number of connections to open with the target server. **Default is 1.**                                                                                                                                                                                                                                                                         |
+| cpu      | Number of cpu cores to use. **Default is the number of logical CPUs.**                                                                                                                                                                                                                                                                                                                
+
 ## FAQs
 
 ## Screenshots
@@ -58,4 +83,4 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 ## References
 [hey](https://github.com/rakyll/hey)
 
-The logo is built using [logo.com](logo.com)
+*The logo is built using [logo.com](logo.com)*.
