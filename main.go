@@ -73,7 +73,7 @@ Options:
           (default for current machine is %d cores)
 `
 
-// main is the entrypoint for the blast application.
+// main is the CLI for the blast application.
 func main() {
 	file, _ := os.Open("banner.txt")
 	banner.Init(os.Stdout, true, false, file)
