@@ -25,9 +25,9 @@ I am a part of the team that is developing a strongly consistent distributed key
 The distributed key/value storage engine has TCP servers that implement [Single Socket Channel](https://martinfowler.com/articles/patterns-of-distributed-systems/single-socket-channel.html) and [Request Pipeline
 ](https://martinfowler.com/articles/patterns-of-distributed-systems/request-pipeline.html). 
 
-We needed a way to send load on our servers and get a report with some details including total connections created, total requests sent, total responses read and time to get those responses back etc.
+We need a way to send load on our servers and get a report with some details including total connections created, total requests sent, total responses read and time to get those responses back etc.
 
-Our servers accept protobuf encoded messages as byte slices, so the tool should be able to send the load (/byte slice) in a format that the target servers
+Another detail, our servers accept protobuf encoded messages as byte slices, so the tool should be able to send the load (/byte slice) in a format that the target servers
 can decode. Almost all distributed systems accept payloads in a very specific format. For example, [JunoDB](https://github.com/paypal/junodb) sends (and receives) [OperationalMessage](https://github.com/paypal/junodb/blob/ca68aa14734768fd047b66ea0b7e6316b15fef16/pkg/proto/opMsg.go#L33) encoded as byte slice.
 
 All we needed was a tool that can send load (or specific load) on target TCP servers, read responses from those servers and present a decent :) report. This was an opportunity to build **blast**.
@@ -39,7 +39,7 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 2. Support for **reading N total responses** from the target server.
 3. Support for **reading N successful responses** from the target server.
 4. Support for **customizing** the **load** **duration**. By default, blast runs for 20 seconds.
-5. Support for sending N requests to the target server with specified **concurrency** **level**.
+5. Support for sending N requests to the target server with the specified **concurrency** **level**.
 6. Support for **establishing N connections** to the target server.
 7. Support for specifying the **connection timeout**.
 8. Support for specifying **requests per second** (also called **throttle**).
@@ -72,7 +72,7 @@ Yes.
 
 The following command sends 200000 requests, over 10 TCP connections using 100 concurrent workers.
 ```sh
-./blast -n 200000 -c 100 -conn 10  -f ./payload localhost:8989
+./blast -n 200000 -c 100 -conn 10 -f ./payload localhost:8989
 ```
 
 2. **Are the workers implemented using goroutines?**
@@ -83,9 +83,9 @@ Yes, workers are implemented as cooperative goroutines. You can refer the code [
 
 Let's consider two cases. 
 
-**Case1**: Number of requests % workers = 0. Let's consider **200 requests** using **10 workers**. **Each** **worker** will send **20 requests**.
+**Case1**: Total requests % workers = 0. Let's consider **200 requests** with **10 workers**. **Each** **worker** will send **20 requests**.
 
-**Case2**: Number of requests % workers != 0. Let's consider **1001 requests** using **100 workers**. **blast** will end up sending **1100 requests**, and **each worker** will send **11 requests**.
+**Case2**: Total requests % workers != 0. Let's consider **1001 requests** with **100 workers**. **blast** will end up sending **1100 requests**, and **each worker** will send **11 requests**.
 
 You can refer the code [here](https://github.com/SarthakMakhija/blast/blob/main/workers/worker_group.go#L52).
 
@@ -123,20 +123,20 @@ The above code creates a protobuf encoded message and writes it to a file. The f
 6. **blast provides a feature to read responses. How is response reading implemented?**
 
 [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) implements one goroutine per `net.Conn` to read responses from connections.
-The goroutine keeps on reading from the connection, and track successful and failred reads.
+The goroutine keeps on reading from the connection, and tracks successful and failed reads.
 
 7. **What is the significance of Rrs flag in blast?**
 
-To read responses from the connections, **blast** needs to know the response payload size. The flag `Rrs` signifies the size of the response payload in bytes (or the size of the
-byte slice) that [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) should read. 
+To read responses from connections, **blast** needs to know the response payload size. The flag `Rrs` signifies the size of the response payload in bytes (or the size of the
+byte slice) that [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) should read in each iteration.
 
 8. **What is the significance of Rrd flag in blast?**
 
-`Rrd` is the read response deadline flag that defines the deadline for the read calls on connections. This flag will help in understanding the responsiveness of the target server. Let's consider that we are running **blast** with the following command: 
+`Rrd` is the read response deadline flag that defines the deadline for the read calls on connections. This flag helps in understanding the responsiveness of the target server. Let's consider that we are running **blast** with the following command: 
 
 `./blast -n 200000 -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rrd 10ms -Rtr 200000 localhost:8989`.
 
-`Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) will block for 10ms and then timeout if there is no response on the underlying connection.
+Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) will block for 10ms and then timeout if there is no response on the underlying connection.
 
 ## Screenshots
 
