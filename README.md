@@ -166,7 +166,7 @@ Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseRea
 
 - **Reading responses from the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rtr 200000 localhost:8989` 2> err.log
   
-  <img width="715" alt="Reading responses from the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/0678c3f6-138c-42f6-8c6a-c310d7f97150">
+  <img width="715" alt="Reading responses from the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/915ed04a-042c-42b6-aec3-83a4ee14e739">
 
 - **Error distribution:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989` 2> err.log
 
