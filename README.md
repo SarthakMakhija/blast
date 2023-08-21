@@ -27,6 +27,17 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 
 ## Features
 
+**blast** provides the following features:
+1. Support for **sending N requests** to the target server.
+2. Support for **reading N total responses** from the target server.
+3. Support for **reading N successful responses** from the target server.
+4. Support for **customizing** the **load** **duration**. By default, blast runs for 20 seconds.
+5. Support for sending N requests to the target server with specified **concurrency** **level**.
+6. Support for **establishing N connections** to the target server.
+7. Support for specifying the **connection timeout**.
+8. Support for specifying **requests per second** (also called **throttle**).
+9. Support for **printing** the **report**.
+
 ## Installation
 
 ## FAQs
