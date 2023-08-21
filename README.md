@@ -120,6 +120,24 @@ as an option to the **blast**. Let's look at the pseudocode:
 
 The above code creates a protobuf encoded message and writes it to a file. The file can then be provided using `-f` option to the **blast**.
 
+6. **blast provides a feature to read responses. How is response reading implemented?**
+
+[ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) implements one goroutine per `net.Conn` to read responses from connections.
+The goroutine keeps on reading from the connection, and track successful and failred reads.
+
+7. **What is the significance of Rrs flag in blast?**
+
+To read responses from the connections, **blast** needs to know the response payload size. The flag `Rrs` signifies the size of the response payload in bytes (or the size of the
+byte slice) that [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) should read. 
+
+8. **What is the significance of Rrd flag in blast?**
+
+`Rrd` is the read response deadline flag that defines the deadline for the read calls on connections. This flag will help in understanding the responsiveness of the target server. Let's consider that we are running **blast** with the following command: 
+
+`./blast -n 200000 -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rrd 10ms -Rtr 200000 localhost:8989`.
+
+`Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) will block for 10ms and then timeout if there is no response on the underlying connection.
+
 ## Screenshots
 
 - **Sending load on the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989`
