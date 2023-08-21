@@ -150,7 +150,7 @@ Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseRea
 
 - **Error distribution:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989` 2> err.log
 
-  <img width="862" alt="Error distribution" src="https://github.com/SarthakMakhija/blast/assets/21108320/b6f4eb6d-699a-430f-b211-17d0a99d05ad">
+  <img width="715" alt="Error distribution" src="https://github.com/SarthakMakhija/blast/assets/21108320/b6f4eb6d-699a-430f-b211-17d0a99d05ad">
 
 ## References
 [hey](https://github.com/rakyll/hey)
