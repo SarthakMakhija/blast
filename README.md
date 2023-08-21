@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="blast" src="https://github.com/SarthakMakhija/blast/assets/21108320/ffb3336c-688f-4b33-b99f-3a26fb35982d" />
+   <img alt="blast" src="https://github.com/SarthakMakhija/blast/assets/21108320/0c282eb8-fb21-4294-bccd-12a81426b894" />
 </p>
 
 | Platform       | Build Status                                                                                                                  |
