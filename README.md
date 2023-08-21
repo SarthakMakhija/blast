@@ -47,6 +47,26 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 
 ## Installation
 
+### MacOS
+
+1. **Download the current release**
+
+`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.1/blast_Darwin_x86_64.tar.gz`
+
+3. **Unzip the release in a directory**
+
+`mkdir blast && tar xvf blast_Darwin_x86_64.tar.gz -C blast`
+
+### Linux AMD64
+
+1. **Download the current release**
+
+`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.1/blast_Linux_x86_64.tar.gz`
+
+2. **Unzip the release in a directory**
+
+`mkdir blast && tar xvf blast_Linux_x86_64.tar.gz -C blast`
+
 ## Supported flags
 
 | **Flag** | **Description**                                                                                                                                                                                                                                                                                                                             |
