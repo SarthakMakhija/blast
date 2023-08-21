@@ -140,16 +140,17 @@ Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseRea
 
 ## Screenshots
 
-- **Sending load on the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989`
+- **Sending load on the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989` 2> err.log
 
-  <img width="715" alt="Sending load on the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/5a614f53-31cc-43b3-99ad-0cdfd22603e6">
-- **Reading responses from the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rtr 200000 localhost:8989`
+  <img width="715" alt="Sending load on the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/476cec77-f390-4ede-bab1-3ce375ed8edc">
+
+- **Reading responses from the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rtr 200000 localhost:8989` 2> err.log
   
-  <img width="715" alt="Reading responses from the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/2b8f7abe-c9eb-4ce1-a95e-a3c926074062">
+  <img width="715" alt="Reading responses from the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/2d94660e-a494-410d-8288-7af0e0ccb284">
 
-- **Error distribution:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989`
+- **Error distribution:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989` 2> err.log
 
-  <img width="715" alt="Error distribution" src="https://github.com/SarthakMakhija/blast/assets/21108320/808ab493-8f8b-4792-bce2-bc8ee49d1d63">
+  <img width="862" alt="Error distribution" src="https://github.com/SarthakMakhija/blast/assets/21108320/b6f4eb6d-699a-430f-b211-17d0a99d05ad">
 
 ## References
 [hey](https://github.com/rakyll/hey)
