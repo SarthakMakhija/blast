@@ -70,6 +70,9 @@ func formatNumberInt64(value int64) string {
 
 // formatTime returns the time.Time as string.
 func formatTime(time time.Time) string {
+	if time.IsZero() {
+		return "NA"
+	}
 	return time.Format(timeFormat)
 }
 

@@ -191,3 +191,61 @@ Summary:
 
 	assert.Equal(t, strings.Trim(expected, " "), strings.Trim(string(buffer.Bytes()), " "))
 }
+
+func TestPrintsTheReportWithLoadAndResponseMetricsWithoutLoadAndReceivedTimes(t *testing.T) {
+	expected := `
+Summary:
+  LoadMetrics:
+    TotalConnections: 5
+    TotalRequests: 1000
+    SuccessCount: 999
+    ErrorCount: 1
+    TotalPayloadSize: 2.0 kB
+    AveragePayloadSize: 20 B
+    EarliestSuccessfulLoadSendTime: NA
+    LatestSuccessfulLoadSendTime: NA
+    TimeToCompleteLoad: 0s
+
+  Error distribution:
+  [1]   load error
+  
+  ResponseMetrics:
+    TotalResponses: 1000
+    SuccessCount: 999
+    ErrorCount: 1
+    TotalResponsePayloadSize: 1.8 kB
+    AverageResponsePayloadSize: 18 B 
+    EarliestSuccessfulResponseReceivedTime: NA
+    LatestSuccessfulResponseReceivedTime: NA
+    TimeToGetResponses: 0s
+  
+  Error distribution: 
+  [1]   response error
+`
+	report := &Report{
+		Load: LoadMetrics{
+			TotalConnections:          5,
+			TotalRequests:             1000,
+			SuccessCount:              999,
+			ErrorCount:                1,
+			ErrorCountByType:          map[string]uint{"load error": 1},
+			TotalPayloadLengthBytes:   2000,
+			AveragePayloadLengthBytes: 20.0,
+		},
+		Response: ResponseMetrics{
+			TotalResponses:                    1000,
+			SuccessCount:                      999,
+			ErrorCount:                        1,
+			ErrorCountByType:                  map[string]uint{"response error": 1},
+			TotalResponsePayloadLengthBytes:   1800,
+			AverageResponsePayloadLengthBytes: 18.0,
+			IsAvailableForReporting:           true,
+		},
+	}
+
+	buffer := &bytes.Buffer{}
+	err := print(buffer, report)
+
+	assert.Nil(t, err)
+	assert.Equal(t, strings.Trim(expected, " "), strings.Trim(string(buffer.Bytes()), " "))
+}
