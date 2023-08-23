@@ -51,7 +51,7 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 
 1. **Download the current release**
 
-`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.1/blast_Darwin_x86_64.tar.gz`
+`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.2/blast_Darwin_x86_64.tar.gz`
 
 3. **Unzip the release in a directory**
 
@@ -61,7 +61,7 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 
 1. **Download the current release**
 
-`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.1/blast_Linux_x86_64.tar.gz`
+`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.2/blast_Linux_x86_64.tar.gz`
 
 2. **Unzip the release in a directory**
 
@@ -160,17 +160,17 @@ Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseRea
 
 ## Screenshots
 
-- **Sending load on the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989` 2> err.log
+- **Sending load on the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989 2> err.log`
 
-  <img width="715" alt="Sending load on the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/669b9116-ca11-4b07-ac77-9e489c8780f6">
+  <img width="715" alt="Sending load on the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/0eca825c-22e5-4120-9460-cf5eead92c9b">
 
-- **Reading responses from the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rtr 200000 localhost:8989` 2> err.log
-  
-  <img width="715" alt="Reading responses from the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/915ed04a-042c-42b6-aec3-83a4ee14e739">
+- **Reading responses from the target server:** `./blast -n 200000 -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rtr 200000 localhost:8989 2> err.log`
 
-- **Error distribution:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989` 2> err.log
+  <img width="715" alt="Reading responses from the target server" src="https://github.com/SarthakMakhija/blast/assets/21108320/d15a1782-b1e6-4200-b697-1083015c3cb3">
 
-  <img width="715" alt="Error distribution" src="https://github.com/SarthakMakhija/blast/assets/21108320/bb081d85-054c-4c5e-b711-9150acf62a4b">
+- **Error distribution:** `./blast -n 200000 -c 100 -conn 100  -f ./payload localhost:8989 2> err.log`
+
+  <img width="715" alt="Error distribution" src="https://github.com/SarthakMakhija/blast/assets/21108320/b4ca41cd-17ea-497e-9290-29eeb8ba2089">
 
 ## References
 [hey](https://github.com/rakyll/hey)
