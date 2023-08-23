@@ -33,7 +33,7 @@ var (
 )
 
 const (
-	version      = "0.0.1"
+	version      = "0.0.2"
 	versionLabel = " Version: %s\n\n"
 )
 
