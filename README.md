@@ -143,7 +143,8 @@ The above code creates a protobuf encoded message and writes it to a file. The f
 6. **blast provides a feature to read responses. How is response reading implemented?**
 
 [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) implements one goroutine per `net.Conn` to read responses from connections.
-The goroutine keeps on reading from the connection, and tracks successful and failed reads.
+The goroutine keeps on reading from the connection, and tracks successful and failed reads. This design means that there will be 1M response reader goroutines if the user
+wants to estalish 1M connections and read responses. To handle this, IO multiplexing + pool of ResponseReaders is planned in subsequent release.
 
 7. **What is the significance of Rrs flag in blast?**
 
