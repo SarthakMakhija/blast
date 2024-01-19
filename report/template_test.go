@@ -73,7 +73,7 @@ Summary:
 	}
 
 	buffer := &bytes.Buffer{}
-	err = print(buffer, report)
+	err = write(buffer, report)
 
 	assert.Equal(t, strings.Trim(expected, " "), strings.Trim(string(buffer.Bytes()), " "))
 }
@@ -118,7 +118,7 @@ Summary:
 	}
 
 	buffer := &bytes.Buffer{}
-	err = print(buffer, report)
+	err = write(buffer, report)
 
 	assert.Equal(t, strings.Trim(expected, " "), strings.Trim(string(buffer.Bytes()), " "))
 }
@@ -187,7 +187,7 @@ Summary:
 	}
 
 	buffer := &bytes.Buffer{}
-	err = print(buffer, report)
+	err = write(buffer, report)
 
 	assert.Equal(t, strings.Trim(expected, " "), strings.Trim(string(buffer.Bytes()), " "))
 }
@@ -244,7 +244,7 @@ Summary:
 	}
 
 	buffer := &bytes.Buffer{}
-	err := print(buffer, report)
+	err := write(buffer, report)
 
 	assert.Nil(t, err)
 	assert.Equal(t, strings.Trim(expected, " "), strings.Trim(string(buffer.Bytes()), " "))

@@ -58,7 +58,7 @@ func formatNumberUint(value uint) string {
 	return fmt.Sprintf("%d", value)
 }
 
-// humanizePayloadSize returns the size in human readable form.
+// humanizePayloadSize returns the size in human-readable form.
 func humanizePayloadSize(size int64) string {
 	return humanize.Bytes(uint64(size))
 }
@@ -81,10 +81,12 @@ func formatDuration(duration time.Duration) string {
 	return duration.String()
 }
 
-func print(writer io.Writer, report *Report) error {
+// write writes the report to the given writer.
+func write(writer io.Writer, report *Report) error {
 	return newTemplate().Execute(writer, report)
 }
 
+// newTemplate creates a new instance of template.Template.
 func newTemplate() *template.Template {
 	return template.Must(template.New("blast").Funcs(functions).Parse(templateText))
 }

@@ -120,7 +120,7 @@ func (reporter *Reporter) PrintReport(writer io.Writer) {
 	if reporter.responseMetricsDoneChannel != nil {
 		<-reporter.responseMetricsDoneChannel
 	}
-	_ = print(writer, reporter.report)
+	_ = write(writer, reporter.report)
 }
 
 // TotalLoadReportedTillNow returns the total load that has reporter so far.
