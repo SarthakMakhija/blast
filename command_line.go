@@ -75,8 +75,10 @@ Options:
           (default for current machine is %d cores)
 `
 
+// CommandLineArguments defines the command line arguments supported by blast.
 type CommandLineArguments struct{}
 
+// NewCommandArguments creates a new instance of CommandLineArguments.
 func NewCommandArguments() *CommandLineArguments {
 	return &CommandLineArguments{}
 }
