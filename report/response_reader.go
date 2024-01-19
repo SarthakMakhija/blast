@@ -54,26 +54,26 @@ func NewResponseReader(
 }
 
 // StartReading runs a goroutine that reads from the provided net.Conn.
-// It keepts on reading from the connection until either of the two happen:
-// 1) Reading from the connnection returns an io.EOF error
+// It keeps on reading from the connection until either of the two happen:
+// 1) Reading from the connection returns an io.EOF error
 // 2) ResponseReader gets stopped
 // ResponseReader implements one goroutine for each new connection created by the workers.WorkerGroup.
 func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 	go func(connection net.Conn) {
-		for {
-			defer func() {
-				_ = connection.Close()
-				if err := recover(); err != nil {
-					fmt.Fprintf(os.Stderr, "[ResponseReader] %v\n", err.(error).Error())
-				}
-			}()
+		defer func() {
+			_ = connection.Close()
+			if err := recover(); err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "[ResponseReader] %v\n", err.(error).Error())
+			}
+		}()
 
+		for {
 			select {
 			case <-responseReader.stopChannel:
 				return
 			default:
 				if responseReader.readDeadline != time.Duration(0) {
-					connection.SetReadDeadline(time.Now().Add(responseReader.readDeadline))
+					_ = connection.SetReadDeadline(time.Now().Add(responseReader.readDeadline))
 				}
 				buffer := make([]byte, responseReader.responseSizeBytes)
 				n, err := connection.Read(buffer)
@@ -100,7 +100,7 @@ func (responseReader *ResponseReader) StartReading(connection net.Conn) {
 	}(connection)
 }
 
-// Closes closes the stopChannel which stops all the goroutines.
+// Close closes the stopChannel which stops all the goroutines.
 func (responseReader *ResponseReader) Close() {
 	close(responseReader.stopChannel)
 }

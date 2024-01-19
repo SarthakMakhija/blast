@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Reports represents the report that is displayed to the user after the load is completed.
+// Report reports represents the report that is displayed to the user after the load is completed.
 // Report contains LoadMetrics and ResponseMetrics.
 // LoadMetrics defines fields that are relevant to the generated load, whereas
 // ResponseMetrics defines the fields that are relevant to the response read by blast.
@@ -120,7 +120,7 @@ func (reporter *Reporter) PrintReport(writer io.Writer) {
 	if reporter.responseMetricsDoneChannel != nil {
 		<-reporter.responseMetricsDoneChannel
 	}
-	print(writer, reporter.report)
+	_ = print(writer, reporter.report)
 }
 
 // TotalLoadReportedTillNow returns the total load that has reporter so far.
