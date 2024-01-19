@@ -32,7 +32,7 @@ can decode. Almost all distributed systems accept payloads in a very specific fo
 
 All we needed was a tool that can send load (or specific load) on target TCP servers, read responses from those servers and present a decent :) report. This was an opportunity to build **blast**. **blast** is inspired from [hey](https://github.com/rakyll/hey), which is an HTTP load generator in golang.
 
-Since version 0.0.3, blast is a very thin CLI with a dependency on [blast-core](https://github.com/SarthakMakhija/blast-core).  
+*With version 0.0.3, blast is a very thin CLI with a dependency on [blast-core](https://github.com/SarthakMakhija/blast-core).*  
 
 ## Features
 
