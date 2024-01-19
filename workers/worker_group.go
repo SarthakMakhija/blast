@@ -22,6 +22,7 @@ type WorkerGroup struct {
 	stopChannel    chan struct{}
 	doneChannel    chan struct{}
 	responseReader *report.ResponseReader
+	requestId      *RequestId
 }
 
 // NewWorkerGroup returns a new instance of WorkerGroup without supporting reading from the
@@ -41,6 +42,7 @@ func NewWorkerGroupWithResponseReader(
 		stopChannel:    make(chan struct{}, options.concurrency),
 		doneChannel:    make(chan struct{}, 1),
 		responseReader: responseReader,
+		requestId:      NewRequestId(),
 	}
 }
 
@@ -144,6 +146,7 @@ func (group *WorkerGroup) runWorker(
 	Worker{
 		connection:   connection,
 		connectionId: connectionId,
+		requestId:    group.requestId,
 		options: WorkerOptions{
 			totalRequests:          totalRequests / group.options.concurrency,
 			payloadGenerator:       group.options.payloadGenerator,

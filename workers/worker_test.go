@@ -27,6 +27,7 @@ func TestWritesPayloadByWorker(t *testing.T) {
 	var buffer bytes.Buffer
 	worker := Worker{
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
+		requestId:  NewRequestId(),
 		options: WorkerOptions{
 			totalRequests:          uint(1),
 			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
@@ -53,6 +54,7 @@ func TestWritesMultiplePayloadsByWorker(t *testing.T) {
 	var buffer bytes.Buffer
 	worker := Worker{
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
+		requestId:  NewRequestId(),
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
 			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
@@ -80,6 +82,7 @@ func TestWritesMultiplePayloadsByWorkerWithThrottle(t *testing.T) {
 	var buffer bytes.Buffer
 	worker := Worker{
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
+		requestId:  NewRequestId(),
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
 			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
@@ -107,6 +110,7 @@ func TestWritesOnANilConnectionWithConnectionId(t *testing.T) {
 
 	worker := Worker{
 		connection: nil,
+		requestId:  NewRequestId(),
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
 			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
@@ -134,6 +138,7 @@ func TestWritesPayloadByWorkerWithConnectionId(t *testing.T) {
 	var buffer bytes.Buffer
 	worker := Worker{
 		connection:   &BytesWriteCloser{bufio.NewWriter(&buffer)},
+		requestId:    NewRequestId(),
 		connectionId: 10,
 		options: WorkerOptions{
 			totalRequests:          uint(1),

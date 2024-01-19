@@ -20,6 +20,7 @@ type Worker struct {
 	connection   io.WriteCloser
 	connectionId int
 	options      WorkerOptions
+	requestId    *RequestId
 }
 
 // run runs a Worker.
@@ -63,7 +64,7 @@ func (worker Worker) sendRequest() {
 		_ = recover()
 	}()
 	if worker.connection != nil {
-		payload := worker.options.payloadGenerator.Generate(1) //TODO: Generate request id
+		payload := worker.options.payloadGenerator.Generate(worker.requestId.Next())
 		_, err := worker.connection.Write(payload)
 
 		worker.options.loadGenerationResponse <- report.LoadGenerationResponse{

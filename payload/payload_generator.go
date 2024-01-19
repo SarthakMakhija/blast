@@ -2,7 +2,7 @@ package payload
 
 // PayloadGenerator defines a function for generating the request payload
 type PayloadGenerator interface {
-	Generate(requestId uint) []byte
+	Generate(requestId uint64) []byte
 }
 
 // ConstantPayloadGenerator provides a constant payload to all the workers for sending the payload.
@@ -18,6 +18,6 @@ func NewConstantPayloadGenerator(payload []byte) ConstantPayloadGenerator {
 }
 
 // Generate generates (/returns) the same payload for each request.
-func (generator ConstantPayloadGenerator) Generate(_ uint) []byte {
+func (generator ConstantPayloadGenerator) Generate(id uint64) []byte {
 	return generator.payload
 }
