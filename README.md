@@ -53,7 +53,7 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 
 1. **Download the current release**
 
-`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.2/blast_Darwin_x86_64.tar.gz`
+`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.3/blast_Darwin_x86_64.tar.gz`
 
 3. **Unzip the release in a directory**
 
@@ -63,7 +63,7 @@ All we needed was a tool that can send load (or specific load) on target TCP ser
 
 1. **Download the current release**
 
-`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.2/blast_Linux_x86_64.tar.gz`
+`wget -o - https://github.com/SarthakMakhija/blast/releases/download/v0.0.3/blast_Linux_x86_64.tar.gz`
 
 2. **Unzip the release in a directory**
 
