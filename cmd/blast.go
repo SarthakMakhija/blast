@@ -240,7 +240,7 @@ func (blast Blast) waitForResponsesToComplete() {
 		for {
 			select {
 			case <-blast.workerGroup.DoneChannel():
-				fmt.Fprintln(os.Stdout, "[Load completed]")
+				_, _ = fmt.Fprintln(os.Stdout, "[Load completed]")
 			case <-responsesCapturedInspectionTimer.C:
 				if blast.responseOptions.ReadingOption == ReadTotalResponses {
 					if blast.responseReader.TotalResponsesRead() >= uint64(
