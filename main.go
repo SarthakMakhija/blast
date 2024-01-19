@@ -20,7 +20,7 @@ var (
 	numberOfRequests        = flag.Uint("n", 1000, "")
 	concurrency             = flag.Uint("c", 50, "")
 	connections             = flag.Uint("conn", 1, "")
-	filePath                = flag.String("f", "", "")
+	payloadFilePath         = flag.String("f", "", "")
 	requestsPerSecond       = flag.Float64("rps", 0, "")
 	loadDuration            = flag.Duration("z", 20*time.Second, "")
 	connectTimeout          = flag.Duration("t", 3*time.Second, "")
@@ -82,10 +82,10 @@ Options:
 func main() {
 	logo := `{{ .Title "blast" "" 0}}`
 	banner.InitString(os.Stdout, true, false, logo)
-	fmt.Fprintf(os.Stdout, versionLabel, version)
+	_, _ = fmt.Fprintf(os.Stdout, versionLabel, version)
 
 	flag.Usage = func() {
-		fmt.Fprint(os.Stderr, fmt.Sprintf(usage, runtime.NumCPU()))
+		_, _ = fmt.Fprint(os.Stderr, fmt.Sprintf(usage, runtime.NumCPU()))
 	}
 
 	flag.Parse()
@@ -95,7 +95,7 @@ func main() {
 
 	url := flag.Args()[0]
 	assertUrl(url)
-	assertFilePath(*filePath)
+	assertPayloadFilePath(*payloadFilePath)
 	assertConnectTimeout(*connectTimeout)
 	assertRequestsPerSecond(*requestsPerSecond)
 	assertLoadDuration(*loadDuration)
@@ -132,8 +132,8 @@ func assertUrl(url string) {
 	}
 }
 
-// assertFilePath asserts that the filePath is not empty.
-func assertFilePath(filePath string) {
+// assertPayloadFilePath asserts that the payloadFilePath is not empty.
+func assertPayloadFilePath(filePath string) {
 	if len(strings.Trim(filePath, " ")) == 0 {
 		exitFunction("-f cannot be blank.")
 	}
@@ -215,7 +215,7 @@ func setUpBlast(url string) blast.Blast {
 		*concurrency,
 		*connections,
 		*numberOfRequests,
-		getFilePayload(*filePath),
+		getFilePayload(*payloadFilePath),
 		url,
 		*requestsPerSecond,
 		*connectTimeout,
@@ -253,10 +253,10 @@ func getFilePayload(filePath string) []byte {
 // usageAndExit defines the usage of blast application and exits the application.
 func usageAndExit(msg string) {
 	if msg != "" {
-		fmt.Fprintf(os.Stderr, msg)
-		fmt.Fprintf(os.Stderr, "\n\n")
+		_, _ = fmt.Fprintf(os.Stderr, msg)
+		_, _ = fmt.Fprintf(os.Stderr, "\n\n")
 	}
 	flag.Usage()
-	fmt.Fprintf(os.Stderr, "\n")
+	_, _ = fmt.Fprintf(os.Stderr, "\n")
 	os.Exit(1)
 }
