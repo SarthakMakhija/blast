@@ -63,7 +63,7 @@ func (worker Worker) sendRequest() {
 		_ = recover()
 	}()
 	if worker.connection != nil {
-		payload := worker.options.payloadGenerationFn(1) //TODO: Generate request id
+		payload := worker.options.payloadGenerator.Generate(1) //TODO: Generate request id
 		_, err := worker.connection.Write(payload)
 
 		worker.options.loadGenerationResponse <- report.LoadGenerationResponse{

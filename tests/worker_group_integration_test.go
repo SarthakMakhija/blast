@@ -25,7 +25,7 @@ func TestSendsRequestsWithSingleConnection(t *testing.T) {
 	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:8080",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
@@ -55,7 +55,7 @@ func TestSendsRequestsWithMultipleConnections(t *testing.T) {
 		concurrency,
 		connections,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:8081",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
@@ -98,7 +98,7 @@ func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 		workers.NewGroupOptions(
 			concurrency,
 			totalRequests,
-			payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+			payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 			"localhost:8082",
 		), report.NewResponseReader(responseSizeBytes, 100*time.Millisecond, responseChannel),
 	)
@@ -132,7 +132,7 @@ func TestSendsAdditionalRequestsThanConfiguredWithSingleConnection(t *testing.T)
 	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:8083",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
@@ -155,7 +155,7 @@ func TestSendsRequestsOnANonRunningServer(t *testing.T) {
 	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:8090",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
@@ -183,7 +183,7 @@ func TestSendsRequestsWithDialTimeout(t *testing.T) {
 		concurrency,
 		1,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:8098",
 		0.0,
 		1*time.Nanosecond,

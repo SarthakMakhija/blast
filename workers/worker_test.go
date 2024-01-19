@@ -29,7 +29,7 @@ func TestWritesPayloadByWorker(t *testing.T) {
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
 		options: WorkerOptions{
 			totalRequests:          uint(1),
-			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
+			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
 			loadGenerationResponse: loadGenerationResponse,
 		},
 	}
@@ -55,7 +55,7 @@ func TestWritesMultiplePayloadsByWorker(t *testing.T) {
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
-			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
+			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
 			loadGenerationResponse: loadGenerationResponse,
 		},
 	}
@@ -82,7 +82,7 @@ func TestWritesMultiplePayloadsByWorkerWithThrottle(t *testing.T) {
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
-			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
+			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
 			loadGenerationResponse: loadGenerationResponse,
 			requestsPerSecond:      float64(3),
 		},
@@ -109,7 +109,7 @@ func TestWritesOnANilConnectionWithConnectionId(t *testing.T) {
 		connection: nil,
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
-			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
+			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
 			loadGenerationResponse: loadGenerationResponse,
 		},
 	}
@@ -137,7 +137,7 @@ func TestWritesPayloadByWorkerWithConnectionId(t *testing.T) {
 		connectionId: 10,
 		options: WorkerOptions{
 			totalRequests:          uint(1),
-			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
+			payloadGenerator:       payload.NewConstantPayloadGenerator([]byte("payload")),
 			loadGenerationResponse: loadGenerationResponse,
 		},
 	}

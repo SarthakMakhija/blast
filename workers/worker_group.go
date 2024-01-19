@@ -146,7 +146,7 @@ func (group *WorkerGroup) runWorker(
 		connectionId: connectionId,
 		options: WorkerOptions{
 			totalRequests:          totalRequests / group.options.concurrency,
-			payloadGenerationFn:    group.options.payloadGenerationFn,
+			payloadGenerator:       group.options.payloadGenerator,
 			targetAddress:          group.options.targetAddress,
 			requestsPerSecond:      group.options.requestsPerSecond,
 			stopChannel:            group.stopChannel,

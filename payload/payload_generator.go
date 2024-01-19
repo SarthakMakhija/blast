@@ -1,5 +1,10 @@
 package payload
 
+// PayloadGenerator defines a function for generating the request payload
+type PayloadGenerator interface {
+	Generate(requestId uint) []byte
+}
+
 // ConstantPayloadGenerator provides a constant payload to all the workers for sending the payload.
 type ConstantPayloadGenerator struct {
 	payload []byte

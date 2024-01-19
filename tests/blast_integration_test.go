@@ -28,7 +28,7 @@ func TestBlastWithLoadGeneration(t *testing.T) {
 	groupOptions := workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:10001",
 	)
 	buffer := &bytes.Buffer{}
@@ -60,7 +60,7 @@ func TestBlastWithLoadGenerationForMaximumDuration(t *testing.T) {
 		concurrency,
 		10,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:10002",
 	)
 	buffer := &bytes.Buffer{}
@@ -96,7 +96,7 @@ func TestBlastWithLoadGenerationAndResponseReading(t *testing.T) {
 	groupOptions := workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:10003",
 	)
 	responseOptions := blast.ResponseOptions{
@@ -135,7 +135,7 @@ func TestBlastWithLoadGenerationAndResponseReadingForMaximumDuration(t *testing.
 		concurrency,
 		10,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:10004",
 	)
 	responseOptions := blast.ResponseOptions{
@@ -178,7 +178,7 @@ func TestBlastWithResponseReadingGivenTheTargetServerFailsInSendingResponses(t *
 	groupOptions := workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:10005",
 	)
 	responseOptions := blast.ResponseOptions{
@@ -216,7 +216,7 @@ func TestBlastWithLoadGenerationAndAStopSignal(t *testing.T) {
 	groupOptions := workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:10006",
 	)
 	buffer := &bytes.Buffer{}
@@ -257,7 +257,7 @@ func TestBlastWithLoadGenerationAndResponseReadingWithStopSignal(t *testing.T) {
 		concurrency,
 		10,
 		totalRequests,
-		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")),
 		"localhost:10007",
 	)
 	responseOptions := blast.ResponseOptions{

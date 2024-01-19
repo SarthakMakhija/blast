@@ -216,7 +216,7 @@ func setUpBlast(url string) blast.Blast {
 		*concurrency,
 		*connections,
 		*numberOfRequests,
-		payloadGenerator.Generate,
+		payloadGenerator,
 		url,
 		*requestsPerSecond,
 		*connectTimeout,
