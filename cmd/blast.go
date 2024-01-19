@@ -196,7 +196,7 @@ func (blast Blast) waitForLoadToComplete() {
 		for {
 			select {
 			case <-blast.workerGroup.DoneChannel():
-				fmt.Fprintln(os.Stdout, "[Load completed]")
+				_, _ = fmt.Fprintln(os.Stdout, "[Load completed]")
 			case <-loadReportedInspectionTimer.C:
 				if blast.reporter.TotalLoadReportedTillNow() >= uint64(
 					blast.groupOptions.TotalRequests(),
