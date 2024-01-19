@@ -50,7 +50,6 @@ func (worker Worker) sendRequests() {
 			if worker.options.requestsPerSecond > 0 {
 				<-throttle
 			}
-
 			worker.sendRequest()
 		}
 	}
@@ -64,10 +63,12 @@ func (worker Worker) sendRequest() {
 		_ = recover()
 	}()
 	if worker.connection != nil {
-		_, err := worker.connection.Write(worker.options.payload)
+		payload := worker.options.payloadGenerationFn(1) //TODO: Generate request id
+		_, err := worker.connection.Write(payload)
+
 		worker.options.loadGenerationResponse <- report.LoadGenerationResponse{
 			Err:                err,
-			PayloadLengthBytes: int64(len(worker.options.payload)),
+			PayloadLengthBytes: int64(len(payload)),
 			LoadGenerationTime: time.Now(),
 			ConnectionId:       worker.connectionId,
 		}

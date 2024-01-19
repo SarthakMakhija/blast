@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"blast/payload"
 	"bytes"
 	"regexp"
 	"strconv"
@@ -27,14 +28,14 @@ func TestBlastWithLoadGeneration(t *testing.T) {
 	groupOptions := workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:10001",
 	)
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
 
-	blast := blast.NewBlastWithoutResponseReading(groupOptions, 5*time.Minute)
-	blast.WaitForCompletion()
+	blastInstance := blast.NewBlastWithoutResponseReading(groupOptions, 5*time.Minute)
+	blastInstance.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalConnections: 1"))
@@ -59,21 +60,21 @@ func TestBlastWithLoadGenerationForMaximumDuration(t *testing.T) {
 		concurrency,
 		10,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:10002",
 	)
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
 
-	blast := blast.NewBlastWithoutResponseReading(groupOptions, 10*time.Millisecond)
-	blast.WaitForCompletion()
+	blastInstance := blast.NewBlastWithoutResponseReading(groupOptions, 10*time.Millisecond)
+	blastInstance.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
 	assert.True(t, strings.Contains(output, "ErrorCount: 0"))
 
-	regexp := regexp.MustCompile("TotalRequests.*")
-	totalRequestsString := regexp.Find(buffer.Bytes())
+	regularExpression := regexp.MustCompile("TotalRequests.*")
+	totalRequestsString := regularExpression.Find(buffer.Bytes())
 	totalRequestsMade, _ := strconv.Atoi(strings.Trim(
 		strings.ReplaceAll(string(totalRequestsString), "TotalRequests:", ""),
 		" ",
@@ -95,7 +96,7 @@ func TestBlastWithLoadGenerationAndResponseReading(t *testing.T) {
 	groupOptions := workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:10003",
 	)
 	responseOptions := blast.ResponseOptions{
@@ -107,8 +108,8 @@ func TestBlastWithLoadGenerationAndResponseReading(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
 
-	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Minute)
-	blast.WaitForCompletion()
+	blastInstance := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Minute)
+	blastInstance.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "ResponseMetrics"))
@@ -134,7 +135,7 @@ func TestBlastWithLoadGenerationAndResponseReadingForMaximumDuration(t *testing.
 		concurrency,
 		10,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:10004",
 	)
 	responseOptions := blast.ResponseOptions{
@@ -146,16 +147,16 @@ func TestBlastWithLoadGenerationAndResponseReadingForMaximumDuration(t *testing.
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
 
-	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 10*time.Millisecond)
-	blast.WaitForCompletion()
+	blastInstance := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 10*time.Millisecond)
+	blastInstance.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
 	assert.True(t, strings.Contains(output, "ErrorCount: 0"))
 	assert.True(t, strings.Contains(output, "ResponseMetrics"))
 
-	regexp := regexp.MustCompile("TotalRequests.*")
-	totalRequestsString := regexp.Find(buffer.Bytes())
+	regularExpression := regexp.MustCompile("TotalRequests.*")
+	totalRequestsString := regularExpression.Find(buffer.Bytes())
 	totalRequestsMade, _ := strconv.Atoi(strings.Trim(
 		strings.ReplaceAll(string(totalRequestsString), "TotalRequests:", ""),
 		" ",
@@ -177,7 +178,7 @@ func TestBlastWithResponseReadingGivenTheTargetServerFailsInSendingResponses(t *
 	groupOptions := workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:10005",
 	)
 	responseOptions := blast.ResponseOptions{
@@ -189,8 +190,8 @@ func TestBlastWithResponseReadingGivenTheTargetServerFailsInSendingResponses(t *
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
 
-	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Second)
-	blast.WaitForCompletion()
+	blastInstance := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 5*time.Second)
+	blastInstance.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 
@@ -215,25 +216,25 @@ func TestBlastWithLoadGenerationAndAStopSignal(t *testing.T) {
 	groupOptions := workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:10006",
 	)
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
 
-	blast := blast.NewBlastWithoutResponseReading(groupOptions, 50*time.Second)
+	blastInstance := blast.NewBlastWithoutResponseReading(groupOptions, 50*time.Second)
 	go func() {
 		time.Sleep(10 * time.Millisecond)
-		blast.Stop()
+		blastInstance.Stop()
 	}()
-	blast.WaitForCompletion()
+	blastInstance.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
 	assert.True(t, strings.Contains(output, "ErrorCount: 0"))
 
-	regexp := regexp.MustCompile("TotalRequests.*")
-	totalRequestsString := regexp.Find(buffer.Bytes())
+	regularExpression := regexp.MustCompile("TotalRequests.*")
+	totalRequestsString := regularExpression.Find(buffer.Bytes())
 	totalRequestsMade, _ := strconv.Atoi(strings.Trim(
 		strings.ReplaceAll(string(totalRequestsString), "TotalRequests:", ""),
 		" ",
@@ -256,7 +257,7 @@ func TestBlastWithLoadGenerationAndResponseReadingWithStopSignal(t *testing.T) {
 		concurrency,
 		10,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:10007",
 	)
 	responseOptions := blast.ResponseOptions{
@@ -268,20 +269,20 @@ func TestBlastWithLoadGenerationAndResponseReadingWithStopSignal(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	blast.OutputStream = buffer
 
-	blast := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 50*time.Millisecond)
+	blastInstance := blast.NewBlastWithResponseReading(groupOptions, responseOptions, 50*time.Millisecond)
 	go func() {
 		time.Sleep(10 * time.Millisecond)
-		blast.Stop()
+		blastInstance.Stop()
 	}()
-	blast.WaitForCompletion()
+	blastInstance.WaitForCompletion()
 
 	output := string(buffer.Bytes())
 	assert.True(t, strings.Contains(output, "TotalRequests"))
 	assert.True(t, strings.Contains(output, "ErrorCount: 0"))
 	assert.True(t, strings.Contains(output, "ResponseMetrics"))
 
-	regexp := regexp.MustCompile("TotalRequests.*")
-	totalRequestsString := regexp.Find(buffer.Bytes())
+	regularExpression := regexp.MustCompile("TotalRequests.*")
+	totalRequestsString := regularExpression.Find(buffer.Bytes())
 	totalRequestsMade, _ := strconv.Atoi(strings.Trim(
 		strings.ReplaceAll(string(totalRequestsString), "TotalRequests:", ""),
 		" ",

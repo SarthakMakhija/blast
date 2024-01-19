@@ -65,7 +65,7 @@ func (group *WorkerGroup) Run() chan report.LoadGenerationResponse {
 	return loadGenerationResponseChannel
 }
 
-// Closes sends a stop signal to all the workers.
+// Close closes sends a stop signal to all the workers.
 func (group *WorkerGroup) Close() {
 	for count := 1; count <= int(group.options.concurrency); count++ {
 		group.stopChannel <- struct{}{}
@@ -91,12 +91,12 @@ func (group *WorkerGroup) runWorkers(
 	var connection net.Conn
 	var err error
 
-	var connectionId int = -1
+	var connectionId = -1
 	for count := 0; count < int(group.options.concurrency); count++ {
 		if count%int(connectionsSharedByWorker) == 0 || connection == nil {
 			connection, err = group.newConnection()
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "[WorkerGroup] %v\n", err.Error())
+				_, _ = fmt.Fprintf(os.Stderr, "[WorkerGroup] %v\n", err.Error())
 			} else {
 				connectionId = connectionId + 1
 			}
@@ -145,10 +145,8 @@ func (group *WorkerGroup) runWorker(
 		connection:   connection,
 		connectionId: connectionId,
 		options: WorkerOptions{
-			totalRequests: uint(
-				totalRequests / group.options.concurrency,
-			),
-			payload:                group.options.payload,
+			totalRequests:          totalRequests / group.options.concurrency,
+			payloadGenerationFn:    group.options.payloadGenerationFn,
 			targetAddress:          group.options.targetAddress,
 			requestsPerSecond:      group.options.requestsPerSecond,
 			stopChannel:            group.stopChannel,

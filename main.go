@@ -12,7 +12,7 @@ import (
 	"github.com/dimiro1/banner"
 
 	"blast/cmd"
-	payloadprovider "blast/payload_provider"
+	payloadprovider "blast/payload"
 	"blast/workers"
 )
 
@@ -211,11 +211,12 @@ func assertResponseReading(
 
 // setUpBlast creates a new instance of blast.Blast.
 func setUpBlast(url string) blast.Blast {
+	payloadGenerator := payloadprovider.NewConstantPayloadGenerator(getFilePayload(*payloadFilePath))
 	groupOptions := workers.NewGroupOptionsFullyLoaded(
 		*concurrency,
 		*connections,
 		*numberOfRequests,
-		getFilePayload(*payloadFilePath),
+		payloadGenerator.Generate,
 		url,
 		*requestsPerSecond,
 		*connectTimeout,

@@ -1,4 +1,4 @@
-package payloadprovider
+package payload
 
 import (
 	"os"

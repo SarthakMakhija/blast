@@ -1,4 +1,4 @@
-package payloadprovider
+package payload
 
 import (
 	"os"
@@ -11,7 +11,9 @@ func TestReadsTheFile(t *testing.T) {
 	file, err := os.CreateTemp(".", "file_payload")
 	assert.Nil(t, err)
 
-	defer os.Remove(file.Name())
+	defer func(name string) {
+		_ = os.Remove(name)
+	}(file.Name())
 
 	_, err = file.Write([]byte("sample test content"))
 	assert.Nil(t, err)

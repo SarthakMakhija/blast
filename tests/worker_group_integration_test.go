@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"blast/payload"
 	"sort"
 	"testing"
 	"time"
@@ -24,7 +25,7 @@ func TestSendsRequestsWithSingleConnection(t *testing.T) {
 	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:8080",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
@@ -54,7 +55,7 @@ func TestSendsRequestsWithMultipleConnections(t *testing.T) {
 		concurrency,
 		connections,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:8081",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
@@ -97,7 +98,7 @@ func TestSendsARequestAndReadsResponseWithSingleConnection(t *testing.T) {
 		workers.NewGroupOptions(
 			concurrency,
 			totalRequests,
-			[]byte("HelloWorld"),
+			payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 			"localhost:8082",
 		), report.NewResponseReader(responseSizeBytes, 100*time.Millisecond, responseChannel),
 	)
@@ -131,7 +132,7 @@ func TestSendsAdditionalRequestsThanConfiguredWithSingleConnection(t *testing.T)
 	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:8083",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
@@ -154,7 +155,7 @@ func TestSendsRequestsOnANonRunningServer(t *testing.T) {
 	workerGroup := workers.NewWorkerGroup(workers.NewGroupOptions(
 		concurrency,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:8090",
 	))
 	loadGenerationResponseChannel := workerGroup.Run()
@@ -182,7 +183,7 @@ func TestSendsRequestsWithDialTimeout(t *testing.T) {
 		concurrency,
 		1,
 		totalRequests,
-		[]byte("HelloWorld"),
+		payload.NewConstantPayloadGenerator([]byte("HelloWorld")).Generate,
 		"localhost:8098",
 		0.0,
 		1*time.Nanosecond,

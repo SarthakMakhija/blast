@@ -1,6 +1,7 @@
 package workers
 
 import (
+	"blast/payload"
 	"bufio"
 	"bytes"
 	"sync"
@@ -28,7 +29,7 @@ func TestWritesPayloadByWorker(t *testing.T) {
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
 		options: WorkerOptions{
 			totalRequests:          uint(1),
-			payload:                []byte("payload"),
+			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
 			loadGenerationResponse: loadGenerationResponse,
 		},
 	}
@@ -54,7 +55,7 @@ func TestWritesMultiplePayloadsByWorker(t *testing.T) {
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
-			payload:                []byte("payload"),
+			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
 			loadGenerationResponse: loadGenerationResponse,
 		},
 	}
@@ -81,7 +82,7 @@ func TestWritesMultiplePayloadsByWorkerWithThrottle(t *testing.T) {
 		connection: &BytesWriteCloser{bufio.NewWriter(&buffer)},
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
-			payload:                []byte("payload"),
+			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
 			loadGenerationResponse: loadGenerationResponse,
 			requestsPerSecond:      float64(3),
 		},
@@ -108,7 +109,7 @@ func TestWritesOnANilConnectionWithConnectionId(t *testing.T) {
 		connection: nil,
 		options: WorkerOptions{
 			totalRequests:          totalRequests,
-			payload:                []byte("payload"),
+			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
 			loadGenerationResponse: loadGenerationResponse,
 		},
 	}
@@ -136,7 +137,7 @@ func TestWritesPayloadByWorkerWithConnectionId(t *testing.T) {
 		connectionId: 10,
 		options: WorkerOptions{
 			totalRequests:          uint(1),
-			payload:                []byte("payload"),
+			payloadGenerationFn:    payload.NewConstantPayloadGenerator([]byte("payload")).Generate,
 			loadGenerationResponse: loadGenerationResponse,
 		},
 	}

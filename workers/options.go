@@ -8,82 +8,85 @@ import (
 
 const dialTimeout = 3 * time.Second
 
+// PayloadGenerator defines a function for generating the request payload
+type PayloadGenerator = func(requestId uint) []byte
+
 // GroupOptions defines the configuration options for the WorkerGroup.
 type GroupOptions struct {
-	concurrency       uint
-	connections       uint
-	totalRequests     uint
-	payload           []byte
-	targetAddress     string
-	requestsPerSecond float64
-	dialTimeout       time.Duration
+	concurrency         uint
+	connections         uint
+	totalRequests       uint
+	payloadGenerationFn PayloadGenerator
+	targetAddress       string
+	requestsPerSecond   float64
+	dialTimeout         time.Duration
 }
 
 // WorkerOptions defines the configuration options for a running Worker.
 type WorkerOptions struct {
 	totalRequests          uint
-	payload                []byte
+	payloadGenerationFn    PayloadGenerator
 	targetAddress          string
 	requestsPerSecond      float64
 	stopChannel            chan struct{}
 	loadGenerationResponse chan report.LoadGenerationResponse
 }
 
-// Creates a new instance of GroupOptions.
+// NewGroupOptions creates a new instance of GroupOptions.
 func NewGroupOptions(
 	concurrency uint,
 	totalRequests uint,
-	payload []byte,
+	payloadGenerationFn PayloadGenerator,
 	targetAddress string,
 ) GroupOptions {
 	return NewGroupOptionsFullyLoaded(
 		concurrency,
 		1,
 		totalRequests,
-		payload,
+		payloadGenerationFn,
 		targetAddress,
 		0.0,
 		dialTimeout,
 	)
 }
 
-// Creates a new instance of GroupOptions.
+// NewGroupOptionsWithConnections creates a new instance of GroupOptions.
 func NewGroupOptionsWithConnections(
 	concurrency uint,
 	connections uint,
 	totalRequests uint,
-	payload []byte,
+	payloadGenerationFn PayloadGenerator,
 	targetAddress string,
 ) GroupOptions {
 	return NewGroupOptionsFullyLoaded(
 		concurrency,
 		connections,
 		totalRequests,
-		payload,
+		payloadGenerationFn,
 		targetAddress,
 		0.0,
 		dialTimeout,
 	)
 }
 
-// Creates a new instance of GroupOptions.
+// NewGroupOptionsFullyLoaded creates a new instance of GroupOptions.
 func NewGroupOptionsFullyLoaded(
 	concurrency uint,
 	connections uint,
 	totalRequests uint,
-	payload []byte,
+	payloadGenerationFn PayloadGenerator,
 	targetAddress string,
 	requestsPerSecond float64,
 	dialTimeout time.Duration,
 ) GroupOptions {
 	return GroupOptions{
-		concurrency:       concurrency,
-		connections:       connections,
-		totalRequests:     totalRequests,
-		payload:           payload,
-		targetAddress:     targetAddress,
-		requestsPerSecond: requestsPerSecond,
-		dialTimeout:       dialTimeout,
+		concurrency:         concurrency,
+		connections:         connections,
+		totalRequests:       totalRequests,
+		payloadGenerationFn: payloadGenerationFn,
+		targetAddress:       targetAddress,
+		requestsPerSecond:   requestsPerSecond,
+		dialTimeout:         dialTimeout,
 	}
 }
 
