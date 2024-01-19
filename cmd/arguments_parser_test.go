@@ -15,53 +15,53 @@ func exitWithPanic(msg string) {
 func TestParseCommandLineArgumentsWithoutUrl(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertUrl("")
+		assertUrl("")
 	})
 }
 
 func TestParseCommandLineArgumentsWithEmptyUrl(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertUrl(" ")
+		assertUrl(" ")
 	})
 }
 
 func TestParseCommandLineArgumentsWithoutPayloadFilePath(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertPayloadFilePath("")
+		assertPayloadFilePath("")
 	})
 }
 
 func TestParseCommandLineArgumentsWithEmptyPayloadFilePath(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertPayloadFilePath(" ")
+		assertPayloadFilePath(" ")
 	})
 }
 
 func TestParseCommandLineArgumentsWithNonEmptyPayloadFilePath(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertPayloadFilePath("./filePayload")
+		assertPayloadFilePath("./filePayload")
 	})
 }
 
 func TestParseCommandLineArgumentsWithConnectTimeoutEqualToZero(t *testing.T) {
 	assert.Panics(t, func() {
-		NewCommandArguments().assertConnectTimeout(time.Duration(0))
+		assertConnectTimeout(time.Duration(0))
 	})
 }
 
 func TestParseCommandLineArgumentsWithConnectTimeout(t *testing.T) {
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertConnectTimeout(time.Duration(1))
+		assertConnectTimeout(time.Duration(1))
 	})
 }
 
 func TestParseCommandLineArgumentsWithRequestsPerSecondLessThanZero(t *testing.T) {
 	assert.Panics(t, func() {
-		NewCommandArguments().assertRequestsPerSecond(-1)
+		assertRequestsPerSecond(-1)
 	})
 }
 
@@ -77,21 +77,21 @@ func TestParseCommandLineArgumentsWithLoadDurationZero(t *testing.T) {
 	for _, test := range tests {
 		duration, _ := time.ParseDuration(test.loadDuration)
 		assert.Panics(t, func() {
-			NewCommandArguments().assertLoadDuration(duration)
+			assertLoadDuration(duration)
 		})
 	}
 }
 
 func TestParseCommandLineArgumentsWithRequestsPerSecond(t *testing.T) {
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertRequestsPerSecond(1)
+		assertRequestsPerSecond(1)
 	})
 }
 
 func TestParseCommandLineArgumentsWithTotalRequestsMustBeGreaterThanZero(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			0, 1, 1,
 		)
 	})
@@ -100,7 +100,7 @@ func TestParseCommandLineArgumentsWithTotalRequestsMustBeGreaterThanZero(t *test
 func TestParseCommandLineArgumentsWithConcurrencyMustBeGreaterThanZero(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			1, 0, 1,
 		)
 	})
@@ -109,7 +109,7 @@ func TestParseCommandLineArgumentsWithConcurrencyMustBeGreaterThanZero(t *testin
 func TestParseCommandLineArgumentsWithConnectionsMustBeGreaterThanZero(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			1, 1, 0,
 		)
 	})
@@ -118,7 +118,7 @@ func TestParseCommandLineArgumentsWithConnectionsMustBeGreaterThanZero(t *testin
 func TestParseCommandLineArgumentsWithTotalRequestsMustBeGreaterThanOrEqualToConcurrency(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			1, 2, 1,
 		)
 	})
@@ -127,7 +127,7 @@ func TestParseCommandLineArgumentsWithTotalRequestsMustBeGreaterThanOrEqualToCon
 func TestParseCommandLineArgumentsWithTotalRequestsIsEqualToConcurrency(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			2, 2, 1,
 		)
 	})
@@ -136,7 +136,7 @@ func TestParseCommandLineArgumentsWithTotalRequestsIsEqualToConcurrency(t *testi
 func TestParseCommandLineArgumentsWithTotalRequestsIsGreaterThanConcurrency(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			4, 2, 1,
 		)
 	})
@@ -145,7 +145,7 @@ func TestParseCommandLineArgumentsWithTotalRequestsIsGreaterThanConcurrency(t *t
 func TestParseCommandLineArgumentsWithConnectionsMustNotBeGreaterThanConcurrency(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			10, 5, 10,
 		)
 	})
@@ -154,7 +154,7 @@ func TestParseCommandLineArgumentsWithConnectionsMustNotBeGreaterThanConcurrency
 func TestParseCommandLineArgumentsWithConcurrencyMustBeAMultipleOfConnections(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			10, 5, 8,
 		)
 	})
@@ -163,7 +163,7 @@ func TestParseCommandLineArgumentsWithConcurrencyMustBeAMultipleOfConnections(t 
 func TestParseCommandLineArgumentsWithConcurrencyIsAMultipleOfConnections(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			100, 10, 5,
 		)
 	})
@@ -172,7 +172,7 @@ func TestParseCommandLineArgumentsWithConcurrencyIsAMultipleOfConnections(t *tes
 func TestParseCommandLineArgumentsWithConcurrencyMustBeGreaterThanZeroEvenIfLoadDurationIsGreaterThanZero(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertTotalConcurrentRequestsWithClientConnections(
+		assertTotalConcurrentRequestsWithClientConnections(
 			1, 0, 1,
 		)
 	})
@@ -181,55 +181,55 @@ func TestParseCommandLineArgumentsWithConcurrencyMustBeGreaterThanZeroEvenIfLoad
 func TestParseCommandLineArgumentsWithMaxProcsMustBeGreaterThanZero(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertAndSetMaxProcs(0)
+		assertAndSetMaxProcs(0)
 	})
 }
 
 func TestParseCommandLineArgumentsWithMaxProcsIsGreaterThanZero(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertAndSetMaxProcs(1)
+		assertAndSetMaxProcs(1)
 	})
 }
 
 func TestParseCommandLineArgumentsWithResponseSizeLessThanZero(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertResponseReading(true, -1, 10, 10)
+		assertResponseReading(true, -1, 10, 10)
 	})
 }
 
 func TestParseCommandLineArgumentsWithBothTotalResponsesAndSuccessfulResponsesSpecified(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.Panics(t, func() {
-		NewCommandArguments().assertResponseReading(true, 100, 10, 10)
+		assertResponseReading(true, 100, 10, 10)
 	})
 }
 
 func TestParseCommandLineArgumentsWithOnlyTotalResponsesSpecified(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertResponseReading(false, 100, 10, 0)
+		assertResponseReading(false, 100, 10, 0)
 	})
 }
 
 func TestParseCommandLineArgumentsWithOnlySuccessfulResponsesSpecified(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertResponseReading(false, 100, 0, 10)
+		assertResponseReading(false, 100, 0, 10)
 	})
 }
 
 func TestParseCommandLineArgumentsWithoutResponseReading(t *testing.T) {
 	exitFunction = exitWithPanic
 	assert.NotPanics(t, func() {
-		NewCommandArguments().assertResponseReading(false, 100, 10, 10)
+		assertResponseReading(false, 100, 10, 10)
 	})
 }
 
 func TestParseCommandLineArgumentsWithNonExistingFile(t *testing.T) {
 	assert.Panics(t, func() {
-		NewCommandArguments().getFilePayload("./non-existing")
+		getFilePayload("./non-existing")
 	})
 }
 
@@ -241,6 +241,6 @@ func TestParseCommandLineArgumentsWithAnExistingFile(t *testing.T) {
 	}()
 
 	assert.NotPanics(t, func() {
-		NewCommandArguments().getFilePayload("./testFile")
+		getFilePayload("./testFile")
 	})
 }
