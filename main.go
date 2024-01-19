@@ -1,12 +1,13 @@
 package main
 
 import (
+	"blast/cmd"
 	"os"
 	"os/signal"
 )
 
 func main() {
-	commandArguments := NewCommandArguments()
+	commandArguments := blast.NewCommandArguments()
 	blastInstance := commandArguments.Parse()
 
 	interruptChannel := make(chan os.Signal, 1)

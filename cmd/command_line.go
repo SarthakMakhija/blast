@@ -1,7 +1,6 @@
-package main
+package blast
 
 import (
-	blast "blast/cmd"
 	"blast/payload"
 	"blast/workers"
 	"flag"
@@ -84,7 +83,7 @@ func NewCommandArguments() *CommandLineArguments {
 }
 
 // Parse is the entrypoint for CommandLineArguments.
-func (arguments *CommandLineArguments) Parse() blast.Blast {
+func (arguments *CommandLineArguments) Parse() Blast {
 	logo := `{{ .Title "blast" "" 0}}`
 	banner.InitString(os.Stdout, true, false, logo)
 	_, _ = fmt.Fprintf(os.Stdout, versionLabel, version)
@@ -211,7 +210,7 @@ func (arguments *CommandLineArguments) assertResponseReading(
 func (arguments *CommandLineArguments) setUpBlast(
 	payloadGenerator payload.PayloadGenerator,
 	url string,
-) blast.Blast {
+) Blast {
 	groupOptions := workers.NewGroupOptionsFullyLoaded(
 		*concurrency,
 		*connections,
@@ -222,22 +221,22 @@ func (arguments *CommandLineArguments) setUpBlast(
 		*connectTimeout,
 	)
 
-	var instance blast.Blast
+	var instance Blast
 	if *readResponses {
-		readingOption := blast.ReadTotalResponses
+		readingOption := ReadTotalResponses
 		if *readSuccessfulResponses > 0 {
-			readingOption = blast.ReadSuccessfulResponses
+			readingOption = ReadSuccessfulResponses
 		}
-		responseOptions := blast.ResponseOptions{
+		responseOptions := ResponseOptions{
 			ResponsePayloadSizeBytes:       *responsePayloadSize,
 			TotalResponsesToRead:           *readTotalResponses,
 			TotalSuccessfulResponsesToRead: *readSuccessfulResponses,
 			ReadingOption:                  readingOption,
 			ReadDeadline:                   *readResponseDeadline,
 		}
-		instance = blast.NewBlastWithResponseReading(groupOptions, responseOptions, *loadDuration)
+		instance = NewBlastWithResponseReading(groupOptions, responseOptions, *loadDuration)
 	} else {
-		instance = blast.NewBlastWithoutResponseReading(groupOptions, *loadDuration)
+		instance = NewBlastWithoutResponseReading(groupOptions, *loadDuration)
 	}
 	return instance
 }
