@@ -179,4 +179,4 @@ Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseRea
 ## References
 [hey](https://github.com/rakyll/hey)
 
-*The logo is built using [logo.com](logo.com)*.
+*The logo is built using [logo.com](https://logo.com/)*.
