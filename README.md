@@ -108,7 +108,7 @@ This means, we can have 100 workers with 10 connections, where a group of 10 wor
 
 You can refer the code [here](https://github.com/SarthakMakhija/blast/blob/main/workers/worker_group.go#L89).
 
-5. **My server takes a protobuf encoded byte slice. How do I pass the payload to blast?**
+4. **My server takes a protobuf encoded byte slice. How do I pass the payload to blast?**
 
 **blast** supports reading the payload from a file. The payload that needs to be sent to the target server can be written to a file in a separate process and then the file can be passed
 as an option to the **blast**. Let's look at the pseudocode:
@@ -132,18 +132,18 @@ as an option to the **blast**. Let's look at the pseudocode:
 
 The above code creates a protobuf encoded message and writes it to a file. The file can then be provided using `-f` option to the **blast**.
 
-6. **blast provides a feature to read responses. How is response reading implemented?**
+5. **blast provides a feature to read responses. How is response reading implemented?**
 
 [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) implements one goroutine per `net.Conn` to read responses from connections.
 The goroutine keeps on reading from the connection, and tracks successful and failed reads. This design means that there will be 1M response reader goroutines if the user
 wants to establish 1M connections and read responses. To handle this, IO multiplexing + pool of ResponseReaders is planned in subsequent release.
 
-7. **What is the significance of Rrs flag in blast?**
+6. **What is the significance of Rrs flag in blast?**
 
 To read responses from connections, **blast** needs to know the response payload size. The flag `Rrs` signifies the size of the response payload in bytes (or the size of the
 byte slice) that [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) should read in each iteration.
 
-8. **What is the significance of Rrd flag in blast?**
+7. **What is the significance of Rrd flag in blast?**
 
 `Rrd` is the read response deadline flag that defines the deadline for the read calls on connections. 
 This flag helps in understanding the responsiveness of the target server. Let's consider that we are running **blast** with the following command: 
