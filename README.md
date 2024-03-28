@@ -99,14 +99,14 @@ The following command sends 100 requests per second per worker, over 10 TCP conn
 
 2. **Are the workers implemented using goroutines?**
    
-Yes, workers are implemented as cooperative goroutines. You can refer the code [here](https://github.com/SarthakMakhija/blast/blob/main/workers/worker.go).
+Yes, workers are implemented as cooperative goroutines. You can refer the code [here](https://github.com/SarthakMakhija/blast-core/blob/main/workers/worker.go).
 
 3. **Can I create more connections than workers?**
 
 No, you can not create more connections that workers. The relationship between the concurrency and the workers is simple: `concurrency % workers must be equal to zero`.
 This means, we can have 100 workers with 10 connections, where a group of 10 workers will share one connection.
 
-You can refer the code [here](https://github.com/SarthakMakhija/blast/blob/main/workers/worker_group.go#L89).
+You can refer the code [here](https://github.com/SarthakMakhija/blast-core/blob/main/workers/worker_group.go#L77).
 
 4. **My server takes a protobuf encoded byte slice. How do I pass the payload to blast?**
 
@@ -134,14 +134,14 @@ The above code creates a protobuf encoded message and writes it to a file. The f
 
 5. **blast provides a feature to read responses. How is response reading implemented?**
 
-[ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) implements one goroutine per `net.Conn` to read responses from connections.
+[ResponseReader](https://github.com/SarthakMakhija/blast-core/blob/main/report/response_reader.go) implements one goroutine per `net.Conn` to read responses from connections.
 The goroutine keeps on reading from the connection, and tracks successful and failed reads. This design means that there will be 1M response reader goroutines if the user
 wants to establish 1M connections and read responses. To handle this, IO multiplexing + pool of ResponseReaders is planned in subsequent release.
 
 6. **What is the significance of Rrs flag in blast?**
 
 To read responses from connections, **blast** needs to know the response payload size. The flag `Rrs` signifies the size of the response payload in bytes (or the size of the
-byte slice) that [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) should read in each iteration.
+byte slice) that [ResponseReader](https://github.com/SarthakMakhija/blast-core/blob/main/report/response_reader.go) should read in each iteration.
 
 7. **What is the significance of Rrd flag in blast?**
 
@@ -150,7 +150,7 @@ This flag helps in understanding the responsiveness of the target server. Let's 
 
 `./blast -c 100 -conn 100  -f ./payload -Rr -Rrs 19 -Rrd 10ms -Rtr 200000 localhost:8989`.
 
-Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseReader](https://github.com/SarthakMakhija/blast/blob/main/report/response_reader.go) will block for 10ms and 
+Here, `Rrd` is 10 milliseconds, this means that the `read` calls in [ResponseReader](https://github.com/SarthakMakhija/blast-core/blob/main/report/response_reader.go) will block for 10ms and 
 then timeout if there is no response on the underlying connection.
 
 ## References
